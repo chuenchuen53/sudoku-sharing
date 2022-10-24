@@ -26,7 +26,40 @@
         </div>
       </div>
     </div>
+    <section>numberOfClues: {{ sudoku.numberOfClues }}</section>
     <section>is valid: {{ sudoku.isValid }}</section>
+    <section>
+      <table>
+        <thead>
+          <tr>
+            <th>des</th>
+            <th>count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>row unique missing</th>
+            <td>{{ sudoku.stats.rowUniqueMissing }}</td>
+          </tr>
+          <tr>
+            <th>col unique missing</th>
+            <td>{{ sudoku.stats.columnUniqueMissing }}</td>
+          </tr>
+          <tr>
+            <th>box unique missing</th>
+            <td>{{ sudoku.stats.boxUniqueMissing }}</td>
+          </tr>
+          <tr>
+            <th>naked single</th>
+            <td>{{ sudoku.stats.nakedSingles }}</td>
+          </tr>
+          <tr>
+            <th>hidden single</th>
+            <td>{{ sudoku.stats.hiddenSingles }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
     <section>
       <button @click="clearAllCandidates">clear all candidates</button>
       <button @click="getRowMissing">get row missing</button>
@@ -34,7 +67,8 @@
       <button @click="getBoxMissing">get box missing</button>
       <button @click="getCombinedMissing">get combined missing</button>
       <button @click="getUniqueMissingCandidate">get Unique Missing Candidate</button>
-      <button @click="sudoku.setUniqueMissingCandidateToInputValue">set Unique Missing Candidate</button>
+      <button @click="sudoku.setNakedSingles">set Unique Missing Candidate</button>
+      <button @click="sudoku.trySolve">try solve</button>
     </section>
   </div>
 </template>
@@ -90,7 +124,7 @@ const getBoxMissing = () => {
 };
 
 const getCombinedMissing = () => {
-  sudoku.getMissing();
+  sudoku.getCombinedMissing();
 };
 
 const getUniqueMissingCandidate = () => {
