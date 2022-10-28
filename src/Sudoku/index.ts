@@ -788,6 +788,35 @@ export default class Sudoku {
     return elimination;
   }
 
+  getHiddenMultipleHelper(
+    virtualLines: VirtualLine[],
+    sizeOfCandidate: number
+  ): {
+    multiple: CellWithIndex[];
+    elimination: InputValueData[];
+  }[] {
+    const result: {
+      multiple: CellWithIndex[];
+      elimination: InputValueData[];
+    }[] = [];
+
+    for (let i = 0; i < virtualLines.length; i++) {
+      const virtualLine = virtualLines[i];
+
+      const emptyCells = virtualLine.filter((x) => !x.clue && !x.inputValue);
+      const missingInVirtualLine = this.missingInVirtualLine(virtualLine);
+      const missingArr = this.getCandidatesArr(missingInVirtualLine);
+      if (missingArr.length < sizeOfCandidate) continue;
+      const combinations = CalcUtil.combinations(missingArr, sizeOfCandidate);
+
+      for (const comb of combinations) {
+        console.log("todo");
+      }
+    }
+
+    return result;
+  }
+
   setRowUniqueMissing(): boolean {
     const uniqueMissing = this.getUniqueMissing("row");
     if (uniqueMissing.length) {
