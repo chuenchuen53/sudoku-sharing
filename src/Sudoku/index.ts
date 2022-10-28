@@ -3,7 +3,7 @@ import CalcUtil from "@/utils/CalcUtil";
 import ObjUtil from "@/utils/ObjUtil";
 
 type SudokuIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
-type SudokuElement = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+export type SudokuElement = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
 type Candidates = {
   [key in SudokuElement]: boolean;
@@ -52,84 +52,6 @@ const statsTemplate: () => Stats = () => ({
   hiddenSingles: 0,
 });
 
-// medium
-const testingPuzzle: (SudokuElement | null)[][] = [
-  ["2", null, null, null, null, null, "8", "6", null],
-  [null, null, null, null, "4", "2", null, null, null],
-  [null, "1", null, null, "6", null, null, "4", "7"],
-  ["3", "4", "5", null, "2", null, null, null, "1"],
-  ["7", "2", null, null, null, null, "4", null, "9"],
-  ["8", null, null, null, null, null, "5", null, "6"],
-  [null, null, "2", null, "3", null, null, null, null],
-  [null, null, null, "6", "8", null, null, "1", "2"],
-  ["5", null, "8", null, null, null, null, null, "4"],
-];
-
-// medium
-const testingPuzzle2: (SudokuElement | null)[][] = [
-  [null, "3", null, "9", null, null, null, null, null],
-  ["6", null, null, "2", null, null, "8", null, null],
-  ["8", null, null, "6", "1", null, "5", "4", "9"],
-  [null, null, null, null, "3", "2", "1", null, null],
-  ["2", null, "8", null, "4", null, null, null, null],
-  [null, null, "3", "1", "9", null, null, null, "4"],
-  ["9", null, "2", null, null, null, null, null, "5"],
-  ["1", null, null, null, null, null, null, "6", null],
-  [null, null, "4", null, "6", null, "9", null, "8"],
-];
-
-// hard
-const testingPuzzle3: (SudokuElement | null)[][] = [
-  [null, null, null, null, null, "1", "6", null, null],
-  [null, null, "5", null, null, null, null, null, "3"],
-  [null, null, null, null, null, null, "5", "9", "4"],
-  [null, "8", null, null, "6", null, null, null, "1"],
-  [null, "1", null, null, null, "4", "9", null, "2"],
-  ["4", "9", null, "1", "8", null, null, null, null],
-  [null, "2", null, "4", null, "6", "1", null, null],
-  [null, null, null, null, "5", "3", "2", null, null],
-  ["7", null, null, null, null, "8", null, "6", null],
-];
-
-// hard
-const testingPuzzle4: (SudokuElement | null)[][] = [
-  [null, null, null, null, null, null, null, "6", null],
-  [null, null, null, "3", "8", null, "1", "9", null],
-  [null, null, "7", "5", null, null, "3", "4", "2"],
-  ["8", "9", null, null, null, null, "4", null, null],
-  [null, null, "6", null, null, null, "8", null, "1"],
-  ["3", "4", null, null, null, null, null, null, null],
-  [null, null, null, "4", "6", "7", null, null, null],
-  [null, null, null, null, null, "5", null, "3", null],
-  [null, "7", null, null, null, "1", null, null, null],
-];
-
-// hard
-const testingPuzzle5: (SudokuElement | null)[][] = [
-  [null, null, "2", null, "1", null, null, null, null],
-  ["1", null, null, null, "8", null, null, "5", "4"],
-  [null, "6", null, null, "2", null, "9", "1", "3"],
-  ["6", null, "5", null, null, null, "4", null, "9"],
-  [null, null, null, null, null, "8", "1", null, null],
-  ["2", null, null, "7", null, null, null, null, null],
-  ["9", null, null, null, null, null, null, null, "5"],
-  [null, null, null, null, "4", null, null, null, "6"],
-  ["4", "7", "3", null, null, "6", null, null, "1"],
-];
-
-// expert
-const testingPuzzle6: (SudokuElement | null)[][] = [
-  [null, "8", null, "5", null, null, null, null, null],
-  [null, null, null, null, "3", null, "2", null, null],
-  [null, null, "9", null, "2", null, "7", null, null],
-  [null, null, "7", null, null, null, null, null, "6"],
-  [null, "4", null, null, null, null, null, "5", null],
-  ["1", null, null, "2", null, null, null, null, "7"],
-  [null, null, "8", null, "6", null, null, null, "3"],
-  [null, null, null, "3", null, "1", "6", null, "4"],
-  [null, null, "1", null, null, "9", null, null, null],
-];
-
 const candidatesTemplate = (defaultValue: boolean) => ({
   "1": defaultValue,
   "2": defaultValue,
@@ -168,8 +90,8 @@ export default class Sudoku {
 
   private elementMissing: ElementMissing;
 
-  constructor() {
-    this.puzzle = this.createPuzzle(testingPuzzle5);
+  constructor(puzzle) {
+    this.puzzle = this.createPuzzle(puzzle);
     this.isValid = this.validatePuzzle().clueValid;
     this.stats = statsTemplate();
     this.elementMissing = this.updateElementMissing();
@@ -653,7 +575,6 @@ export default class Sudoku {
 
       const comb: [CellWithIndex, CellWithIndex][] = CalcUtil.combinations(cellWith2Candidates, 2);
 
-      console.log(comb);
       const pairs: [CellWithIndex, CellWithIndex][] = [
         ...comb.filter(([x, y]) => x.candidates && y.candidates && ObjUtil.shallowEquality(x.candidates, y.candidates)),
       ];
@@ -689,11 +610,8 @@ export default class Sudoku {
   getNakedPairs(): InputValueData[] {
     if (!this.isValid) return [];
 
-    console.log("row");
     const rowResult = this.getNakedPairsHelper(this.getAllRows());
-    console.log("column");
     const columnResult = this.getNakedPairsHelper(this.getAllColumns());
-    console.log("box");
     const boxResult = this.getNakedPairsHelper(this.getAllBoxes());
     const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
 
@@ -792,10 +710,12 @@ export default class Sudoku {
     virtualLines: VirtualLine[],
     sizeOfCandidate: number
   ): {
+    combination: SudokuElement[];
     multiple: CellWithIndex[];
     elimination: InputValueData[];
   }[] {
     const result: {
+      combination: SudokuElement[];
       multiple: CellWithIndex[];
       elimination: InputValueData[];
     }[] = [];
@@ -809,12 +729,85 @@ export default class Sudoku {
       if (missingArr.length < sizeOfCandidate) continue;
       const combinations = CalcUtil.combinations(missingArr, sizeOfCandidate);
 
-      for (const comb of combinations) {
-        console.log("todo");
+      // !debug
+      if (virtualLine.every((x) => x.rowIndex === 1)) {
+        console.log("file: index.ts ~ line 811 ~ Sudoku ~ combinations", combinations);
+      }
+      // !debug
+
+      for (const combination of combinations) {
+        const allSubComb: SudokuElement[][] = [];
+
+        for (let i = 1; i <= combination.length; i++) {
+          const subComb = CalcUtil.combinations(combination, i);
+          allSubComb.push(...subComb);
+        }
+
+        const cellsRelated = emptyCells.filter(
+          (x) => x.candidates && allSubComb.some((y) => this.isCandidateIsSubset(candidatesFromArr(y), x.candidates!))
+        );
+
+        if (cellsRelated.length === sizeOfCandidate) {
+          const multiple: CellWithIndex[] = cellsRelated;
+          const elimination: InputValueData[] = [];
+
+          cellsRelated.forEach((x) => {
+            if (x.candidates) {
+              for (const key in x.candidates) {
+                const sudokuElement = key as SudokuElement;
+                if (x.candidates[sudokuElement] && !combination.includes(sudokuElement)) {
+                  elimination.push({
+                    rowIndex: x.rowIndex,
+                    columnIndex: x.columnIndex,
+                    value: sudokuElement,
+                  });
+                }
+              }
+            }
+          });
+
+          result.push({ combination, multiple, elimination });
+        }
       }
     }
 
     return result;
+  }
+
+  getHiddenPairs(): InputValueData[] {
+    if (!this.isValid) return [];
+
+    const size = 2;
+    const rowResult = this.getHiddenMultipleHelper(this.getAllRows(), size);
+    const columnResult = this.getHiddenMultipleHelper(this.getAllColumns(), size);
+    const boxResult = this.getHiddenMultipleHelper(this.getAllBoxes(), size);
+    const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
+
+    return elimination;
+  }
+
+  getHiddenTriplets(): InputValueData[] {
+    if (!this.isValid) return [];
+
+    const size = 3;
+    const rowResult = this.getHiddenMultipleHelper(this.getAllRows(), size);
+    const columnResult = this.getHiddenMultipleHelper(this.getAllColumns(), size);
+    const boxResult = this.getHiddenMultipleHelper(this.getAllBoxes(), size);
+    const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
+
+    return elimination;
+  }
+
+  getHiddenQuads(): InputValueData[] {
+    if (!this.isValid) return [];
+
+    const size = 4;
+    const rowResult = this.getHiddenMultipleHelper(this.getAllRows(), size);
+    const columnResult = this.getHiddenMultipleHelper(this.getAllColumns(), size);
+    const boxResult = this.getHiddenMultipleHelper(this.getAllBoxes(), size);
+    const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
+
+    return elimination;
   }
 
   setRowUniqueMissing(): boolean {
@@ -907,6 +900,27 @@ export default class Sudoku {
       const nakedQuadsElimination = this.getNakedQuads();
       if (nakedQuadsElimination.length) {
         this.removeElementInCandidates(nakedQuadsElimination);
+        if (this.setNakedSingles()) return this.trySolve();
+        if (this.setHiddenSingles()) return this.trySolve();
+      }
+
+      const hiddenPairsElimination = this.getHiddenPairs();
+      if (hiddenPairsElimination.length) {
+        this.removeElementInCandidates(hiddenPairsElimination);
+        if (this.setNakedSingles()) return this.trySolve();
+        if (this.setHiddenSingles()) return this.trySolve();
+      }
+
+      const hiddenTripletsElimination = this.getHiddenTriplets();
+      if (hiddenTripletsElimination.length) {
+        this.removeElementInCandidates(hiddenTripletsElimination);
+        if (this.setNakedSingles()) return this.trySolve();
+        if (this.setHiddenSingles()) return this.trySolve();
+      }
+
+      const hiddenQuadsElimination = this.getHiddenQuads();
+      if (hiddenQuadsElimination.length) {
+        this.removeElementInCandidates(hiddenQuadsElimination);
         if (this.setNakedSingles()) return this.trySolve();
         if (this.setHiddenSingles()) return this.trySolve();
       }

@@ -74,6 +74,7 @@
 </template>
 
 <script setup lang="ts">
+import * as tp from "@/samplePuzzle";
 import { reactive, computed } from "vue";
 import Sudoku from "../Sudoku";
 import ArrayUtil from "../utils/ArrayUtil";
@@ -87,7 +88,7 @@ const selectedCell = reactive<SelectedCell>({
   row: 0,
   col: 0,
 });
-const sudoku = reactive(new Sudoku());
+const sudoku = reactive(new Sudoku(tp.testingPuzzle9));
 
 const handleCellClick = (rowIndex: number, colIndex: number) => {
   selectedCell.row = rowIndex;
@@ -194,6 +195,7 @@ const highlight = computed(() => {
         .candidate {
           font-size: 10px;
           color: grey;
+
           &.hidden {
             visibility: hidden;
           }
