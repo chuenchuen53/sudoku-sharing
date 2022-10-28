@@ -104,8 +104,21 @@ const testingPuzzle4: (SudokuElement | null)[][] = [
   [null, "7", null, null, null, "1", null, null, null],
 ];
 
-// expert
+// hard
 const testingPuzzle5: (SudokuElement | null)[][] = [
+  [null, null, "2", null, "1", null, null, null, null],
+  ["1", null, null, null, "8", null, null, "5", "4"],
+  [null, "6", null, null, "2", null, "9", "1", "3"],
+  ["6", null, "5", null, null, null, "4", null, "9"],
+  [null, null, null, null, null, "8", "1", null, null],
+  ["2", null, null, "7", null, null, null, null, null],
+  ["9", null, null, null, null, null, null, null, "5"],
+  [null, null, null, null, "4", null, null, null, "6"],
+  ["4", "7", "3", null, null, "6", null, null, "1"],
+];
+
+// expert
+const testingPuzzle6: (SudokuElement | null)[][] = [
   [null, "8", null, "5", null, null, null, null, null],
   [null, null, null, null, "3", null, "2", null, null],
   [null, null, "9", null, "2", null, "7", null, null],
@@ -129,6 +142,12 @@ const candidatesTemplate = (defaultValue: boolean) => ({
   "9": defaultValue,
 });
 
+const candidatesFromArr = (arr: SudokuElement[]) => {
+  const candidates = candidatesTemplate(false);
+  arr.forEach((x) => (candidates[x] = true));
+  return candidates;
+};
+
 const hiddenCandidatesTemplate = () => ({
   "1": 0,
   "2": 0,
@@ -150,7 +169,7 @@ export default class Sudoku {
   private elementMissing: ElementMissing;
 
   constructor() {
-    this.puzzle = this.createPuzzle(testingPuzzle4);
+    this.puzzle = this.createPuzzle(testingPuzzle5);
     this.isValid = this.validatePuzzle().clueValid;
     this.stats = statsTemplate();
     this.elementMissing = this.updateElementMissing();
@@ -632,7 +651,9 @@ export default class Sudoku {
       const cellWith2Candidates = virtualLine.filter((x) => this.numberOfCandidates(x) === 2);
       if (cellWith2Candidates.length < 2) continue;
 
-      const comb = CalcUtil.combination(cellWith2Candidates);
+      const comb: [CellWithIndex, CellWithIndex][] = CalcUtil.combinations(cellWith2Candidates, 2);
+
+      console.log(comb);
       const pairs: [CellWithIndex, CellWithIndex][] = [
         ...comb.filter(([x, y]) => x.candidates && y.candidates && ObjUtil.shallowEquality(x.candidates, y.candidates)),
       ];
@@ -662,8 +683,6 @@ export default class Sudoku {
       result.push({ pairs, elimination });
     }
 
-    console.log("turbo ~ file: index.ts ~ line 667 ~ Sudoku ~ getNakedPairsHelper ~ result", result);
-
     return result;
   }
 
@@ -676,6 +695,94 @@ export default class Sudoku {
     const columnResult = this.getNakedPairsHelper(this.getAllColumns());
     console.log("box");
     const boxResult = this.getNakedPairsHelper(this.getAllBoxes());
+    const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
+
+    return elimination;
+  }
+
+  isCandidateIsSubset(subset: Candidates, superset: Candidates): boolean {
+    for (const key in subset) {
+      const sudokuElement = key as SudokuElement;
+      if (subset[sudokuElement] && !superset[sudokuElement]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  getMultipleNakedHelper(
+    virtualLines: VirtualLine[],
+    sizeOfCandidate: number
+  ): {
+    multiple: CellWithIndex[];
+    elimination: InputValueData[];
+  }[] {
+    const result: {
+      multiple: CellWithIndex[];
+      elimination: InputValueData[];
+    }[] = [];
+
+    for (let i = 0; i < virtualLines.length; i++) {
+      const virtualLine = virtualLines[i];
+
+      const emptyCells = virtualLine.filter((x) => !x.clue && !x.inputValue);
+      const missingInVirtualLine = this.missingInVirtualLine(virtualLine);
+      const missingArr = this.getCandidatesArr(missingInVirtualLine);
+      if (missingArr.length < sizeOfCandidate) continue;
+      const combinations = CalcUtil.combinations(missingArr, sizeOfCandidate);
+
+      for (const comb of combinations) {
+        const superset = candidatesFromArr(comb);
+        const subsetCells = emptyCells.filter((x) => x.candidates && this.isCandidateIsSubset(x.candidates, superset));
+
+        if (subsetCells.length === sizeOfCandidate) {
+          const multiple: CellWithIndex[] = subsetCells;
+          const elimination: InputValueData[] = [];
+
+          const restCells = emptyCells.filter(
+            (x) => !subsetCells.some((y) => y.rowIndex === x.rowIndex && y.columnIndex === x.columnIndex)
+          );
+          // const restCellsContainerAnyCandidateInComb = restCells.some(
+          //   (x) => x.candidates && this.getCandidatesArr(x.candidates).some((y) => comb.includes(y))
+          // );
+          // if (restCellsContainerAnyCandidateInComb) continue;
+
+          restCells.forEach((cell) => {
+            for (const sudokuElement of comb) {
+              if (cell.candidates && cell.candidates[sudokuElement]) {
+                elimination.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement });
+              }
+            }
+          });
+
+          result.push({ multiple, elimination });
+        }
+      }
+    }
+
+    return result;
+  }
+
+  getNakedTriplets(): InputValueData[] {
+    if (!this.isValid) return [];
+
+    const size = 3;
+    const rowResult = this.getMultipleNakedHelper(this.getAllRows(), size);
+    const columnResult = this.getMultipleNakedHelper(this.getAllColumns(), size);
+    const boxResult = this.getMultipleNakedHelper(this.getAllBoxes(), size);
+    const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
+
+    return elimination;
+  }
+
+  getNakedQuads(): InputValueData[] {
+    if (!this.isValid) return [];
+
+    const size = 4;
+    const rowResult = this.getMultipleNakedHelper(this.getAllRows(), size);
+    const columnResult = this.getMultipleNakedHelper(this.getAllColumns(), size);
+    const boxResult = this.getMultipleNakedHelper(this.getAllBoxes(), size);
     const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
 
     return elimination;
@@ -757,6 +864,20 @@ export default class Sudoku {
       const nakedPairsElimination = this.getNakedPairs();
       if (nakedPairsElimination.length) {
         this.removeElementInCandidates(nakedPairsElimination);
+        if (this.setNakedSingles()) return this.trySolve();
+        if (this.setHiddenSingles()) return this.trySolve();
+      }
+
+      const nakedTripletsElimination = this.getNakedTriplets();
+      if (nakedTripletsElimination.length) {
+        this.removeElementInCandidates(nakedTripletsElimination);
+        if (this.setNakedSingles()) return this.trySolve();
+        if (this.setHiddenSingles()) return this.trySolve();
+      }
+
+      const nakedQuadsElimination = this.getNakedQuads();
+      if (nakedQuadsElimination.length) {
+        this.removeElementInCandidates(nakedQuadsElimination);
         if (this.setNakedSingles()) return this.trySolve();
         if (this.setHiddenSingles()) return this.trySolve();
       }
