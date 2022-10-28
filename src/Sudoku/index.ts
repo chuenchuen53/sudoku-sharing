@@ -1,4 +1,6 @@
 import ArrayUtils from "@/utils/ArrayUtil";
+import CalcUtil from "@/utils/CalcUtil";
+import ObjUtil from "@/utils/ObjUtil";
 
 type SudokuIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 type SudokuElement = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
@@ -148,7 +150,7 @@ export default class Sudoku {
   private elementMissing: ElementMissing;
 
   constructor() {
-    this.puzzle = this.createPuzzle(testingPuzzle5);
+    this.puzzle = this.createPuzzle(testingPuzzle4);
     this.isValid = this.validatePuzzle().clueValid;
     this.stats = statsTemplate();
     this.elementMissing = this.updateElementMissing();
@@ -603,6 +605,82 @@ export default class Sudoku {
     return arr;
   }
 
+  numberOfCandidates(cell: Cell): number {
+    if (!cell.candidates) return 0;
+    const entries = Object.entries(cell.candidates) as [SudokuElement, boolean][];
+    const candidatesArr = entries.filter(([_, value]) => value);
+    return candidatesArr.length;
+  }
+
+  getCandidatesArr(candidates: Candidates): SudokuElement[] {
+    const entries = Object.entries(candidates) as [SudokuElement, boolean][];
+    const candidatesArr = entries.filter(([_, value]) => value);
+    return candidatesArr.map(([sudokuElement]) => sudokuElement);
+  }
+
+  getNakedPairsHelper(virtualLines: VirtualLine[]): {
+    pairs: [CellWithIndex, CellWithIndex][];
+    elimination: InputValueData[];
+  }[] {
+    const result: {
+      pairs: [CellWithIndex, CellWithIndex][];
+      elimination: InputValueData[];
+    }[] = [];
+
+    for (let i = 0; i < virtualLines.length; i++) {
+      const virtualLine = virtualLines[i];
+      const cellWith2Candidates = virtualLine.filter((x) => this.numberOfCandidates(x) === 2);
+      if (cellWith2Candidates.length < 2) continue;
+
+      const comb = CalcUtil.combination(cellWith2Candidates);
+      const pairs: [CellWithIndex, CellWithIndex][] = [
+        ...comb.filter(([x, y]) => x.candidates && y.candidates && ObjUtil.shallowEquality(x.candidates, y.candidates)),
+      ];
+      if (!pairs.length) continue;
+      const elimination: InputValueData[] = [];
+      pairs.forEach(([x, y]) => {
+        const candidates = x.candidates;
+        if (!candidates) return;
+        const elements = this.getCandidatesArr(candidates);
+        const [c1, c2] = elements;
+        const restCells = virtualLine.filter(
+          (z) =>
+            !(z.rowIndex === x.rowIndex && z.columnIndex === x.columnIndex) &&
+            !(z.rowIndex === y.rowIndex && z.columnIndex === y.columnIndex)
+        );
+        restCells.forEach((z) => {
+          if (z.candidates && z.candidates[c1]) {
+            elimination.push({ rowIndex: z.rowIndex, columnIndex: z.columnIndex, value: c1 });
+          }
+
+          if (z.candidates && z.candidates[c2]) {
+            elimination.push({ rowIndex: z.rowIndex, columnIndex: z.columnIndex, value: c2 });
+          }
+        });
+      });
+
+      result.push({ pairs, elimination });
+    }
+
+    console.log("turbo ~ file: index.ts ~ line 667 ~ Sudoku ~ getNakedPairsHelper ~ result", result);
+
+    return result;
+  }
+
+  getNakedPairs(): InputValueData[] {
+    if (!this.isValid) return [];
+
+    console.log("row");
+    const rowResult = this.getNakedPairsHelper(this.getAllRows());
+    console.log("column");
+    const columnResult = this.getNakedPairsHelper(this.getAllColumns());
+    console.log("box");
+    const boxResult = this.getNakedPairsHelper(this.getAllBoxes());
+    const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
+
+    return elimination;
+  }
+
   setRowUniqueMissing(): boolean {
     const uniqueMissing = this.getUniqueMissing("row");
     if (uniqueMissing.length) {
@@ -672,6 +750,13 @@ export default class Sudoku {
       const removalDueToLockedCandidates = this.getRemovalDueToLockedCandidates();
       if (removalDueToLockedCandidates.length) {
         this.removeElementInCandidates(removalDueToLockedCandidates);
+        if (this.setNakedSingles()) return this.trySolve();
+        if (this.setHiddenSingles()) return this.trySolve();
+      }
+
+      const nakedPairsElimination = this.getNakedPairs();
+      if (nakedPairsElimination.length) {
+        this.removeElementInCandidates(nakedPairsElimination);
         if (this.setNakedSingles()) return this.trySolve();
         if (this.setHiddenSingles()) return this.trySolve();
       }
