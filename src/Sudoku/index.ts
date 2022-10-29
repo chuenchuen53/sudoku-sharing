@@ -44,6 +44,8 @@ interface Stats {
   hiddenSingles: number;
 }
 
+const allElementsFactory = () => ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
 const statsTemplate: () => Stats = () => ({
   rowUniqueMissing: 0,
   columnUniqueMissing: 0,
@@ -810,6 +812,79 @@ export default class Sudoku {
     return elimination;
   }
 
+  getXWingHelper(
+    virtualLines: VirtualLine[],
+    type: "row" | "column"
+  ): { sudokuElement: SudokuElement; multiple: CellWithIndex[]; elimination: InputValueData[] }[] {
+    const result: { sudokuElement: SudokuElement; multiple: CellWithIndex[]; elimination: InputValueData[] }[] = [];
+
+    const allElements = allElementsFactory();
+
+    for (const e of allElements) {
+      const sudokuElement = e as SudokuElement;
+      const containElement = virtualLines.map((line) =>
+        line.map((x) => (x.candidates && x.candidates[sudokuElement]) ?? false)
+      );
+      const lineWithTwoCellsContained = containElement.reduce((acc, cur, curIndex) => {
+        if (cur.filter((x) => x).length === 2) {
+          const cells = virtualLines[curIndex].filter((x) => x.candidates && x.candidates[sudokuElement]);
+          acc.push({ element: sudokuElement, index: curIndex, cells });
+        }
+        return acc;
+      }, [] as { element: SudokuElement; index: number; cells: CellWithIndex[] }[]);
+      if (lineWithTwoCellsContained.length > 1) {
+        const combinations = CalcUtil.combinations(lineWithTwoCellsContained, 2);
+        for (const [c1, c2] of combinations) {
+          const isSamePosition =
+            type === "row"
+              ? c1.cells[0].columnIndex === c2.cells[0].columnIndex &&
+                c1.cells[1].columnIndex === c2.cells[1].columnIndex
+              : c1.cells[0].rowIndex === c2.cells[0].rowIndex && c1.cells[1].rowIndex === c2.cells[1].rowIndex;
+
+          if (isSamePosition) {
+            const transverseIndexes =
+              type === "row"
+                ? [c1.cells[0].columnIndex, c1.cells[1].columnIndex]
+                : [c1.cells[0].rowIndex, c1.cells[1].rowIndex];
+
+            const multiple = [c1.cells[0], c1.cells[1], c2.cells[0], c2.cells[1]];
+            const eliminationLines =
+              type === "row"
+                ? [this.getColumn(transverseIndexes[0]), this.getColumn(transverseIndexes[1])]
+                : [this.getRow(transverseIndexes[0]), this.getRow(transverseIndexes[1])];
+            const elimination: InputValueData[] = [];
+            eliminationLines.forEach((line) => {
+              line.forEach((cell) => {
+                if (cell.candidates && cell.candidates[sudokuElement]) {
+                  if (!multiple.some((x) => x.rowIndex === cell.rowIndex && x.columnIndex === cell.columnIndex)) {
+                    elimination.push({
+                      rowIndex: cell.rowIndex,
+                      columnIndex: cell.columnIndex,
+                      value: sudokuElement,
+                    });
+                  }
+                }
+              });
+            });
+            result.push({ sudokuElement, multiple, elimination });
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
+  getXWing(): InputValueData[] {
+    if (!this.isValid) return [];
+
+    const rowResult = this.getXWingHelper(this.getAllRows(), "row");
+    const columnResult = this.getXWingHelper(this.getAllColumns(), "column");
+    const elimination = [...rowResult, ...columnResult].flatMap((x) => x.elimination);
+
+    return elimination;
+  }
+
   setRowUniqueMissing(): boolean {
     const uniqueMissing = this.getUniqueMissing("row");
     if (uniqueMissing.length) {
@@ -876,51 +951,59 @@ export default class Sudoku {
       if (this.setNakedSingles()) return this.trySolve();
       if (this.setHiddenSingles()) return this.trySolve();
 
-      const removalDueToLockedCandidates = this.getRemovalDueToLockedCandidates();
-      if (removalDueToLockedCandidates.length) {
-        this.removeElementInCandidates(removalDueToLockedCandidates);
-        if (this.setNakedSingles()) return this.trySolve();
-        if (this.setHiddenSingles()) return this.trySolve();
-      }
+      // const removalDueToLockedCandidates = this.getRemovalDueToLockedCandidates();
+      // if (removalDueToLockedCandidates.length) {
+      //   this.removeElementInCandidates(removalDueToLockedCandidates);
+      //   if (this.setNakedSingles()) return this.trySolve();
+      //   if (this.setHiddenSingles()) return this.trySolve();
+      // }
 
-      const nakedPairsElimination = this.getNakedPairs();
-      if (nakedPairsElimination.length) {
-        this.removeElementInCandidates(nakedPairsElimination);
-        if (this.setNakedSingles()) return this.trySolve();
-        if (this.setHiddenSingles()) return this.trySolve();
-      }
+      // const nakedPairsElimination = this.getNakedPairs();
+      // if (nakedPairsElimination.length) {
+      //   this.removeElementInCandidates(nakedPairsElimination);
+      //   if (this.setNakedSingles()) return this.trySolve();
+      //   if (this.setHiddenSingles()) return this.trySolve();
+      // }
 
-      const nakedTripletsElimination = this.getNakedTriplets();
-      if (nakedTripletsElimination.length) {
-        this.removeElementInCandidates(nakedTripletsElimination);
-        if (this.setNakedSingles()) return this.trySolve();
-        if (this.setHiddenSingles()) return this.trySolve();
-      }
+      // const nakedTripletsElimination = this.getNakedTriplets();
+      // if (nakedTripletsElimination.length) {
+      //   this.removeElementInCandidates(nakedTripletsElimination);
+      //   if (this.setNakedSingles()) return this.trySolve();
+      //   if (this.setHiddenSingles()) return this.trySolve();
+      // }
 
-      const nakedQuadsElimination = this.getNakedQuads();
-      if (nakedQuadsElimination.length) {
-        this.removeElementInCandidates(nakedQuadsElimination);
-        if (this.setNakedSingles()) return this.trySolve();
-        if (this.setHiddenSingles()) return this.trySolve();
-      }
+      // const nakedQuadsElimination = this.getNakedQuads();
+      // if (nakedQuadsElimination.length) {
+      //   this.removeElementInCandidates(nakedQuadsElimination);
+      //   if (this.setNakedSingles()) return this.trySolve();
+      //   if (this.setHiddenSingles()) return this.trySolve();
+      // }
 
-      const hiddenPairsElimination = this.getHiddenPairs();
-      if (hiddenPairsElimination.length) {
-        this.removeElementInCandidates(hiddenPairsElimination);
-        if (this.setNakedSingles()) return this.trySolve();
-        if (this.setHiddenSingles()) return this.trySolve();
-      }
+      // const hiddenPairsElimination = this.getHiddenPairs();
+      // if (hiddenPairsElimination.length) {
+      //   this.removeElementInCandidates(hiddenPairsElimination);
+      //   if (this.setNakedSingles()) return this.trySolve();
+      //   if (this.setHiddenSingles()) return this.trySolve();
+      // }
 
-      const hiddenTripletsElimination = this.getHiddenTriplets();
-      if (hiddenTripletsElimination.length) {
-        this.removeElementInCandidates(hiddenTripletsElimination);
-        if (this.setNakedSingles()) return this.trySolve();
-        if (this.setHiddenSingles()) return this.trySolve();
-      }
+      // const hiddenTripletsElimination = this.getHiddenTriplets();
+      // if (hiddenTripletsElimination.length) {
+      //   this.removeElementInCandidates(hiddenTripletsElimination);
+      //   if (this.setNakedSingles()) return this.trySolve();
+      //   if (this.setHiddenSingles()) return this.trySolve();
+      // }
 
-      const hiddenQuadsElimination = this.getHiddenQuads();
-      if (hiddenQuadsElimination.length) {
-        this.removeElementInCandidates(hiddenQuadsElimination);
+      // const hiddenQuadsElimination = this.getHiddenQuads();
+      // if (hiddenQuadsElimination.length) {
+      //   this.removeElementInCandidates(hiddenQuadsElimination);
+      //   if (this.setNakedSingles()) return this.trySolve();
+      //   if (this.setHiddenSingles()) return this.trySolve();
+      // }
+
+      const xWingElimination = this.getXWing();
+      if (xWingElimination.length) {
+        console.log(xWingElimination);
+        this.removeElementInCandidates(xWingElimination);
         if (this.setNakedSingles()) return this.trySolve();
         if (this.setHiddenSingles()) return this.trySolve();
       }
