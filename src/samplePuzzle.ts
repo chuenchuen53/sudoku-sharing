@@ -116,3 +116,16 @@ export const testingPuzzle9: (SudokuElement | null)[][] = [
   [null, null, "2", null, "9", null, null, null, null],
   ["4", null, null, null, null, null, null, "8", "9"],
 ];
+
+// yWing test
+export const testingPuzzle10: (SudokuElement | null)[][] = [
+  ["9", null, null, "2", null, null, "7", "5", null],
+  [null, "5", null, "6", "9", null, "2", "3", "1"],
+  ["4", "2", null, null, null, null, null, null, null],
+  [null, "9", null, null, null, null, null, null, null],
+  [null, null, "2", null, null, null, null, null, null],
+  [null, "7", null, null, null, "6", null, null, null],
+  [null, "6", "9", null, null, "1", null, null, null],
+  ["5", "1", null, null, null, "3", null, null, null],
+  ["2", null, "7", null, "8", null, null, null, "9"],
+];

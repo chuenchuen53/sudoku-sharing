@@ -812,12 +812,14 @@ export default class Sudoku {
     return elimination;
   }
 
-  getXWingHelper(
+  getXWingSwordfishHelper(
     virtualLines: VirtualLine[],
-    type: "row" | "column"
+    type: "row" | "column",
+    calcType: "xWing" | "swordfish"
   ): { sudokuElement: SudokuElement; multiple: CellWithIndex[]; elimination: InputValueData[] }[] {
     const result: { sudokuElement: SudokuElement; multiple: CellWithIndex[]; elimination: InputValueData[] }[] = [];
 
+    const size = calcType === "xWing" ? 2 : 3;
     const allElements = allElementsFactory();
 
     for (const e of allElements) {
@@ -826,32 +828,53 @@ export default class Sudoku {
         line.map((x) => (x.candidates && x.candidates[sudokuElement]) ?? false)
       );
       const lineWithTwoCellsContained = containElement.reduce((acc, cur, curIndex) => {
-        if (cur.filter((x) => x).length === 2) {
+        if (cur.filter((x) => x).length === size) {
           const cells = virtualLines[curIndex].filter((x) => x.candidates && x.candidates[sudokuElement]);
           acc.push({ element: sudokuElement, index: curIndex, cells });
         }
         return acc;
       }, [] as { element: SudokuElement; index: number; cells: CellWithIndex[] }[]);
-      if (lineWithTwoCellsContained.length > 1) {
-        const combinations = CalcUtil.combinations(lineWithTwoCellsContained, 2);
-        for (const [c1, c2] of combinations) {
+      if (lineWithTwoCellsContained.length >= size) {
+        const combinations = CalcUtil.combinations(lineWithTwoCellsContained, size);
+        for (const [c1, c2, c3] of combinations) {
           const isSamePosition =
             type === "row"
               ? c1.cells[0].columnIndex === c2.cells[0].columnIndex &&
-                c1.cells[1].columnIndex === c2.cells[1].columnIndex
-              : c1.cells[0].rowIndex === c2.cells[0].rowIndex && c1.cells[1].rowIndex === c2.cells[1].rowIndex;
+                c1.cells[1].columnIndex === c2.cells[1].columnIndex &&
+                (c3 ? c1.cells[0].columnIndex === c3.cells[0].columnIndex : true)
+              : c1.cells[0].rowIndex === c2.cells[0].rowIndex &&
+                c1.cells[1].rowIndex === c2.cells[1].rowIndex &&
+                (c3 ? c1.cells[0].rowIndex === c3.cells[0].rowIndex : true);
 
           if (isSamePosition) {
             const transverseIndexes =
-              type === "row"
-                ? [c1.cells[0].columnIndex, c1.cells[1].columnIndex]
-                : [c1.cells[0].rowIndex, c1.cells[1].rowIndex];
-
-            const multiple = [c1.cells[0], c1.cells[1], c2.cells[0], c2.cells[1]];
+              calcType === "xWing"
+                ? type === "row"
+                  ? [c1.cells[0].columnIndex, c1.cells[1].columnIndex]
+                  : [c1.cells[0].rowIndex, c1.cells[1].rowIndex]
+                : type === "row"
+                ? [c1.cells[0].columnIndex, c1.cells[1].columnIndex, c3.cells[0].columnIndex]
+                : [c1.cells[0].rowIndex, c1.cells[1].rowIndex, c3.cells[0].rowIndex];
+            const multiple =
+              calcType === "xWing"
+                ? [c1.cells[0], c1.cells[1], c2.cells[0], c2.cells[1]]
+                : [c1.cells[0], c1.cells[1], c2.cells[0], c2.cells[1], c3.cells[0], c3.cells[1]];
             const eliminationLines =
-              type === "row"
-                ? [this.getColumn(transverseIndexes[0]), this.getColumn(transverseIndexes[1])]
-                : [this.getRow(transverseIndexes[0]), this.getRow(transverseIndexes[1])];
+              calcType === "xWing"
+                ? type === "row"
+                  ? [this.getColumn(transverseIndexes[0]), this.getColumn(transverseIndexes[1])]
+                  : [this.getRow(transverseIndexes[0]), this.getRow(transverseIndexes[1])]
+                : type === "row"
+                ? [
+                    this.getColumn(transverseIndexes[0]),
+                    this.getColumn(transverseIndexes[1]),
+                    this.getColumn(transverseIndexes[1]),
+                  ]
+                : [
+                    this.getRow(transverseIndexes[0]),
+                    this.getRow(transverseIndexes[1]),
+                    this.getRow(transverseIndexes[1]),
+                  ];
             const elimination: InputValueData[] = [];
             eliminationLines.forEach((line) => {
               line.forEach((cell) => {
@@ -878,11 +901,76 @@ export default class Sudoku {
   getXWing(): InputValueData[] {
     if (!this.isValid) return [];
 
-    const rowResult = this.getXWingHelper(this.getAllRows(), "row");
-    const columnResult = this.getXWingHelper(this.getAllColumns(), "column");
+    const rowResult = this.getXWingSwordfishHelper(this.getAllRows(), "row", "xWing");
+    const columnResult = this.getXWingSwordfishHelper(this.getAllColumns(), "column", "xWing");
     const elimination = [...rowResult, ...columnResult].flatMap((x) => x.elimination);
 
     return elimination;
+  }
+
+  // todo the swordfish may not need all rows/cols to have exactly 3 cells
+  getSwordfish(): InputValueData[] {
+    if (!this.isValid) return [];
+
+    const rowResult = this.getXWingSwordfishHelper(this.getAllRows(), "row", "swordfish");
+    const columnResult = this.getXWingSwordfishHelper(this.getAllColumns(), "column", "swordfish");
+    const elimination = [...rowResult, ...columnResult].flatMap((x) => x.elimination);
+
+    return elimination;
+  }
+
+  getYWingHelper(): { pivot: CellWithIndex; pincers: [CellWithIndex, CellWithIndex]; elimination: InputValueData }[] {
+    const result: { pivot: CellWithIndex; pincers: [CellWithIndex, CellWithIndex]; elimination: InputValueData }[] = [];
+    const cellsWithTwoCandidates = this.puzzle.map((row) =>
+      row.map((cell) => (cell.candidates && this.numberOfCandidates(cell) === 2) ?? false)
+    );
+
+    const cellsWithTwoCandidatesAndOneIsAorB = (
+      cell: CellWithIndex,
+      a: SudokuElement,
+      b: SudokuElement
+    ): null | { rowIndex: number; columnIndex: number; same: SudokuElement; diff: SudokuElement } => {
+      if (!cell.candidates) return null;
+      const candidates = cell.candidates;
+      const numberOfCandidates = this.numberOfCandidates(cell);
+      if (numberOfCandidates !== 2) return null;
+      if (!CalcUtil.xor(candidates[a], candidates[b])) return null;
+      const rowIndex = cell.rowIndex;
+      const columnIndex = cell.columnIndex;
+      const same = candidates[a] ? a : b;
+      const diff = this.getCandidatesArr(cell.candidates).filter((x) => x !== same)[0];
+      return { rowIndex, columnIndex, same, diff };
+    };
+
+    const possiblePincersFromLine = (line: VirtualLine, pivot: CellWithIndex, a: SudokuElement, b: SudokuElement) => {
+      const possibleRowPincers = line.reduce((acc, cur) => {
+        if (cur.rowIndex === pivot.rowIndex && cur.columnIndex === pivot.columnIndex) return acc;
+        const pincer = cellsWithTwoCandidatesAndOneIsAorB(cur, a, b);
+        if (pincer) acc.push(pincer);
+        return acc;
+      }, [] as { rowIndex: number; columnIndex: number; same: SudokuElement; diff: SudokuElement }[]);
+    };
+
+    for (let i = 0; i < cellsWithTwoCandidates.length; i++) {
+      for (let j = 0; i < cellsWithTwoCandidates[i].length; j++) {
+        if (cellsWithTwoCandidates[i][j]) continue;
+        const pivot = { ...this.puzzle[i][j], rowIndex: i, columnIndex: j };
+        if (!pivot.candidates) continue;
+        const [a, b] = this.getCandidatesArr(pivot.candidates);
+        const pivotRow = this.getRow(i);
+        const pivotColumn = this.getColumn(j);
+        const pivotBox = this.getBox(i, j);
+        const possibleRowPincers = possiblePincersFromLine(pivotRow, pivot, a, b);
+        const possibleColumnPincers = possiblePincersFromLine(pivotColumn, pivot, a, b);
+        const possibleBoxPincers = possiblePincersFromLine(pivotBox, pivot, a, b);
+
+        // [r1, r2, r3] [c1, c2, c3]
+        // =>
+        // [r1, c1], [r1, c2], [r1, c3], [r2, c1], [r2, c2], [r2, c3], [r3, c1], [r3, c2], [r3, c3]
+      }
+    }
+
+    return result;
   }
 
   setRowUniqueMissing(): boolean {
@@ -1000,13 +1088,19 @@ export default class Sudoku {
       //   if (this.setHiddenSingles()) return this.trySolve();
       // }
 
-      const xWingElimination = this.getXWing();
-      if (xWingElimination.length) {
-        console.log(xWingElimination);
-        this.removeElementInCandidates(xWingElimination);
-        if (this.setNakedSingles()) return this.trySolve();
-        if (this.setHiddenSingles()) return this.trySolve();
-      }
+      // const xWingElimination = this.getXWing();
+      // if (xWingElimination.length) {
+      //   this.removeElementInCandidates(xWingElimination);
+      //   if (this.setNakedSingles()) return this.trySolve();
+      //   if (this.setHiddenSingles()) return this.trySolve();
+      // }
+
+      // const swordfishElimination = this.getSwordfish();
+      // if (swordfishElimination.length) {
+      //   this.removeElementInCandidates(swordfishElimination);
+      //   if (this.setNakedSingles()) return this.trySolve();
+      //   if (this.setHiddenSingles()) return this.trySolve();
+      // }
 
       return;
     }
