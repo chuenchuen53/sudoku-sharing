@@ -1,14 +1,14 @@
 export default class ArrayUtils {
   static create2DArray<T extends string | number | boolean | Object>(
     rows: number,
-    cols: number,
+    columns: number,
     defaultValue: T
   ): T[][] {
     const array: T[][] = [];
     const defaultObject = JSON.stringify(typeof defaultValue === "object" ? defaultValue : {});
     for (let i = 0; i < rows; i++) {
       array[i] = [];
-      for (let j = 0; j < cols; j++) {
+      for (let j = 0; j < columns; j++) {
         if (typeof defaultValue === "object") {
           array[i][j] = JSON.parse(defaultObject);
         } else {

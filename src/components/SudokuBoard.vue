@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="board">
-      <div class="sudoku-row" v-for="(row, rowIndex) in sudoku.puzzle" :key="rowIndex">
+      <div class="sudoku-row" v-for="(row, rowIndex) in sudoku.grid" :key="rowIndex">
         <div
           class="sudoku-cell"
           :class="{
@@ -88,7 +88,7 @@ const selectedCell = reactive<SelectedCell>({
   row: 0,
   col: 0,
 });
-const sudoku = reactive(new Sudoku(tp.testingPuzzle3));
+const sudoku = reactive(new Sudoku(tp.testingPuzzle4));
 
 const handleCellClick = (rowIndex: number, colIndex: number) => {
   selectedCell.row = rowIndex;

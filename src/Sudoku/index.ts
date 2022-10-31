@@ -1,60 +1,25 @@
 import ArrayUtils from "@/utils/ArrayUtil";
 import CalcUtil from "@/utils/CalcUtil";
 import ObjUtil from "@/utils/ObjUtil";
+import {
+  type Element,
+  type SudokuIndex,
+  type Cell,
+  type Candidates,
+  type CellWithIndex,
+  type ElementMissing,
+  type InputValueData,
+  type Grid,
+  type Stats,
+  type VirtualLine,
+  type InputClues,
+  type RowColumn,
+  VirtualLineType,
+} from "./type";
 
-type SudokuIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
-export type SudokuElement = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+const createAllElementsArr = (): Readonly<Element[]> => ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
 
-type Candidates = {
-  [key in SudokuElement]: boolean;
-};
-
-interface Cell {
-  clue?: SudokuElement;
-  inputValue?: SudokuElement;
-  candidates?: Candidates;
-}
-type SudokuRow = Cell[];
-type Puzzle = SudokuRow[];
-
-interface InputValueData {
-  rowIndex: number;
-  columnIndex: number;
-  value: SudokuElement;
-}
-
-interface CellWithIndex extends Cell {
-  rowIndex: number;
-  columnIndex: number;
-}
-
-type VirtualLine = CellWithIndex[];
-
-interface ElementMissing {
-  rows: Candidates[];
-  columns: Candidates[];
-  boxes: Candidates[];
-}
-
-interface Stats {
-  rowUniqueMissing: number;
-  columnUniqueMissing: number;
-  boxUniqueMissing: number;
-  nakedSingles: number;
-  hiddenSingles: number;
-}
-
-const allElementsFactory = () => ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
-
-const statsTemplate: () => Stats = () => ({
-  rowUniqueMissing: 0,
-  columnUniqueMissing: 0,
-  boxUniqueMissing: 0,
-  nakedSingles: 0,
-  hiddenSingles: 0,
-});
-
-const candidatesTemplate = (defaultValue: boolean) => ({
+const candidatesFactory = (defaultValue: boolean) => ({
   "1": defaultValue,
   "2": defaultValue,
   "3": defaultValue,
@@ -66,13 +31,22 @@ const candidatesTemplate = (defaultValue: boolean) => ({
   "9": defaultValue,
 });
 
-const candidatesFromArr = (arr: SudokuElement[]) => {
-  const candidates = candidatesTemplate(false);
+// todo
+const statsTemplate: () => Stats = () => ({
+  rowUniqueMissing: 0,
+  columnUniqueMissing: 0,
+  boxUniqueMissing: 0,
+  nakedSingles: 0,
+  hiddenSingles: 0,
+});
+
+const candidatesFromArr = (arr: Element[]) => {
+  const candidates = candidatesFactory(false);
   arr.forEach((x) => (candidates[x] = true));
   return candidates;
 };
 
-const hiddenCandidatesTemplate = () => ({
+const hiddenCandidatesCount = () => ({
   "1": 0,
   "2": 0,
   "3": 0,
@@ -85,23 +59,23 @@ const hiddenCandidatesTemplate = () => ({
 });
 
 export default class Sudoku {
-  public puzzle: Puzzle;
+  public grid: Grid;
   public isValid: boolean;
-  public stats: Stats;
   public numberOfClues: number;
+  public stats: Stats;
 
   private elementMissing: ElementMissing;
 
-  constructor(puzzle) {
-    this.puzzle = this.createPuzzle(puzzle);
+  constructor(clues: InputClues) {
+    this.grid = this.createPuzzle(clues);
     this.isValid = this.validatePuzzle().clueValid;
-    this.stats = statsTemplate();
     this.elementMissing = this.updateElementMissing();
     this.numberOfClues = this.getNumberOfClues();
+    this.stats = statsTemplate();
   }
 
   private getNumberOfClues() {
-    return this.puzzle.reduce((acc, row) => acc + row.reduce((acc, cell) => (cell.clue ? acc + 1 : acc), 0), 0);
+    return this.grid.reduce((acc, row) => acc + row.reduce((acc, cell) => (cell.clue ? acc + 1 : acc), 0), 0);
   }
 
   private updateElementMissing() {
@@ -118,24 +92,23 @@ export default class Sudoku {
     return this.elementMissing;
   }
 
-  createPuzzle(clues?: (SudokuElement | null)[][]): Puzzle {
-    const puzzle: Puzzle = ArrayUtils.create2DArray(9, 9, {});
-    if (!clues) return puzzle;
+  createPuzzle(clues: InputClues): Grid {
+    if (clues.length !== 9 || clues.some((x) => x.length !== 9)) throw new Error("Invalid input clues");
 
-    for (let i = 0; i < clues.length; i++) {
-      for (let j = 0; j < clues[i].length; j++) {
-        const clue = clues[i][j];
-        if (clue) {
-          puzzle[i][j].clue = clue;
+    const grid: Grid = ArrayUtils.create2DArray(9, 9, {});
+    clues.forEach((row, i) =>
+      row.forEach((clue, j) => {
+        if (clue !== "0") {
+          grid[i][j].clue = clue;
         }
-      }
-    }
+      })
+    );
 
-    return puzzle;
+    return grid;
   }
 
   getRow(rowIndex: number): VirtualLine {
-    return this.puzzle[rowIndex].map((x, columnIndex) => ({
+    return this.grid[rowIndex].map((x, columnIndex) => ({
       ...x,
       rowIndex,
       columnIndex,
@@ -143,7 +116,7 @@ export default class Sudoku {
   }
 
   getColumn(columnIndex: number): VirtualLine {
-    return this.puzzle.map((row, rowIndex) => ({
+    return this.grid.map((row, rowIndex) => ({
       ...row[columnIndex],
       rowIndex,
       columnIndex,
@@ -152,12 +125,12 @@ export default class Sudoku {
 
   getBox(rowIndex: number, columnIndex: number): VirtualLine {
     const box: VirtualLine = [];
-    const boxRowIndex = this.boxFirstRowOrColumnIndex(rowIndex);
-    const boxColumnIndex = this.boxFirstRowOrColumnIndex(columnIndex);
+    const boxRowIndex = this.boxFirstLineIndex(rowIndex);
+    const boxColumnIndex = this.boxFirstLineIndex(columnIndex);
     for (let i = boxRowIndex; i < boxRowIndex + 3; i++) {
       for (let j = boxColumnIndex; j < boxColumnIndex + 3; j++) {
         box.push({
-          ...this.puzzle[i][j],
+          ...this.grid[i][j],
           rowIndex: i,
           columnIndex: j,
         });
@@ -167,11 +140,11 @@ export default class Sudoku {
   }
 
   getAllRows(): VirtualLine[] {
-    return this.puzzle.map((_, rowIndex) => this.getRow(rowIndex));
+    return this.grid.map((_, rowIndex) => this.getRow(rowIndex));
   }
 
   getAllColumns(): VirtualLine[] {
-    return this.puzzle[0].map((_, columnIndex) => this.getColumn(columnIndex));
+    return this.grid[0].map((_, columnIndex) => this.getColumn(columnIndex));
   }
 
   getAllBoxes(): VirtualLine[] {
@@ -184,33 +157,21 @@ export default class Sudoku {
     return boxes;
   }
 
-  getAllRelatedBoxesInRow(rowIndex: number): VirtualLine[] {
+  getAllRelatedBoxesInLine(lineType: RowColumn, lineIndex: number): VirtualLine[] {
     const boxes: VirtualLine[] = [];
     for (let i = 0; i < 9; i += 3) {
-      boxes.push(this.getBox(rowIndex, i));
+      lineType === VirtualLineType.ROW ? boxes.push(this.getBox(lineIndex, i)) : boxes.push(this.getBox(i, lineIndex));
     }
     return boxes;
   }
 
-  getAllRelatedBoxesInColumn(columnIndex: number): VirtualLine[] {
-    const boxes: VirtualLine[] = [];
-    for (let i = 0; i < 9; i += 3) {
-      boxes.push(this.getBox(i, columnIndex));
-    }
-    return boxes;
+  getAllRelatedLinesInBox(lineType: RowColumn, boxIndex: number): VirtualLine[] {
+    const firstIndex = this.boxFirstLineIndex(boxIndex);
+    const getLine = lineType === VirtualLineType.ROW ? this.getRow : this.getColumn;
+    return [getLine(firstIndex), getLine(firstIndex + 1), getLine(firstIndex + 2)];
   }
 
-  getAllRelatedLinesInBox(type: "row" | "column", boxIndex: number): VirtualLine[] {
-    if (type === "row") {
-      const boxRowIndex = this.boxFirstRowOrColumnIndex(boxIndex);
-      return [this.getRow(boxRowIndex), this.getRow(boxRowIndex + 1), this.getRow(boxRowIndex + 2)];
-    } else {
-      const boxColumnIndex = this.boxFirstRowOrColumnIndex(boxIndex);
-      return [this.getColumn(boxColumnIndex), this.getColumn(boxColumnIndex + 1), this.getColumn(boxColumnIndex + 2)];
-    }
-  }
-
-  isSameCell(c1: CellWithIndex, c2: CellWithIndex) {
+  static isSamePos(c1: CellWithIndex, c2: CellWithIndex): boolean {
     return c1.rowIndex === c2.rowIndex && c1.columnIndex === c2.columnIndex;
   }
 
@@ -224,11 +185,11 @@ export default class Sudoku {
     const row = this.getRow(cell.rowIndex);
     const column = this.getColumn(cell.columnIndex);
     const box = this.getBox(cell.rowIndex, cell.columnIndex);
-    const intersection = [...row, ...column, ...box].filter((x) => !this.isSameCell(x, cell));
-    return intersection.filter((x, index, arr) => arr.findIndex((y) => this.isSameCell(x, y)) === index);
+    const intersection = [...row, ...column, ...box].filter((x) => !Sudoku.isSamePos(x, cell));
+    return intersection.filter((x, index, arr) => arr.findIndex((y) => Sudoku.isSamePos(x, y)) === index);
   }
 
-  boxFirstRowOrColumnIndex(index: number) {
+  boxFirstLineIndex(index: number) {
     return Math.floor(index / 3) * 3;
   }
 
@@ -250,20 +211,20 @@ export default class Sudoku {
   }
 
   setCandidates(rowIndex: number, columnIndex: number, candidates: Candidates) {
-    this.puzzle[rowIndex][columnIndex].candidates = { ...candidates };
+    this.grid[rowIndex][columnIndex].candidates = { ...candidates };
   }
 
   setInputValue(data: InputValueData[]) {
     if (!data.length) return;
 
     data.forEach(({ rowIndex, columnIndex, value }) => {
-      if (this.puzzle[rowIndex][columnIndex].clue) {
+      if (this.grid[rowIndex][columnIndex].clue) {
         console.error("Cannot set input value to a cell with a clue");
         return;
       }
 
-      this.puzzle[rowIndex][columnIndex].inputValue = value;
-      this.puzzle[rowIndex][columnIndex].candidates = undefined;
+      this.grid[rowIndex][columnIndex].inputValue = value;
+      this.grid[rowIndex][columnIndex].candidates = undefined;
       const { inputValueValid } = this.validatePuzzle();
       this.isValid = inputValueValid;
     });
@@ -272,15 +233,15 @@ export default class Sudoku {
   }
 
   clearAllCandidates() {
-    for (let i = 0; i < this.puzzle.length; i++) {
-      for (let j = 0; j < this.puzzle[i].length; j++) {
-        this.puzzle[i][j].candidates = undefined;
+    for (let i = 0; i < this.grid.length; i++) {
+      for (let j = 0; j < this.grid[i].length; j++) {
+        this.grid[i][j].candidates = undefined;
       }
     }
   }
 
   missingInVirtualLine(virtualLine: VirtualLine) {
-    const missing = candidatesTemplate(true);
+    const missing = candidatesFactory(true);
     virtualLine.forEach((cell) => {
       if (cell.clue) {
         missing[cell.clue] = false;
@@ -331,18 +292,18 @@ export default class Sudoku {
     const missingInColumns = this.elementMissing.columns;
     const missingInBoxes = this.elementMissing.boxes;
 
-    for (let i = 0; i < this.puzzle.length; i++) {
-      for (let j = 0; j < this.puzzle[i].length; j++) {
-        if (this.puzzle[i][j].clue || this.puzzle[i][j].inputValue) continue;
+    for (let i = 0; i < this.grid.length; i++) {
+      for (let j = 0; j < this.grid[i].length; j++) {
+        if (this.grid[i][j].clue || this.grid[i][j].inputValue) continue;
 
         const boxIndex = this.getBoxIndex(i, j);
         const missingRow = missingInRows[i];
         const missingColumn = missingInColumns[j];
         const missingBox = missingInBoxes[boxIndex];
-        const candidates = candidatesTemplate(false);
+        const candidates = candidatesFactory(false);
 
         for (const key in candidates) {
-          const typedKey = key as SudokuElement;
+          const typedKey = key as Element;
           if (missingRow[typedKey] && missingColumn[typedKey] && missingBox[typedKey]) {
             candidates[typedKey] = true;
           }
@@ -356,10 +317,10 @@ export default class Sudoku {
   rowColumnLockInBox(type: "row" | "column", index: number): InputValueData[] {
     const result: InputValueData[] = [];
     const missing = type === "row" ? this.elementMissing.rows[index] : this.elementMissing.columns[index];
-    const relatedBoxes = type === "row" ? this.getAllRelatedBoxesInRow(index) : this.getAllRelatedBoxesInColumn(index);
+    const relatedBoxes = type === "row" ? this.getAllRelatedBoxesInLine(index) : this.getAllRelatedBoxesInColumn(index);
 
     for (const key in missing) {
-      const sudokuElement = key as SudokuElement;
+      const sudokuElement = key as Element;
       if (!missing[sudokuElement]) continue;
 
       const boxContained = relatedBoxes.map((box) =>
@@ -400,7 +361,7 @@ export default class Sudoku {
     const box = this.getAllBoxes()[boxIndex];
 
     for (const key in missing) {
-      const sudokuElement = key as SudokuElement;
+      const sudokuElement = key as Element;
       if (!missing[sudokuElement]) continue;
 
       const cellsContained = box.filter((x) => !x.clue && !x.inputValue && x.candidates && x.candidates[sudokuElement]);
@@ -448,7 +409,7 @@ export default class Sudoku {
     } else {
       inputValueDataArr.forEach((inputValueData) => {
         const { rowIndex, columnIndex, value } = inputValueData;
-        const cell = this.puzzle[rowIndex][columnIndex];
+        const cell = this.grid[rowIndex][columnIndex];
         if (cell.candidates) {
           cell.candidates[value] = false;
         }
@@ -457,8 +418,8 @@ export default class Sudoku {
     }
   }
 
-  getUniqueCandidate(candidates: Candidates): SudokuElement | null {
-    const entries = Object.entries(candidates) as [SudokuElement, boolean][];
+  getUniqueCandidate(candidates: Candidates): Element | null {
+    const entries = Object.entries(candidates) as [Element, boolean][];
     const candidatesArr = entries.filter(([_, value]) => value);
     if (candidatesArr.length === 1) {
       return candidatesArr[0][0];
@@ -501,14 +462,14 @@ export default class Sudoku {
 
     const arr: InputValueData[] = [];
 
-    for (let i = 0; i < this.puzzle.length; i++) {
-      for (let j = 0; j < this.puzzle[i].length; j++) {
-        const cell = this.puzzle[i][j];
+    for (let i = 0; i < this.grid.length; i++) {
+      for (let j = 0; j < this.grid[i].length; j++) {
+        const cell = this.grid[i][j];
         if (cell.clue || cell.inputValue || !cell.candidates) {
           continue;
         }
         const candidates = cell.candidates;
-        const entries = Object.entries(candidates) as [SudokuElement, boolean][];
+        const entries = Object.entries(candidates) as [Element, boolean][];
         const candidatesArr = entries.filter(([_, value]) => value);
         if (candidatesArr.length === 1) {
           arr.push({ rowIndex: i, columnIndex: j, value: candidatesArr[0][0] });
@@ -524,7 +485,7 @@ export default class Sudoku {
 
     for (let i = 0; i < virtualLines.length; i++) {
       const virtualLine = virtualLines[i];
-      const candidatesCount = hiddenCandidatesTemplate();
+      const candidatesCount = hiddenCandidatesCount();
       for (let j = 0; j < virtualLine.length; j++) {
         const cell = virtualLine[j];
         if (cell.clue || cell.inputValue || !cell.candidates) {
@@ -532,7 +493,7 @@ export default class Sudoku {
         }
         const candidates = cell.candidates;
         for (const key in candidates) {
-          const sudokuElement = key as SudokuElement;
+          const sudokuElement = key as Element;
           if (candidates[sudokuElement]) {
             candidatesCount[sudokuElement]++;
           }
@@ -540,7 +501,7 @@ export default class Sudoku {
       }
 
       for (const key in candidatesCount) {
-        const sudokuElement = key as SudokuElement;
+        const sudokuElement = key as Element;
         if (candidatesCount[sudokuElement] === 1) {
           const cell = virtualLine.find((x) => x.candidates && x.candidates[sudokuElement]);
           if (cell) {
@@ -568,13 +529,13 @@ export default class Sudoku {
 
   numberOfCandidates(cell: Cell): number {
     if (!cell.candidates) return 0;
-    const entries = Object.entries(cell.candidates) as [SudokuElement, boolean][];
+    const entries = Object.entries(cell.candidates) as [Element, boolean][];
     const candidatesArr = entries.filter(([_, value]) => value);
     return candidatesArr.length;
   }
 
-  getCandidatesArr(candidates: Candidates): SudokuElement[] {
-    const entries = Object.entries(candidates) as [SudokuElement, boolean][];
+  getCandidatesArr(candidates: Candidates): Element[] {
+    const entries = Object.entries(candidates) as [Element, boolean][];
     const candidatesArr = entries.filter(([_, value]) => value);
     return candidatesArr.map(([sudokuElement]) => sudokuElement);
   }
@@ -640,7 +601,7 @@ export default class Sudoku {
 
   isCandidateIsSubset(subset: Candidates, superset: Candidates): boolean {
     for (const key in subset) {
-      const sudokuElement = key as SudokuElement;
+      const sudokuElement = key as Element;
       if (subset[sudokuElement] && !superset[sudokuElement]) {
         return false;
       }
@@ -730,12 +691,12 @@ export default class Sudoku {
     virtualLines: VirtualLine[],
     sizeOfCandidate: number
   ): {
-    combination: SudokuElement[];
+    combination: Element[];
     multiple: CellWithIndex[];
     elimination: InputValueData[];
   }[] {
     const result: {
-      combination: SudokuElement[];
+      combination: Element[];
       multiple: CellWithIndex[];
       elimination: InputValueData[];
     }[] = [];
@@ -756,7 +717,7 @@ export default class Sudoku {
       // !debug
 
       for (const combination of combinations) {
-        const allSubComb: SudokuElement[][] = [];
+        const allSubComb: Element[][] = [];
 
         for (let i = 1; i <= combination.length; i++) {
           const subComb = CalcUtil.combinations(combination, i);
@@ -774,7 +735,7 @@ export default class Sudoku {
           cellsRelated.forEach((x) => {
             if (x.candidates) {
               for (const key in x.candidates) {
-                const sudokuElement = key as SudokuElement;
+                const sudokuElement = key as Element;
                 if (x.candidates[sudokuElement] && !combination.includes(sudokuElement)) {
                   elimination.push({
                     rowIndex: x.rowIndex,
@@ -834,14 +795,14 @@ export default class Sudoku {
     virtualLines: VirtualLine[],
     type: "row" | "column",
     calcType: "xWing" | "swordfish"
-  ): { sudokuElement: SudokuElement; multiple: CellWithIndex[]; elimination: InputValueData[] }[] {
-    const result: { sudokuElement: SudokuElement; multiple: CellWithIndex[]; elimination: InputValueData[] }[] = [];
+  ): { sudokuElement: Element; multiple: CellWithIndex[]; elimination: InputValueData[] }[] {
+    const result: { sudokuElement: Element; multiple: CellWithIndex[]; elimination: InputValueData[] }[] = [];
 
     const size = calcType === "xWing" ? 2 : 3;
-    const allElements = allElementsFactory();
+    const allElements = createAllElementsArr();
 
     for (const e of allElements) {
-      const sudokuElement = e as SudokuElement;
+      const sudokuElement = e as Element;
       const containElement = virtualLines.map((line) =>
         line.map((x) => (x.candidates && x.candidates[sudokuElement]) ?? false)
       );
@@ -851,7 +812,7 @@ export default class Sudoku {
           acc.push({ element: sudokuElement, index: curIndex, cells });
         }
         return acc;
-      }, [] as { element: SudokuElement; index: number; cells: CellWithIndex[] }[]);
+      }, [] as { element: Element; index: number; cells: CellWithIndex[] }[]);
       if (lineWithTwoCellsContained.length >= size) {
         const combinations = CalcUtil.combinations(lineWithTwoCellsContained, size);
         for (const [c1, c2, c3] of combinations) {
@@ -947,15 +908,15 @@ export default class Sudoku {
       pincers: [CellWithIndex, CellWithIndex];
       elimination: InputValueData | null;
     }[] = [];
-    const cellsWithTwoCandidates = this.puzzle.map((row) =>
+    const cellsWithTwoCandidates = this.grid.map((row) =>
       row.map((cell) => (cell.candidates && this.numberOfCandidates(cell) === 2) ?? false)
     );
 
     const cellsWithTwoCandidatesAndOneIsAorB = (
       cell: CellWithIndex,
-      a: SudokuElement,
-      b: SudokuElement
-    ): null | { rowIndex: number; columnIndex: number; same: SudokuElement; diff: SudokuElement } => {
+      a: Element,
+      b: Element
+    ): null | { rowIndex: number; columnIndex: number; same: Element; diff: Element } => {
       if (!cell.candidates) return null;
       const candidates = cell.candidates;
       const numberOfCandidates = this.numberOfCandidates(cell);
@@ -968,19 +929,19 @@ export default class Sudoku {
       return { rowIndex, columnIndex, same, diff };
     };
 
-    const possiblePincersFromLine = (line: VirtualLine, pivot: CellWithIndex, a: SudokuElement, b: SudokuElement) => {
+    const possiblePincersFromLine = (line: VirtualLine, pivot: CellWithIndex, a: Element, b: Element) => {
       return line.reduce((acc, cur, arr) => {
         if (cur.rowIndex === pivot.rowIndex && cur.columnIndex === pivot.columnIndex) return acc;
         const pincer = cellsWithTwoCandidatesAndOneIsAorB(cur, a, b);
         if (pincer) acc.push({ ...pincer, line });
         return acc;
-      }, [] as { rowIndex: number; columnIndex: number; same: SudokuElement; diff: SudokuElement; line: VirtualLine }[]);
+      }, [] as { rowIndex: number; columnIndex: number; same: Element; diff: Element; line: VirtualLine }[]);
     };
 
     for (let i = 0; i < cellsWithTwoCandidates.length; i++) {
       for (let j = 0; j < cellsWithTwoCandidates[i].length; j++) {
         if (!cellsWithTwoCandidates[i][j]) continue;
-        const pivot = { ...this.puzzle[i][j], rowIndex: i, columnIndex: j };
+        const pivot = { ...this.grid[i][j], rowIndex: i, columnIndex: j };
         if (!pivot.candidates) continue;
         const [a, b] = this.getCandidatesArr(pivot.candidates);
         const pivotRow = this.getRow(i);
@@ -1014,7 +975,7 @@ export default class Sudoku {
           // !wrong type here
           const p2Intersection = this.getCellIntersections(pincers[1]);
           const intersection = this.getVirtualLinesIntersections(p1Intersection, p2Intersection).filter(
-            (x) => !this.isSameCell(x, pivot)
+            (x) => !Sudoku.isSamePos(x, pivot)
           );
           intersection.forEach((x) => {
             if (x.candidates && x.candidates[pincers[0].diff]) {
