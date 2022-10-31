@@ -88,7 +88,7 @@ const selectedCell = reactive<SelectedCell>({
   row: 0,
   col: 0,
 });
-const sudoku = reactive(new Sudoku(tp.testingPuzzle10));
+const sudoku = reactive(new Sudoku(tp.testingPuzzle3));
 
 const handleCellClick = (rowIndex: number, colIndex: number) => {
   selectedCell.row = rowIndex;

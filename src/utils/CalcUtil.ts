@@ -11,7 +11,9 @@ export default class CalcUtil {
     return _.combinations(arr, size);
   }
 
-  static cartesianProduct<T extends number | string>(...args: T[][]): T[][] {
-    return args.reduce((acc, cur) => acc.flatMap((d) => cur.map((e) => [d, e].flat())), [] as T[][]);
+  // todo
+  static cartesianProduct<T>(...args: T[][]): T[][] {
+    // @ts-ignore
+    return args.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
   }
 }
