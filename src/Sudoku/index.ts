@@ -17,19 +17,40 @@ import {
   VirtualLineType,
 } from "./type";
 
-const createAllElementsArr = (): Readonly<Element[]> => ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
+export interface CheckVirtualLineDuplicateResult {
+  haveDuplicate: boolean;
+  duplicatedCells: CellWithIndex[];
+}
 
-const candidatesFactory = (defaultValue: boolean) => ({
-  "1": defaultValue,
-  "2": defaultValue,
-  "3": defaultValue,
-  "4": defaultValue,
-  "5": defaultValue,
-  "6": defaultValue,
-  "7": defaultValue,
-  "8": defaultValue,
-  "9": defaultValue,
-});
+const createAllElementsArr = (): Element[] => ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
+export const candidatesFactory = (defaultValue: boolean, elements?: Element[]) => {
+  if (!elements) {
+    return {
+      "1": defaultValue,
+      "2": defaultValue,
+      "3": defaultValue,
+      "4": defaultValue,
+      "5": defaultValue,
+      "6": defaultValue,
+      "7": defaultValue,
+      "8": defaultValue,
+      "9": defaultValue,
+    };
+  } else {
+    return {
+      "1": elements.includes("1") ? defaultValue : !defaultValue,
+      "2": elements.includes("2") ? defaultValue : !defaultValue,
+      "3": elements.includes("3") ? defaultValue : !defaultValue,
+      "4": elements.includes("4") ? defaultValue : !defaultValue,
+      "5": elements.includes("5") ? defaultValue : !defaultValue,
+      "6": elements.includes("6") ? defaultValue : !defaultValue,
+      "7": elements.includes("7") ? defaultValue : !defaultValue,
+      "8": elements.includes("8") ? defaultValue : !defaultValue,
+      "9": elements.includes("9") ? defaultValue : !defaultValue,
+    };
+  }
+};
 
 // todo
 const statsTemplate: () => Stats = () => ({
@@ -60,6 +81,7 @@ const hiddenCandidatesCount = () => ({
 
 export default class Sudoku {
   public grid: Grid;
+  public invalidCells: [CellWithIndex, CellWithIndex][] = [];
   public isValid: boolean;
   public numberOfClues: number;
   public stats: Stats;
@@ -68,7 +90,7 @@ export default class Sudoku {
 
   constructor(clues: InputClues) {
     this.grid = this.createPuzzle(clues);
-    this.isValid = this.validatePuzzle().clueValid;
+    this.isValid = this.validatePuzzle("clue").isValid;
     this.elementMissing = this.updateElementMissing();
     this.numberOfClues = this.getNumberOfClues();
     this.stats = statsTemplate();
@@ -79,14 +101,10 @@ export default class Sudoku {
   }
 
   private updateElementMissing() {
-    const rows = this.getAllRows().map((x) => this.missingInVirtualLine(x));
-    const columns = this.getAllColumns().map((x) => this.missingInVirtualLine(x));
-    const boxes = this.getAllBoxes().map((x) => this.missingInVirtualLine(x));
-
     this.elementMissing = {
-      rows,
-      columns,
-      boxes,
+      [VirtualLineType.ROW]: this.getAllRows().map((x) => this.missingInVirtualLine(x)),
+      [VirtualLineType.COLUMN]: this.getAllColumns().map((x) => this.missingInVirtualLine(x)),
+      [VirtualLineType.BOX]: this.getAllBoxes().map((x) => this.missingInVirtualLine(x)),
     };
 
     return this.elementMissing;
@@ -123,12 +141,12 @@ export default class Sudoku {
     }));
   }
 
-  getBox(rowIndex: number, columnIndex: number): VirtualLine {
+  getBoxFromRowColumnIndex(rowIndex: number, columnIndex: number): VirtualLine {
     const box: VirtualLine = [];
-    const boxRowIndex = this.boxFirstLineIndex(rowIndex);
-    const boxColumnIndex = this.boxFirstLineIndex(columnIndex);
-    for (let i = boxRowIndex; i < boxRowIndex + 3; i++) {
-      for (let j = boxColumnIndex; j < boxColumnIndex + 3; j++) {
+    const firstRowIndex = rowIndex - (rowIndex % 3);
+    const firstColumnIndex = columnIndex - (columnIndex % 3);
+    for (let i = firstRowIndex; i < firstRowIndex + 3; i++) {
+      for (let j = firstColumnIndex; j < firstColumnIndex + 3; j++) {
         box.push({
           ...this.grid[i][j],
           rowIndex: i,
@@ -137,6 +155,12 @@ export default class Sudoku {
       }
     }
     return box;
+  }
+
+  getBoxFromBoxIndex(boxIndex: number) {
+    const rowIndex = this.boxFirstLineIndex(boxIndex, VirtualLineType.ROW);
+    const columnIndex = this.boxFirstLineIndex(boxIndex, VirtualLineType.COLUMN);
+    return this.getBoxFromRowColumnIndex(rowIndex, columnIndex);
   }
 
   getAllRows(): VirtualLine[] {
@@ -151,7 +175,7 @@ export default class Sudoku {
     const boxes: VirtualLine[] = [];
     for (let i = 0; i < 9; i += 3) {
       for (let j = 0; j < 9; j += 3) {
-        boxes.push(this.getBox(i, j));
+        boxes.push(this.getBoxFromRowColumnIndex(i, j));
       }
     }
     return boxes;
@@ -160,13 +184,15 @@ export default class Sudoku {
   getAllRelatedBoxesInLine(lineType: RowColumn, lineIndex: number): VirtualLine[] {
     const boxes: VirtualLine[] = [];
     for (let i = 0; i < 9; i += 3) {
-      lineType === VirtualLineType.ROW ? boxes.push(this.getBox(lineIndex, i)) : boxes.push(this.getBox(i, lineIndex));
+      lineType === VirtualLineType.ROW
+        ? boxes.push(this.getBoxFromRowColumnIndex(lineIndex, i))
+        : boxes.push(this.getBoxFromRowColumnIndex(i, lineIndex));
     }
     return boxes;
   }
 
   getAllRelatedLinesInBox(lineType: RowColumn, boxIndex: number): VirtualLine[] {
-    const firstIndex = this.boxFirstLineIndex(boxIndex);
+    const firstIndex = this.boxFirstLineIndex(boxIndex, VirtualLineType.ROW);
     const getLine = lineType === VirtualLineType.ROW ? this.getRow : this.getColumn;
     return [getLine(firstIndex), getLine(firstIndex + 1), getLine(firstIndex + 2)];
   }
@@ -184,19 +210,24 @@ export default class Sudoku {
   getCellIntersections(cell: CellWithIndex): VirtualLine {
     const row = this.getRow(cell.rowIndex);
     const column = this.getColumn(cell.columnIndex);
-    const box = this.getBox(cell.rowIndex, cell.columnIndex);
+    const box = this.getBoxFromRowColumnIndex(cell.rowIndex, cell.columnIndex);
     const intersection = [...row, ...column, ...box].filter((x) => !Sudoku.isSamePos(x, cell));
     return intersection.filter((x, index, arr) => arr.findIndex((y) => Sudoku.isSamePos(x, y)) === index);
   }
 
-  boxFirstLineIndex(index: number) {
-    return Math.floor(index / 3) * 3;
+  boxFirstLineIndex(boxIndex: number, type: RowColumn) {
+    switch (type) {
+      case VirtualLineType.ROW:
+        return Math.floor(boxIndex / 3) * 3;
+      case VirtualLineType.COLUMN:
+        return (boxIndex % 3) * 3;
+    }
   }
 
   getAllCellsInRelatedVirtualLines(rowIndex: number, columnIndex: number): { rowIndex: number; columnIndex: number }[] {
     const row = this.getRow(rowIndex);
     const column = this.getColumn(columnIndex);
-    const box = this.getBox(rowIndex, columnIndex);
+    const box = this.getBoxFromRowColumnIndex(rowIndex, columnIndex);
     const allCellsInRelatedVirtualLines = [...row, ...column, ...box]
       .filter(
         (value, index, self) =>
@@ -224,9 +255,9 @@ export default class Sudoku {
       }
 
       this.grid[rowIndex][columnIndex].inputValue = value;
-      this.grid[rowIndex][columnIndex].candidates = undefined;
-      const { inputValueValid } = this.validatePuzzle();
-      this.isValid = inputValueValid;
+      delete this.grid[rowIndex][columnIndex].candidates;
+      const { isValid } = this.validatePuzzle("inputValue");
+      this.isValid = isValid;
     });
     this.updateElementMissing();
     this.getCombinedMissing();
@@ -240,7 +271,7 @@ export default class Sudoku {
     }
   }
 
-  missingInVirtualLine(virtualLine: VirtualLine) {
+  missingInVirtualLine(virtualLine: VirtualLine): Candidates {
     const missing = candidatesFactory(true);
     virtualLine.forEach((cell) => {
       if (cell.clue) {
@@ -255,10 +286,14 @@ export default class Sudoku {
   private checkVirtualLineDuplicate(
     virtualLine: VirtualLine,
     key: Extract<keyof CellWithIndex, "clue" | "inputValue">
-  ) {
-    const arr = key === "clue" ? virtualLine.map((x) => x.clue) : virtualLine.map((x) => x.clue ?? x.inputValue);
-    const { haveDuplicate } = ArrayUtils.checkDuplicates(arr);
-    return haveDuplicate;
+  ): CheckVirtualLineDuplicateResult {
+    const duplicatedCells: CellWithIndex[] = [];
+    const values = key === "clue" ? virtualLine.map((x) => x.clue) : virtualLine.map((x) => x.clue ?? x.inputValue);
+    values.forEach(
+      (x, ix, arr) => x && arr.some((y, iy) => ix !== iy && x === y && duplicatedCells.push(virtualLine[ix]))
+    );
+    const haveDuplicate = duplicatedCells.length > 0;
+    return { haveDuplicate, duplicatedCells };
   }
 
   private removeDuplicatesInputValueData(data: InputValueData[]) {
@@ -269,28 +304,34 @@ export default class Sudoku {
     );
   }
 
-  validatePuzzle() {
+  validatePuzzle(type: Extract<keyof CellWithIndex, "clue" | "inputValue">): {
+    isValid: boolean;
+    detail: Record<"row" | "column" | "box", CheckVirtualLineDuplicateResult[]>;
+  } {
     const allRows = this.getAllRows();
     const allColumns = this.getAllColumns();
     const allBoxes = this.getAllBoxes();
 
-    const rowClueValid = allRows.every((row) => !this.checkVirtualLineDuplicate(row, "clue"));
-    const columnClueValid = allColumns.every((column) => !this.checkVirtualLineDuplicate(column, "clue"));
-    const boxClueValid = allBoxes.every((box) => !this.checkVirtualLineDuplicate(box, "clue"));
-    const clueValid = rowClueValid && columnClueValid && boxClueValid;
+    const rowDetail = allRows.map((x) => this.checkVirtualLineDuplicate(x, type));
+    const columnDetail = allColumns.map((x) => this.checkVirtualLineDuplicate(x, type));
+    const boxDetail = allBoxes.map((x) => this.checkVirtualLineDuplicate(x, type));
+    const detail = {
+      row: rowDetail,
+      column: columnDetail,
+      box: boxDetail,
+    };
+    const isValid =
+      !rowDetail.some((x) => x.haveDuplicate) &&
+      !columnDetail.some((x) => x.haveDuplicate) &&
+      !boxDetail.some((x) => x.haveDuplicate);
 
-    const rowInputValueValid = allRows.every((row) => !this.checkVirtualLineDuplicate(row, "inputValue"));
-    const columnInputValueValid = allColumns.every((column) => !this.checkVirtualLineDuplicate(column, "inputValue"));
-    const boxInputValueValid = allBoxes.every((box) => !this.checkVirtualLineDuplicate(box, "inputValue"));
-    const inputValueValid = rowInputValueValid && columnInputValueValid && boxInputValueValid;
-
-    return { clueValid, inputValueValid };
+    return { isValid, detail };
   }
 
   getCombinedMissing() {
-    const missingInRows = this.elementMissing.rows;
-    const missingInColumns = this.elementMissing.columns;
-    const missingInBoxes = this.elementMissing.boxes;
+    const missingInRows = this.elementMissing[VirtualLineType.ROW];
+    const missingInColumns = this.elementMissing[VirtualLineType.COLUMN];
+    const missingInBoxes = this.elementMissing[VirtualLineType.BOX];
 
     for (let i = 0; i < this.grid.length; i++) {
       for (let j = 0; j < this.grid[i].length; j++) {
@@ -946,7 +987,7 @@ export default class Sudoku {
         const [a, b] = this.getCandidatesArr(pivot.candidates);
         const pivotRow = this.getRow(i);
         const pivotColumn = this.getColumn(j);
-        const pivotBox = this.getBox(i, j);
+        const pivotBox = this.getBoxFromRowColumnIndex(i, j);
         const possibleRowPincers = possiblePincersFromLine(pivotRow, pivot, a, b);
         const possibleColumnPincers = possiblePincersFromLine(pivotColumn, pivot, a, b);
         const possibleBoxPincers = possiblePincersFromLine(pivotBox, pivot, a, b);

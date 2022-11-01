@@ -25,7 +25,7 @@ export type VirtualLine = CellWithIndex[];
 
 export enum VirtualLineType {
   ROW = "ROW",
-  COLUMN = "Column",
+  COLUMN = "COLUMN",
   BOX = "BOX",
 }
 
@@ -37,11 +37,7 @@ export interface InputValueData {
   value: Element;
 }
 
-export interface ElementMissing {
-  rows: Candidates[];
-  columns: Candidates[];
-  boxes: Candidates[];
-}
+export type ElementMissing = Record<VirtualLineType, Candidates[]>;
 
 export interface Stats {
   rowUniqueMissing: number;

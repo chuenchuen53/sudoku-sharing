@@ -29,4 +29,8 @@ export default class ArrayUtils {
     );
     return { haveDuplicate, duplicatedElements };
   }
+
+  static cloneArr<T>(arr: T[]): T[] {
+    return JSON.parse(JSON.stringify(arr));
+  }
 }
