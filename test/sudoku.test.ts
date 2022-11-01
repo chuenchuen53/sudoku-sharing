@@ -1,7 +1,8 @@
 import { expect, describe, it } from "vitest";
 import ArrayUtils from "../src/utils/ArrayUtil";
 import Sudoku, { CheckVirtualLineDuplicateResult, candidatesFactory } from "../src/Sudoku";
-import { CellWithIndex, InputClues, VirtualLineType } from "../src/sudoku/type";
+import { Candidates, CellWithIndex, InputClues, VirtualLineType } from "../src/sudoku/type";
+import exp from "constants";
 
 const emptyPuzzle: InputClues = [
   ["0", "0", "0", "0", "0", "0", "0", "0", "0"],
@@ -13,6 +14,18 @@ const emptyPuzzle: InputClues = [
   ["0", "0", "0", "0", "0", "0", "0", "0", "0"],
   ["0", "0", "0", "0", "0", "0", "0", "0", "0"],
   ["0", "0", "0", "0", "0", "0", "0", "0", "0"],
+];
+
+export const testPuzzle0: InputClues = [
+  ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
+  ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
+  ["0", "0", "8", "0", "0", "0", "4", "0", "9"],
+  ["9", "6", "2", "1", "0", "0", "0", "4", "0"],
+  ["8", "1", "0", "0", "0", "3", "0", "2", "0"],
+  ["0", "3", "7", "6", "5", "0", "8", "0", "1"],
+  ["5", "8", "0", "7", "0", "4", "9", "1", "3"],
+  ["1", "0", "0", "3", "0", "0", "0", "0", "0"],
+  ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
 ];
 
 const testPuzzle1: InputClues = [
@@ -106,7 +119,7 @@ describe("sudoku basic", () => {
     );
     const s1Expected = {
       isValid: false,
-      detail: s1DetailExpected,
+      validateDetail: s1DetailExpected,
     };
 
     expect(s1.validatePuzzle("clue")).toStrictEqual(s1Expected);
@@ -133,7 +146,7 @@ describe("sudoku basic", () => {
     );
     const s1Expected = {
       isValid: false,
-      detail: s1DetailExpected,
+      validateDetail: s1DetailExpected,
     };
 
     expect(s1.validatePuzzle("inputValue")).toStrictEqual(s1Expected);
@@ -157,7 +170,7 @@ describe("sudoku basic", () => {
     );
     const s1Expected = {
       isValid: false,
-      detail: s1DetailExpected,
+      validateDetail: s1DetailExpected,
     };
 
     expect(s1.validatePuzzle("clue")).toStrictEqual(s1Expected);
@@ -403,6 +416,280 @@ describe("sudoku basic", () => {
     }
   });
 
+  it("getAllRelatedBoxesInLine", () => {
+    const s = new Sudoku(testPuzzle1);
+    const r0 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 0);
+    const r1 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 1);
+    const r2 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 2);
+    const r3 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 3);
+    const r4 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 4);
+    const r5 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 5);
+    const r6 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 6);
+    const r7 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 7);
+    const r8 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 8);
+
+    const allBoxes = s.getAllBoxes();
+    const b012 = allBoxes.slice(0, 3);
+    const b345 = allBoxes.slice(3, 6);
+    const b678 = allBoxes.slice(6, 9);
+    expect(r0).toStrictEqual(b012);
+    expect(r1).toStrictEqual(b012);
+    expect(r2).toStrictEqual(b012);
+    expect(r3).toStrictEqual(b345);
+    expect(r4).toStrictEqual(b345);
+    expect(r5).toStrictEqual(b345);
+    expect(r6).toStrictEqual(b678);
+    expect(r7).toStrictEqual(b678);
+    expect(r8).toStrictEqual(b678);
+  });
+
+  it("getAllRelatedBoxesInLine", () => {
+    const s = new Sudoku(testPuzzle1);
+    const c0 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 0);
+    const c1 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 1);
+    const c2 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 2);
+    const c3 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 3);
+    const c4 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 4);
+    const c5 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 5);
+    const c6 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 6);
+    const c7 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 7);
+    const c8 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 8);
+
+    const allBoxes = s.getAllBoxes();
+    const b036 = [allBoxes[0], allBoxes[3], allBoxes[6]];
+    const b345 = [allBoxes[1], allBoxes[4], allBoxes[7]];
+    const b678 = [allBoxes[2], allBoxes[5], allBoxes[8]];
+    expect(c0).toStrictEqual(b036);
+    expect(c1).toStrictEqual(b036);
+    expect(c2).toStrictEqual(b036);
+    expect(c3).toStrictEqual(b345);
+    expect(c4).toStrictEqual(b345);
+    expect(c5).toStrictEqual(b345);
+    expect(c6).toStrictEqual(b678);
+    expect(c7).toStrictEqual(b678);
+    expect(c8).toStrictEqual(b678);
+  });
+
+  it("getAllRelatedLinesInBox", () => {
+    const s = new Sudoku(testPuzzle1);
+    const b0 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 0);
+    const b1 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 1);
+    const b2 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 2);
+    const b3 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 3);
+    const b4 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 4);
+    const b5 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 5);
+    const b6 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 6);
+    const b7 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 7);
+    const b8 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 8);
+
+    const allRows = s.getAllRows();
+    const r012 = allRows.slice(0, 3);
+    const r345 = allRows.slice(3, 6);
+    const r678 = allRows.slice(6, 9);
+    expect(b0).toStrictEqual(r012);
+    expect(b1).toStrictEqual(r012);
+    expect(b2).toStrictEqual(r012);
+    expect(b3).toStrictEqual(r345);
+    expect(b4).toStrictEqual(r345);
+    expect(b5).toStrictEqual(r345);
+    expect(b6).toStrictEqual(r678);
+    expect(b7).toStrictEqual(r678);
+    expect(b8).toStrictEqual(r678);
+  });
+
+  it("getAllRelatedLinesInBox", () => {
+    const s = new Sudoku(testPuzzle1);
+    const b0 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 0);
+    const b1 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 1);
+    const b2 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 2);
+    const b3 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 3);
+    const b4 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 4);
+    const b5 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 5);
+    const b6 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 6);
+    const b7 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 7);
+    const b8 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 8);
+
+    const allColumns = s.getAllColumns();
+    const c012 = allColumns.slice(0, 3);
+    const c345 = allColumns.slice(3, 6);
+    const c678 = allColumns.slice(6, 9);
+    expect(b0).toStrictEqual(c012);
+    expect(b1).toStrictEqual(c345);
+    expect(b2).toStrictEqual(c678);
+    expect(b3).toStrictEqual(c012);
+    expect(b4).toStrictEqual(c345);
+    expect(b5).toStrictEqual(c678);
+    expect(b6).toStrictEqual(c012);
+    expect(b7).toStrictEqual(c345);
+    expect(b8).toStrictEqual(c678);
+  });
+
+  it("getVirtualLinesIntersections", () => {
+    const s = new Sudoku(testPuzzle1);
+    const r0 = s.getRow(0);
+    const r5 = s.getRow(5);
+    const c0 = s.getColumn(0);
+    const c5 = s.getColumn(5);
+    const b0 = s.getBoxFromBoxIndex(0);
+    const b5 = s.getBoxFromBoxIndex(5);
+
+    expect(s.getVirtualLinesIntersections(r0, r0)).toStrictEqual(r0);
+    expect(s.getVirtualLinesIntersections(c0, c0)).toStrictEqual(c0);
+    expect(s.getVirtualLinesIntersections(b0, b0)).toStrictEqual(b0);
+
+    expect(s.getVirtualLinesIntersections(r0, r5)).toStrictEqual([]);
+    expect(s.getVirtualLinesIntersections(c0, c5)).toStrictEqual([]);
+    expect(s.getVirtualLinesIntersections(b0, b5)).toStrictEqual([]);
+
+    const c = (rowIndex: number, columnIndex: number) => ({ ...s.grid[rowIndex][columnIndex], rowIndex, columnIndex });
+
+    const r0c0 = [c(0, 0)];
+    const r0c5 = [c(0, 5)];
+    const r5c0 = [c(5, 0)];
+    const r5c5 = [c(5, 5)];
+    expect(s.getVirtualLinesIntersections(r0, c0)).toStrictEqual(r0c0);
+    expect(s.getVirtualLinesIntersections(r0, c5)).toStrictEqual(r0c5);
+    expect(s.getVirtualLinesIntersections(r5, c0)).toStrictEqual(r5c0);
+    expect(s.getVirtualLinesIntersections(r5, c5)).toStrictEqual(r5c5);
+    expect(s.getVirtualLinesIntersections(r0, c0)).toStrictEqual(s.getVirtualLinesIntersections(c0, r0));
+    expect(s.getVirtualLinesIntersections(r0, c5)).toStrictEqual(s.getVirtualLinesIntersections(c5, r0));
+    expect(s.getVirtualLinesIntersections(r5, c0)).toStrictEqual(s.getVirtualLinesIntersections(c0, r5));
+    expect(s.getVirtualLinesIntersections(r5, c5)).toStrictEqual(s.getVirtualLinesIntersections(c5, r5));
+
+    const r0b0 = [c(0, 0), c(0, 1), c(0, 2)];
+    const r0b5 = [];
+    const r5b0 = [];
+    const r5b5 = [c(5, 6), c(5, 7), c(5, 8)];
+    expect(s.getVirtualLinesIntersections(r0, b0)).toStrictEqual(r0b0);
+    expect(s.getVirtualLinesIntersections(r0, b5)).toStrictEqual(r0b5);
+    expect(s.getVirtualLinesIntersections(r5, b0)).toStrictEqual(r5b0);
+    expect(s.getVirtualLinesIntersections(r5, b5)).toStrictEqual(r5b5);
+    expect(s.getVirtualLinesIntersections(r0, b0)).toStrictEqual(s.getVirtualLinesIntersections(b0, r0));
+    expect(s.getVirtualLinesIntersections(r0, b5)).toStrictEqual(s.getVirtualLinesIntersections(b5, r0));
+    expect(s.getVirtualLinesIntersections(r5, b0)).toStrictEqual(s.getVirtualLinesIntersections(b0, r5));
+    expect(s.getVirtualLinesIntersections(r5, b5)).toStrictEqual(s.getVirtualLinesIntersections(b5, r5));
+
+    const c0b0 = [c(0, 0), c(1, 0), c(2, 0)];
+    const c0b5 = [];
+    const c5b0 = [];
+    const c5b5 = [];
+    expect(s.getVirtualLinesIntersections(c0, b0)).toStrictEqual(c0b0);
+    expect(s.getVirtualLinesIntersections(c0, b5)).toStrictEqual(c0b5);
+    expect(s.getVirtualLinesIntersections(c5, b0)).toStrictEqual(c5b0);
+    expect(s.getVirtualLinesIntersections(c5, b5)).toStrictEqual(c5b5);
+    expect(s.getVirtualLinesIntersections(c0, b0)).toStrictEqual(s.getVirtualLinesIntersections(b0, c0));
+    expect(s.getVirtualLinesIntersections(c0, b5)).toStrictEqual(s.getVirtualLinesIntersections(b5, c0));
+    expect(s.getVirtualLinesIntersections(c5, b0)).toStrictEqual(s.getVirtualLinesIntersections(b0, c5));
+    expect(s.getVirtualLinesIntersections(c5, b5)).toStrictEqual(s.getVirtualLinesIntersections(b5, c5));
+  });
+
+  it("isSamePos", () => {
+    const p1 = { rowIndex: 0, columnIndex: 0, clue: "1" } as const;
+    const p2 = { rowIndex: 0, columnIndex: 0, candidate: candidatesFactory(true) } as const;
+    const p3 = { rowIndex: 5, columnIndex: 7, inputValue: "3" } as const;
+    const p4 = { rowIndex: 5, columnIndex: 7, clue: "1" } as const;
+
+    expect(Sudoku.isSamePos(p1, p2)).toBe(true);
+    expect(Sudoku.isSamePos(p2, p1)).toBe(true);
+    expect(Sudoku.isSamePos(p1, p3)).toBe(false);
+    expect(Sudoku.isSamePos(p1, p4)).toBe(false);
+    expect(Sudoku.isSamePos(p3, p4)).toBe(true);
+    expect(Sudoku.isSamePos(p4, p3)).toBe(true);
+    expect(Sudoku.isSamePos(p3, p1)).toBe(false);
+  });
+
+  it("getAllRelatedCells", () => {
+    const s = new Sudoku(testPuzzle1);
+
+    const c = (rowIndex: number, columnIndex: number) => ({ ...s.grid[rowIndex][columnIndex], rowIndex, columnIndex });
+    const c34 = c(3, 4);
+    const allRelatedCells = [
+      // row
+      c(3, 0),
+      c(3, 1),
+      c(3, 2),
+      c(3, 3),
+      // c(3, 4), // self
+      c(3, 5),
+      c(3, 6),
+      c(3, 7),
+      c(3, 8),
+      // column
+      c(0, 4),
+      c(1, 4),
+      c(2, 4),
+      // c(3, 4), // self
+      c(4, 4),
+      c(5, 4),
+      c(6, 4),
+      c(7, 4),
+      c(8, 4),
+      // box
+      // c(3, 3), // row repeated
+      // c(3, 4), // self
+      // c(3, 5), // row repeated
+      c(4, 3),
+      // c(4, 4), // column repeated
+      c(4, 5),
+      c(5, 3),
+      // c(5, 4), // column repeated
+      c(5, 5),
+    ];
+    expect(s.getAllRelatedCells(c34)).toStrictEqual(allRelatedCells);
+
+    const c77 = c(7, 6);
+    const allRelatedCells2 = [
+      // row
+      c(7, 0),
+      c(7, 1),
+      c(7, 2),
+      c(7, 3),
+      c(7, 4),
+      c(7, 5),
+      // c(7, 6), // self
+      c(7, 7),
+      c(7, 8),
+      // column
+      c(0, 6),
+      c(1, 6),
+      c(2, 6),
+      c(3, 6),
+      c(4, 6),
+      c(5, 6),
+      c(6, 6),
+      // c(7, 6), // self
+      c(8, 6),
+      // box
+      // c(6, 6), // column repeated
+      c(6, 7),
+      c(6, 8),
+      // c(7, 6), // self
+      // c(7, 7), // row repeated
+      // c(7, 8), // row repeated
+      // c(8, 6), // column repeated
+      c(8, 7),
+      c(8, 8),
+    ];
+    expect(s.getAllRelatedCells(c77)).toStrictEqual(allRelatedCells2);
+  });
+
+  it("removeDuplicatesInputValueData", () => {
+    const input1 = { rowIndex: 1, columnIndex: 2, value: "1" } as const;
+    const input2 = { rowIndex: 1, columnIndex: 2, value: "1" } as const;
+    const input3 = { rowIndex: 3, columnIndex: 6, value: "3" } as const;
+    const input4 = { rowIndex: 3, columnIndex: 6, value: "4" } as const;
+
+    expect(Sudoku.removeDuplicatesInputValueData([input1, input2])).toStrictEqual([input1]);
+    expect(Sudoku.removeDuplicatesInputValueData([input1, input2, input1, input1])).toStrictEqual([input1]);
+    expect(Sudoku.removeDuplicatesInputValueData([input1, input3])).toStrictEqual([input1, input3]);
+    expect(Sudoku.removeDuplicatesInputValueData([input3, input4])).toStrictEqual([input3, input4]);
+    expect(Sudoku.removeDuplicatesInputValueData([input1, input2, input3, input4])).toStrictEqual([
+      input1,
+      input3,
+      input4,
+    ]);
+  });
+
   it("missingInVirtualLine", () => {
     const s = new Sudoku(testPuzzle1);
 
@@ -456,5 +743,62 @@ describe("sudoku basic", () => {
 
     const b2a = candidatesFactory(false, ["2", "4", "6", "7", "8"]);
     expect(s.missingInVirtualLine(s.getBoxFromBoxIndex(2))).toStrictEqual(b2a);
+  });
+
+  it("getCombinedMissing", () => {
+    const s = new Sudoku(testPuzzle0);
+    s.getCombinedMissing();
+
+    const arr: [number, number, Candidates][] = [
+      [0, 0, candidatesFactory(true, ["2", "3"])],
+      [0, 2, candidatesFactory(true, ["1", "3"])],
+      [0, 7, candidatesFactory(true, ["3"])],
+      [1, 1, candidatesFactory(true, ["4", "5"])],
+      [1, 2, candidatesFactory(true, ["1", "3", "5", "6"])],
+      [1, 3, candidatesFactory(true, ["2", "5", "8", "9"])],
+      [1, 4, candidatesFactory(true, ["1", "2", "3", "8", "9"])],
+      [1, 5, candidatesFactory(true, ["1", "2", "5", "8"])],
+      [1, 6, candidatesFactory(true, ["1", "2", "3"])],
+      [1, 7, candidatesFactory(true, ["3", "6"])],
+      [1, 8, candidatesFactory(true, ["2", "6"])],
+      [2, 0, candidatesFactory(true, ["2", "3", "6"])],
+      [2, 1, candidatesFactory(true, ["5"])],
+      [2, 3, candidatesFactory(true, ["2", "5"])],
+      [2, 4, candidatesFactory(true, ["1", "2", "3"])],
+      [2, 5, candidatesFactory(true, ["1", "2", "5"])],
+      [2, 7, candidatesFactory(true, ["3", "6", "7"])],
+      [3, 4, candidatesFactory(true, ["7", "8"])],
+      [3, 5, candidatesFactory(true, ["8"])],
+      [3, 6, candidatesFactory(true, ["3", "7"])],
+      [3, 8, candidatesFactory(true, ["5", "7"])],
+      [4, 2, candidatesFactory(true, ["5"])],
+      [4, 3, candidatesFactory(true, ["9"])],
+      [4, 4, candidatesFactory(true, ["4", "7", "9"])],
+      [4, 6, candidatesFactory(true, ["7"])],
+      [4, 8, candidatesFactory(true, ["5", "6", "7"])],
+      [5, 0, candidatesFactory(true, ["4"])],
+      [5, 5, candidatesFactory(true, ["2"])],
+      [5, 7, candidatesFactory(true, ["9"])],
+      [6, 2, candidatesFactory(true, ["6"])],
+      [6, 4, candidatesFactory(true, ["2"])],
+      [7, 1, candidatesFactory(true, ["7"])],
+      [7, 2, candidatesFactory(true, ["6", "9"])],
+      [7, 4, candidatesFactory(true, ["2", "8"])],
+      [7, 5, candidatesFactory(true, ["2", "5", "6", "8"])],
+      [7, 6, candidatesFactory(true, ["2", "7"])],
+      [7, 7, candidatesFactory(true, ["5", "7", "8"])],
+      [7, 8, candidatesFactory(true, ["2", "4", "5", "7"])],
+      [8, 0, candidatesFactory(true, ["3"])],
+      [8, 3, candidatesFactory(true, ["5", "8"])],
+      [8, 4, candidatesFactory(true, ["1", "8"])],
+      [8, 7, candidatesFactory(true, ["5", "7", "8"])],
+      [8, 8, candidatesFactory(true, ["5", "7"])],
+    ];
+
+    arr.forEach(([r, c, candidates]) => expect(s.grid[r][c].candidates).toStrictEqual(candidates));
+
+    const ns = new Sudoku(testPuzzle0);
+    arr.forEach(([r, c, candidates]) => ns.setCandidates(r, c, candidates));
+    expect(ns.grid).toStrictEqual(s.grid);
   });
 });

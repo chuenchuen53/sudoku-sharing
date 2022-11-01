@@ -29,7 +29,7 @@
     <section>numberOfClues: {{ sudoku.numberOfClues }}</section>
     <section>is valid: {{ sudoku.isValid }}</section>
     <section>
-      <table>
+      <!-- <table>
         <thead>
           <tr>
             <th>des</th>
@@ -58,7 +58,7 @@
             <td>{{ sudoku.stats.hiddenSingles }}</td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
     </section>
     <section>
       <button @click="clearAllCandidates">clear all candidates</button>
@@ -88,7 +88,7 @@ const selectedCell = reactive<SelectedCell>({
   row: 0,
   col: 0,
 });
-const sudoku = reactive(new Sudoku(tp.testingPuzzle4));
+const sudoku = reactive(new Sudoku(tp.testingPuzzle0));
 
 const handleCellClick = (rowIndex: number, colIndex: number) => {
   selectedCell.row = rowIndex;
