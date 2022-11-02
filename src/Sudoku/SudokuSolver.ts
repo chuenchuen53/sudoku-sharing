@@ -14,21 +14,21 @@ import type {
 } from "./type";
 
 // todo
-const statsTemplate: () => Stats = () => ({
-  rowUniqueMissing: 0,
-  columnUniqueMissing: 0,
-  boxUniqueMissing: 0,
-  nakedSingles: 0,
-  hiddenSingles: 0,
-});
+// const statsTemplate: () => Stats = () => ({
+//   rowUniqueMissing: 0,
+//   columnUniqueMissing: 0,
+//   boxUniqueMissing: 0,
+//   nakedSingles: 0,
+//   hiddenSingles: 0,
+// });
 
-const createAllElementsArr = (): SudokuElement[] => ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+// const createAllElementsArr = (): SudokuElement[] => ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
-const candidatesFromArr = (arr: SudokuElement[]) => {
-  const candidates = candidatesFactory(false);
-  arr.forEach((x) => (candidates[x] = true));
-  return candidates;
-};
+// const candidatesFromArr = (arr: SudokuElement[]) => {
+//   const candidates = candidatesFactory(false);
+//   arr.forEach((x) => (candidates[x] = true));
+//   return candidates;
+// };
 
 const hiddenCandidatesCount = () => ({
   "1": 0,
@@ -50,12 +50,6 @@ export interface UniqueMissing {
 export default class SudokuSolver extends Sudoku {
   constructor(clues: InputClues) {
     super(clues);
-  }
-
-  static getUniqueCandidate(candidates: Candidates): SudokuElement | null {
-    const entries = Object.entries(candidates);
-    const candidatesArr = entries.filter(([_, value]) => value) as [SudokuElement, boolean][];
-    return candidatesArr.length === 1 ? candidatesArr[0][0] : null;
   }
 
   getBasicCandidates(): Grid {
@@ -84,6 +78,32 @@ export default class SudokuSolver extends Sudoku {
     return result;
   }
 
+  getHiddenSingles(): InputValueData[] {
+    const rowResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllRows());
+    const columnResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllColumns());
+    const boxResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllBoxes());
+    return Sudoku.removeDuplicatesInputValueData([...rowResult, ...columnResult, ...boxResult]);
+  }
+
+  static numberOfCandidates(candidates: Candidates): number {
+    const entries = Object.entries(candidates);
+    return entries.reduce((acc, [_, value]) => (value ? acc + 1 : acc), 0);
+  }
+
+  private loopGrid(callback: (rowIndex: number, columnIndex: number, cell: Cell, row?: Cell[]) => void): void {
+    this.grid.forEach((row, rowIndex) =>
+      row.forEach((cell, columnIndex) => {
+        callback(rowIndex, columnIndex, cell, row);
+      })
+    );
+  }
+
+  static getUniqueCandidate(candidates: Candidates): SudokuElement | null {
+    const entries = Object.entries(candidates);
+    const candidatesArr = entries.filter(([_, value]) => value) as [SudokuElement, boolean][];
+    return candidatesArr.length === 1 ? candidatesArr[0][0] : null;
+  }
+
   static getHiddenSingleFromVirtualLine(virtualLine: VirtualLine): InputValueData[] {
     const result: InputValueData[] = [];
     const candidatesCount = hiddenCandidatesCount();
@@ -108,21 +128,6 @@ export default class SudokuSolver extends Sudoku {
       result.push(...lineResult);
     });
     return result;
-  }
-
-  getHiddenSingles(): InputValueData[] {
-    const rowResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllRows());
-    const columnResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllColumns());
-    const boxResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllBoxes());
-    return Sudoku.removeDuplicatesInputValueData([...rowResult, ...columnResult, ...boxResult]);
-  }
-
-  private loopGrid(callback: (rowIndex: number, columnIndex: number, cell: Cell, row?: Cell[]) => void): void {
-    this.grid.forEach((row, rowIndex) =>
-      row.forEach((cell, columnIndex) => {
-        callback(rowIndex, columnIndex, cell, row);
-      })
-    );
   }
 
   // rowColumnLockInBox(type: "row" | "column", index: number): InputValueData[] {
@@ -228,11 +233,6 @@ export default class SudokuSolver extends Sudoku {
   //     return true;
   //   }
   // }
-
-  static numberOfCandidates(candidates: Candidates): number {
-    const entries = Object.entries(candidates);
-    return entries.reduce((acc, [_, value]) => (value ? acc + 1 : acc), 0);
-  }
 
   // getCandidatesArr(candidates: Candidates): Element[] {
   //   const entries = Object.entries(candidates) as [Element, boolean][];
