@@ -85,7 +85,6 @@ export default class Sudoku {
 
   createPuzzle(clues: InputClues): Grid {
     if (clues.length !== 9 || clues.some((x) => x.length !== 9)) throw new Error("Invalid input clues");
-
     const grid: Grid = ArrayUtils.create2DArray(9, 9, {});
     clues.forEach((row, i) =>
       row.forEach((clue, j) => {
@@ -190,19 +189,6 @@ export default class Sudoku {
     }
   }
 
-  getAllCellsInRelatedVirtualLines(rowIndex: number, columnIndex: number): { rowIndex: number; columnIndex: number }[] {
-    const row = this.getRow(rowIndex);
-    const column = this.getColumn(columnIndex);
-    const box = this.getBoxFromRowColumnIndex(rowIndex, columnIndex);
-    const allCellsInRelatedVirtualLines = [...row, ...column, ...box]
-      .filter(
-        (value, index, self) =>
-          index === self.findIndex((c) => c.rowIndex === value.rowIndex && c.columnIndex === value.columnIndex)
-      )
-      .map(({ rowIndex, columnIndex }) => ({ rowIndex, columnIndex }));
-    return allCellsInRelatedVirtualLines;
-  }
-
   getBoxIndex(rowIndex: number, columnIndex: number) {
     return Math.floor(rowIndex / 3) * 3 + Math.floor(columnIndex / 3);
   }
@@ -211,28 +197,37 @@ export default class Sudoku {
     this.grid[rowIndex][columnIndex].candidates = { ...candidates };
   }
 
-  setInputValue(data: InputValueData[]) {
-    if (!data.length) return;
+  setInputValue({ rowIndex, columnIndex, value }: InputValueData, update: boolean) {
+    if (this.grid[rowIndex][columnIndex].clue) {
+      console.error("Cannot set input value to a cell with a clue");
+      return;
+    }
 
-    data.forEach(({ rowIndex, columnIndex, value }) => {
-      if (this.grid[rowIndex][columnIndex].clue) {
-        console.error("Cannot set input value to a cell with a clue");
-        return;
-      }
+    this.grid[rowIndex][columnIndex].inputValue = value;
+    delete this.grid[rowIndex][columnIndex].candidates;
 
-      this.grid[rowIndex][columnIndex].inputValue = value;
-      delete this.grid[rowIndex][columnIndex].candidates;
-      const { isValid } = this.validatePuzzle("inputValue");
+    if (update) {
+      const { isValid, validateDetail } = this.validatePuzzle("inputValue");
       this.isValid = isValid;
-    });
+      this.validateDetail = validateDetail;
+
+      this.updateElementMissing();
+    }
+  }
+
+  setInputValues(data: InputValueData[]) {
+    data.forEach((x) => this.setInputValue(x, false));
+
+    const { isValid, validateDetail } = this.validatePuzzle("inputValue");
+    this.isValid = isValid;
+    this.validateDetail = validateDetail;
     this.updateElementMissing();
-    this.getCombinedMissing();
   }
 
   clearAllCandidates() {
     for (let i = 0; i < this.grid.length; i++) {
       for (let j = 0; j < this.grid[i].length; j++) {
-        this.grid[i][j].candidates = undefined;
+        delete this.grid[i][j].candidates;
       }
     }
   }

@@ -1,20 +1,10 @@
-import { expect, describe, it } from "vitest";
+import { expect, describe, it, vitest, beforeAll } from "vitest";
 import ArrayUtils from "../src/utils/ArrayUtil";
 import Sudoku, { CheckVirtualLineDuplicateResult, candidatesFactory } from "../src/Sudoku";
-import { Candidates, CellWithIndex, InputClues, VirtualLineType } from "../src/sudoku/type";
+import { Candidates, CellWithIndex, InputClues, VirtualLineType, Element, InputValueData } from "../src/sudoku/type";
 import exp from "constants";
 
-const emptyPuzzle: InputClues = [
-  ["0", "0", "0", "0", "0", "0", "0", "0", "0"],
-  ["0", "0", "0", "0", "0", "0", "0", "0", "0"],
-  ["0", "0", "0", "0", "0", "0", "0", "0", "0"],
-  ["0", "0", "0", "0", "0", "0", "0", "0", "0"],
-  ["0", "0", "0", "0", "0", "0", "0", "0", "0"],
-  ["0", "0", "0", "0", "0", "0", "0", "0", "0"],
-  ["0", "0", "0", "0", "0", "0", "0", "0", "0"],
-  ["0", "0", "0", "0", "0", "0", "0", "0", "0"],
-  ["0", "0", "0", "0", "0", "0", "0", "0", "0"],
-];
+const emptyPuzzle: InputClues = ArrayUtils.create2DArray(9, 9, "0");
 
 export const testPuzzle0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -64,7 +54,24 @@ const validateDetailTemplate: () => Record<"row" | "column" | "box", CheckVirtua
   };
 };
 
+const inputValueDataFactory = (r: number, c: number, v: Element): InputValueData => {
+  return {
+    rowIndex: r,
+    columnIndex: c,
+    value: v,
+  };
+};
+
 describe("sudoku basic", () => {
+  beforeAll(() => {
+    vitest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  it("createPuzzle", () => {
+    const ic = JSON.parse(JSON.stringify(testPuzzle0)).push(["0", "0", "0", "0", "0", "0", "0", "0", "0"]);
+    expect(() => new Sudoku(ic)).toThrow();
+  });
+
   it("createPuzzle", () => {
     const sudoku = new Sudoku(emptyPuzzle);
     const grid1 = sudoku.createPuzzle(testPuzzle1);
@@ -127,7 +134,7 @@ describe("sudoku basic", () => {
 
   it("validatePuzzle", () => {
     const s1 = new Sudoku(testPuzzle1);
-    s1.setInputValue([{ rowIndex: 0, columnIndex: 1, value: "2" }]);
+    s1.setInputValue({ rowIndex: 0, columnIndex: 1, value: "2" }, true);
     const s1DetailExpected = validateDetailTemplate();
     s1DetailExpected.row[0].haveDuplicate = true;
     s1DetailExpected.row[0].duplicatedCells.push(
@@ -174,6 +181,92 @@ describe("sudoku basic", () => {
     };
 
     expect(s1.validatePuzzle("clue")).toStrictEqual(s1Expected);
+  });
+
+  it("setInputValue", () => {
+    const s1 = new Sudoku(testPuzzle1);
+    s1.setInputValue({ rowIndex: 0, columnIndex: 0, value: "2" }, true);
+    expect(console.error).toHaveBeenCalled();
+  });
+
+  it("setInputValue", () => {
+    const s1 = new Sudoku(testPuzzle1);
+    s1.setInputValue(inputValueDataFactory(2, 0, "9"), false);
+    expect(s1.grid[2][0].inputValue).toBe("9");
+    expect(s1.elementMissing.ROW[2]["9"]).toBe(true);
+  });
+
+  it("setInputValue", () => {
+    const s1 = new Sudoku(testPuzzle1);
+    s1.setInputValue(inputValueDataFactory(2, 0, "9"), true);
+    expect(s1.grid[2][0].inputValue).toBe("9");
+    expect(s1.elementMissing.ROW[2]["9"]).toBe(false);
+  });
+
+  it("setInputValue", () => {
+    const s1 = new Sudoku(testPuzzle1);
+    s1.setInputValue(inputValueDataFactory(2, 0, "1"), false);
+    expect(s1.grid[2][0].inputValue).toBe("1");
+    expect(s1.isValid).toBe(true);
+  });
+
+  it("setInputValue", () => {
+    const s1 = new Sudoku(testPuzzle1);
+    s1.setInputValue(inputValueDataFactory(2, 0, "1"), true);
+
+    const expectedDetail = [
+      {
+        rowIndex: 2,
+        columnIndex: 0,
+        inputValue: "1",
+      },
+      {
+        clue: "1",
+        columnIndex: 1,
+        rowIndex: 2,
+      },
+    ];
+
+    expect(s1.grid[2][0].inputValue).toBe("1");
+    expect(s1.isValid).toBe(false);
+    expect(s1.validateDetail.row[2].haveDuplicate).toBe(true);
+    expect(s1.validateDetail.row[2].duplicatedCells).toStrictEqual(expectedDetail);
+    expect(s1.validateDetail.box[0].haveDuplicate).toBe(true);
+    expect(s1.validateDetail.box[0].duplicatedCells).toStrictEqual(expectedDetail);
+  });
+
+  it("setInputValues", () => {
+    const s = new Sudoku(testPuzzle1);
+    s.setInputValues([inputValueDataFactory(2, 0, "9"), inputValueDataFactory(2, 2, "3")]);
+    expect(s.grid[2][0].inputValue).toBe("9");
+    expect(s.grid[2][2].inputValue).toBe("3");
+    expect(s.isValid).toBe(true);
+  });
+
+  it("setInputValues", () => {
+    const s = new Sudoku(testPuzzle1);
+
+    const expectedDetail = [
+      {
+        rowIndex: 2,
+        columnIndex: 0,
+        inputValue: "1",
+      },
+      {
+        clue: "1",
+        columnIndex: 1,
+        rowIndex: 2,
+      },
+    ];
+
+    s.setInputValues([inputValueDataFactory(2, 0, "1"), inputValueDataFactory(2, 2, "3")]);
+    expect(s.grid[2][0].inputValue).toBe("1");
+    expect(s.grid[2][2].inputValue).toBe("3");
+    expect(s.isValid).toBe(false);
+    expect(s.validateDetail.row[2].haveDuplicate).toBe(true);
+    expect(s.validateDetail.row[2].duplicatedCells).toStrictEqual(expectedDetail);
+    expect(s.validateDetail.box[0].haveDuplicate).toBe(true);
+    expect(s.validateDetail.box[0].duplicatedCells).toStrictEqual(expectedDetail);
   });
 
   it("numberOfClues", () => {
@@ -734,7 +827,7 @@ describe("sudoku basic", () => {
     const b2b = candidatesFactory(false, ["4", "6", "7", "8"]);
     expect(s.missingInVirtualLine(s.getBoxFromBoxIndex(2))).toStrictEqual(b2b);
 
-    s.setInputValue([{ rowIndex: 2, columnIndex: 6, value: "2" }]);
+    s.setInputValue({ rowIndex: 2, columnIndex: 6, value: "2" }, true);
     const r2a = candidatesFactory(false, ["1", "2", "4", "6", "7"]);
     expect(s.missingInVirtualLine(s.getRow(2))).toStrictEqual(r2a);
 
@@ -800,5 +893,78 @@ describe("sudoku basic", () => {
     const ns = new Sudoku(testPuzzle0);
     arr.forEach(([r, c, candidates]) => ns.setCandidates(r, c, candidates));
     expect(ns.grid).toStrictEqual(s.grid);
+  });
+
+  it("getCombinedMissing", () => {
+    const s = new Sudoku(testPuzzle1);
+    s.getCombinedMissing();
+
+    const arr: [number, number, Candidates][] = [
+      [0, 1, candidatesFactory(true, ["3", "5", "7", "9"])],
+      [0, 2, candidatesFactory(true, ["3", "4", "7", "9"])],
+      [0, 3, candidatesFactory(true, ["1", "3", "5", "7", "9"])],
+      [0, 4, candidatesFactory(true, ["1", "5", "7", "9"])],
+      [0, 5, candidatesFactory(true, ["1", "3", "5", "7", "9"])],
+      [0, 8, candidatesFactory(true, ["3", "5"])],
+      [1, 0, candidatesFactory(true, ["6", "9"])],
+      [1, 1, candidatesFactory(true, ["3", "5", "6", "7", "8", "9"])],
+      [1, 2, candidatesFactory(true, ["3", "6", "7", "9"])],
+      [1, 3, candidatesFactory(true, ["1", "3", "5", "7", "8", "9"])],
+      [1, 6, candidatesFactory(true, ["1", "3", "9"])],
+      [1, 7, candidatesFactory(true, ["3", "5", "9"])],
+      [1, 8, candidatesFactory(true, ["3", "5"])],
+      [2, 0, candidatesFactory(true, ["9"])],
+      [2, 2, candidatesFactory(true, ["3", "9"])],
+      [2, 3, candidatesFactory(true, ["3", "5", "8", "9"])],
+      [2, 5, candidatesFactory(true, ["3", "5", "8", "9"])],
+      [2, 6, candidatesFactory(true, ["2", "3", "9"])],
+      [3, 3, candidatesFactory(true, ["7", "8", "9"])],
+      [3, 5, candidatesFactory(true, ["6", "7", "8", "9"])],
+      [3, 6, candidatesFactory(true, ["7"])],
+      [3, 7, candidatesFactory(true, ["7", "8"])],
+      [4, 2, candidatesFactory(true, ["1", "6"])],
+      [4, 3, candidatesFactory(true, ["1", "3", "5", "8"])],
+      [4, 4, candidatesFactory(true, ["1", "5"])],
+      [4, 5, candidatesFactory(true, ["1", "3", "5", "6", "8"])],
+      [4, 7, candidatesFactory(true, ["3", "8"])],
+      [5, 1, candidatesFactory(true, ["9"])],
+      [5, 2, candidatesFactory(true, ["1", "9"])],
+      [5, 3, candidatesFactory(true, ["1", "3", "4", "7", "9"])],
+      [5, 4, candidatesFactory(true, ["1", "7", "9"])],
+      [5, 5, candidatesFactory(true, ["1", "3", "4", "7", "9"])],
+      [5, 7, candidatesFactory(true, ["2", "3", "7"])],
+      [6, 0, candidatesFactory(true, ["1", "4", "6", "9"])],
+      [6, 1, candidatesFactory(true, ["6", "7", "9"])],
+      [6, 3, candidatesFactory(true, ["1", "4", "5", "7", "9"])],
+      [6, 5, candidatesFactory(true, ["1", "4", "5", "7", "9"])],
+      [6, 6, candidatesFactory(true, ["6", "7", "9"])],
+      [6, 7, candidatesFactory(true, ["5", "7", "8", "9"])],
+      [6, 8, candidatesFactory(true, ["5", "8"])],
+      [7, 0, candidatesFactory(true, ["4", "9"])],
+      [7, 1, candidatesFactory(true, ["3", "7", "9"])],
+      [7, 2, candidatesFactory(true, ["3", "4", "7", "9"])],
+      [7, 5, candidatesFactory(true, ["4", "5", "7", "9"])],
+      [7, 6, candidatesFactory(true, ["3", "7", "9"])],
+      [8, 1, candidatesFactory(true, ["3", "6", "7", "9"])],
+      [8, 3, candidatesFactory(true, ["1", "2", "7", "9"])],
+      [8, 4, candidatesFactory(true, ["1", "7", "9"])],
+      [8, 5, candidatesFactory(true, ["1", "7", "9"])],
+      [8, 6, candidatesFactory(true, ["3", "6", "7", "9"])],
+      [8, 7, candidatesFactory(true, ["3", "7", "9"])],
+    ];
+
+    arr.forEach(([r, c, candidates]) => expect(s.grid[r][c].candidates).toStrictEqual(candidates));
+
+    const ns = new Sudoku(testPuzzle1);
+    arr.forEach(([r, c, candidates]) => ns.setCandidates(r, c, candidates));
+    expect(ns.grid).toStrictEqual(s.grid);
+  });
+
+  it("clearAllCandidates", () => {
+    const s = new Sudoku(testPuzzle0);
+    s.getCombinedMissing();
+    expect(s.grid.some((x) => x.some((y) => y.candidates))).toBe(true);
+    s.clearAllCandidates();
+    expect(s.grid.some((x) => x.some((y) => y.candidates))).toBe(false);
   });
 });

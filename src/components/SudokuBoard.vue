@@ -88,7 +88,7 @@ const selectedCell = reactive<SelectedCell>({
   row: 0,
   col: 0,
 });
-const sudoku = reactive(new Sudoku(tp.testingPuzzle0));
+const sudoku = reactive(new Sudoku(tp.testingPuzzle1));
 
 const handleCellClick = (rowIndex: number, colIndex: number) => {
   selectedCell.row = rowIndex;
@@ -134,7 +134,10 @@ const getUniqueMissingCandidate = () => {
 
 const highlight = computed(() => {
   const highlightArr = ArrayUtil.create2DArray<boolean>(9, 9, false);
-  const allCellsInRelatedVirtualLines = sudoku.getAllCellsInRelatedVirtualLines(selectedCell.row, selectedCell.col);
+  const allCellsInRelatedVirtualLines = sudoku.getAllRelatedCells({
+    rowIndex: selectedCell.row,
+    columnIndex: selectedCell.col,
+  });
   allCellsInRelatedVirtualLines.forEach((cell) => {
     highlightArr[cell.rowIndex][cell.columnIndex] = true;
   });

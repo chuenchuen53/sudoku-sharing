@@ -13,8 +13,6 @@ export const testingPuzzle0: InputClues = [
   ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
 ];
 
-console.log(testingPuzzle0.flat().join(""));
-
 // medium
 export const testingPuzzle1: InputClues = [
   ["2", "0", "0", "0", "0", "0", "8", "6", "0"],
@@ -27,6 +25,8 @@ export const testingPuzzle1: InputClues = [
   ["0", "0", "0", "6", "8", "0", "0", "1", "2"],
   ["5", "0", "8", "0", "0", "0", "0", "0", "4"],
 ];
+
+console.log(testingPuzzle1.flat().join(""));
 
 // medium
 export const testingPuzzle2: InputClues = [
