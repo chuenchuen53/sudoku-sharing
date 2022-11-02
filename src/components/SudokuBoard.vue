@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="board">
+    <div id="sudoku-grid">
       <div class="sudoku-row" v-for="(row, rowIndex) in sudoku.grid" :key="rowIndex">
         <div
           class="sudoku-cell"
@@ -146,10 +146,16 @@ const highlight = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-#board {
+$main-grid-color: #616161;
+$sub-grid-color: #9e9e9e;
+$clue-color: #424242;
+$input-value-color: blue;
+$candidate-color: blue;
+
+#sudoku-grid {
   display: flex;
   flex-direction: column;
-  border: 2px black solid;
+  border: 3px $main-grid-color solid;
   width: 450px;
   height: 450px;
 
@@ -162,12 +168,25 @@ const highlight = computed(() => {
       flex: 1 1 0;
       justify-content: center;
       align-items: center;
-      border: 1px lightgrey solid;
+      border: 1px $sub-grid-color solid;
       font-size: 30px;
+
+      &:nth-child(1) {
+        border-left: none;
+      }
+
+      &:nth-child(9) {
+        border-right: none;
+      }
 
       &:nth-child(3),
       &:nth-child(6) {
-        border-right: 2px grey solid;
+        border-right: 1.5px $main-grid-color solid;
+      }
+
+      &:nth-child(4),
+      &:nth-child(7) {
+        border-left: 1.5px $main-grid-color solid;
       }
 
       &.highlight {
@@ -179,11 +198,11 @@ const highlight = computed(() => {
       }
 
       .clue {
-        color: black;
+        color: $clue-color;
       }
 
       .input-value {
-        color: magenta;
+        color: $input-value-color;
       }
 
       .candidate-container {
@@ -197,7 +216,7 @@ const highlight = computed(() => {
 
         .candidate {
           font-size: 10px;
-          color: grey;
+          color: $candidate-color;
 
           &.hidden {
             visibility: hidden;
@@ -206,10 +225,29 @@ const highlight = computed(() => {
       }
     }
 
+    &:nth-child(1) {
+      .sudoku-cell {
+        border-top: none;
+      }
+    }
+
+    &:nth-child(9) {
+      .sudoku-cell {
+        border-bottom: none;
+      }
+    }
+
     &:nth-child(3),
     &:nth-child(6) {
       .sudoku-cell {
-        border-bottom: 2px grey solid;
+        border-bottom: 1.5px $main-grid-color solid;
+      }
+    }
+
+    &:nth-child(4),
+    &:nth-child(7) {
+      .sudoku-cell {
+        border-top: 1.5px $main-grid-color solid;
       }
     }
   }
