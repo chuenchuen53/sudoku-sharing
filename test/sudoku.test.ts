@@ -1,7 +1,14 @@
 import { expect, describe, it, vitest, beforeAll } from "vitest";
 import ArrayUtils from "../src/utils/ArrayUtil";
 import Sudoku, { CheckVirtualLineDuplicateResult, candidatesFactory } from "../src/Sudoku";
-import { Candidates, CellWithIndex, InputClues, VirtualLineType, Element, InputValueData } from "../src/sudoku/type";
+import {
+  Candidates,
+  CellWithIndex,
+  InputClues,
+  VirtualLineType,
+  SudokuElement,
+  InputValueData,
+} from "../src/sudoku/type";
 import exp from "constants";
 
 const emptyPuzzle: InputClues = ArrayUtils.create2DArray(9, 9, "0");
@@ -54,7 +61,7 @@ const validateDetailTemplate: () => Record<"row" | "column" | "box", CheckVirtua
   };
 };
 
-const inputValueDataFactory = (r: number, c: number, v: Element): InputValueData => {
+const inputValueDataFactory = (r: number, c: number, v: SudokuElement): InputValueData => {
   return {
     rowIndex: r,
     columnIndex: c,
@@ -509,6 +516,13 @@ describe("sudoku basic", () => {
     }
   });
 
+  it("getAllVirtualLine", () => {
+    const s = new Sudoku(testPuzzle1);
+    expect(s.getAllVirtualLines(VirtualLineType.ROW)).toStrictEqual(s.getAllRows());
+    expect(s.getAllVirtualLines(VirtualLineType.COLUMN)).toStrictEqual(s.getAllColumns());
+    expect(s.getAllVirtualLines(VirtualLineType.BOX)).toStrictEqual(s.getAllBoxes());
+  });
+
   it("getAllRelatedBoxesInLine", () => {
     const s = new Sudoku(testPuzzle1);
     const r0 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 0);
@@ -808,7 +822,6 @@ describe("sudoku basic", () => {
     expect(s.missingInVirtualLine(s.getBoxFromBoxIndex(0))).toStrictEqual(b0);
 
     const b1 = candidatesFactory(false, ["2", "4", "6"]);
-    console.log(s.getBoxFromBoxIndex(1));
     expect(s.missingInVirtualLine(s.getBoxFromBoxIndex(1))).toStrictEqual(b1);
 
     const b8 = candidatesFactory(false, ["1", "2", "4"]);

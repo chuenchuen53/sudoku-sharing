@@ -2,7 +2,7 @@ import ArrayUtils from "@/utils/ArrayUtil";
 import CalcUtil from "@/utils/CalcUtil";
 import ObjUtil from "@/utils/ObjUtil";
 import {
-  type Element,
+  type SudokuElement,
   type SudokuIndex,
   type Cell,
   type Candidates,
@@ -24,7 +24,7 @@ export interface CheckVirtualLineDuplicateResult {
 
 type ValidateDetail = Record<"row" | "column" | "box", CheckVirtualLineDuplicateResult[]>;
 
-export const candidatesFactory = (defaultValue: boolean, elements?: Element[]) => {
+export const candidatesFactory = (defaultValue: boolean, elements?: SudokuElement[]) => {
   if (!elements) {
     return {
       "1": defaultValue,
@@ -143,6 +143,17 @@ export default class Sudoku {
 
   getAllBoxes(): VirtualLine[] {
     return Array.from({ length: 9 }, (_, i) => this.getBoxFromBoxIndex(i));
+  }
+
+  getAllVirtualLines(type: VirtualLineType): VirtualLine[] {
+    switch (type) {
+      case VirtualLineType.ROW:
+        return this.getAllRows();
+      case VirtualLineType.COLUMN:
+        return this.getAllColumns();
+      case VirtualLineType.BOX:
+        return this.getAllBoxes();
+    }
   }
 
   getAllRelatedBoxesInLine(lineType: RowColumn, lineIndex: number): VirtualLine[] {
@@ -305,7 +316,7 @@ export default class Sudoku {
         const candidates = candidatesFactory(false);
 
         for (const key in candidates) {
-          const typedKey = key as Element;
+          const typedKey = key as SudokuElement;
           if (missingRow[typedKey] && missingColumn[typedKey] && missingBox[typedKey]) {
             candidates[typedKey] = true;
           }
@@ -314,5 +325,7 @@ export default class Sudoku {
         this.setCandidates(i, j, candidates);
       }
     }
+
+    return this.grid;
   }
 }

@@ -1,3 +1,7 @@
+import type { Candidates, VirtualLine } from "@/Sudoku/type";
+
+type Iterableify<T> = { [K in keyof T]: Iterable<T[K]> };
+
 export default class ArrayUtils {
   static create2DArray<T extends string | number | boolean | Object>(
     rows: number,
@@ -33,4 +37,26 @@ export default class ArrayUtils {
   static cloneArr<T>(arr: T[]): T[] {
     return JSON.parse(JSON.stringify(arr));
   }
+
+  static zip<A, B>(a: A[], b: B[]): [A, B][] {
+    const length = Math.min(a.length, b.length);
+    const result: [A, B][] = [];
+    for (let i = 0; i < length; i++) {
+      result.push([a[i], b[i]]);
+    }
+    return result;
+  }
+
+  static zip3<A, B, C>(a: A[], b: B[], c: C[]): [A, B, C][] {
+    const length = Math.min(a.length, b.length, c.length);
+    const result: [A, B, C][] = [];
+    for (let i = 0; i < length; i++) {
+      result.push([a[i], b[i], c[i]]);
+    }
+    return result;
+  }
 }
+
+type A = [number, string];
+type B = [number, string, boolean];
+type C = B extends A ? true : false;

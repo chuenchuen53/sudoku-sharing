@@ -1,14 +1,14 @@
 export type SudokuIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
-export type Element = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+export type SudokuElement = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
 export type Candidates = {
-  [key in Element]: boolean;
+  [key in SudokuElement]: boolean;
 };
 
 export interface Cell {
-  clue?: Element;
-  inputValue?: Element;
+  clue?: SudokuElement;
+  inputValue?: SudokuElement;
   candidates?: Candidates;
 }
 
@@ -34,7 +34,7 @@ export type RowColumn = Exclude<VirtualLineType, VirtualLineType.BOX>;
 export interface InputValueData {
   rowIndex: number;
   columnIndex: number;
-  value: Element;
+  value: SudokuElement;
 }
 
 export type ElementMissing = Record<VirtualLineType, Candidates[]>;
@@ -47,4 +47,5 @@ export interface Stats {
   hiddenSingles: number;
 }
 
-export type InputClues = (Element | "0")[][];
+export type SudokuElementWithZero = SudokuElement | "0";
+export type InputClues = SudokuElementWithZero[][];
