@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div class="position-relative">
+    <div id="hidden-sudoku-input">
+      <input ref="inputRef" @keyup="handleKeyboard" :value="inputStr" />
+    </div>
     <div id="sudoku-grid">
       <div class="sudoku-row" v-for="(row, rowIndex) in grid" :key="rowIndex">
         <div
@@ -29,6 +32,9 @@
               :class="{
                 hidden: !value,
                 elementHighlight: highlight.element === key,
+                candidateHighlight: highlight.candidate.some(
+                  (x) => x.rowIndex === rowIndex && x.columnIndex === columnIndex && x.value === key
+                ),
               }"
             >
               {{ key }}
@@ -37,16 +43,13 @@
         </div>
       </div>
     </div>
-    <div>
-      <input ref="inputRef" @keyup="handleKeyboard" :value="inputStr" />
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, computed, ref, defineProps } from "vue";
 import ArrayUtil from "../utils/ArrayUtil";
-import type { Grid, InputValueData } from "@/Sudoku/type";
+import type { CellWithIndex, Grid, InputValueData } from "@/Sudoku/type";
 import type { Highlight } from "@/views/SudokuPage/type";
 import type SudokuSolver from "@/Sudoku/SudokuSolver";
 
@@ -59,7 +62,9 @@ const props = defineProps<{
   grid: Grid;
   highlight: Highlight;
   getAllRelatedCells: InstanceType<typeof SudokuSolver>["getAllRelatedCells"];
+  // eslint-disable-next-line no-unused-vars
   setInputValue: (data: InputValueData) => void;
+  // eslint-disable-next-line no-unused-vars
   removeInputValue: (data: CellWithIndex) => void;
 }>();
 
@@ -139,6 +144,18 @@ $temp-cell-highlight-bgcolor: #fbf719;
 $temp-candidate-highlight-bgcolor: #fbf719;
 $invalid-cells-bgcolor: var(--el-color-danger-light-9);
 $invalid-cells-color: var(--el-color-danger);
+
+#hidden-sudoku-input {
+  position: absolute;
+  z-index: -1;
+
+  input {
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+}
 
 #sudoku-grid {
   display: flex;
@@ -252,6 +269,10 @@ $invalid-cells-color: var(--el-color-danger);
           &.elementHighlight {
             background-color: $element-highlight-bgcolor;
           }
+
+          &.candidateHighlight {
+            background-color: $temp-candidate-highlight-bgcolor;
+          }
         }
       }
     }
@@ -282,5 +303,9 @@ $invalid-cells-color: var(--el-color-danger);
       }
     }
   }
+}
+
+.position-relative {
+  position: relative;
 }
 </style>
