@@ -1,7 +1,7 @@
 import type { InputClues } from "./Sudoku/type";
 
 // easy
-export const testingPuzzle0: InputClues = [
+export const testPuzzle0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
   ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
   ["0", "0", "8", "0", "0", "0", "4", "0", "9"],
@@ -14,7 +14,7 @@ export const testingPuzzle0: InputClues = [
 ];
 
 // medium
-export const testingPuzzle1: InputClues = [
+export const testPuzzle1: InputClues = [
   ["2", "0", "0", "0", "0", "0", "8", "6", "0"],
   ["0", "0", "0", "0", "4", "2", "0", "0", "0"],
   ["0", "1", "0", "0", "6", "0", "0", "4", "7"],
@@ -26,10 +26,8 @@ export const testingPuzzle1: InputClues = [
   ["5", "0", "8", "0", "0", "0", "0", "0", "4"],
 ];
 
-console.log(testingPuzzle1.flat().join(""));
-
 // medium
-export const testingPuzzle2: InputClues = [
+export const testPuzzle2: InputClues = [
   ["0", "3", "0", "9", "0", "0", "0", "0", "0"],
   ["6", "0", "0", "2", "0", "0", "8", "0", "0"],
   ["8", "0", "0", "6", "1", "0", "5", "4", "9"],
@@ -42,7 +40,7 @@ export const testingPuzzle2: InputClues = [
 ];
 
 // hard
-export const testingPuzzle3: InputClues = [
+export const testPuzzle3: InputClues = [
   ["0", "0", "0", "0", "0", "1", "6", "0", "0"],
   ["0", "0", "5", "0", "0", "0", "0", "0", "3"],
   ["0", "0", "0", "0", "0", "0", "5", "9", "4"],
@@ -55,7 +53,7 @@ export const testingPuzzle3: InputClues = [
 ];
 
 // hard
-export const testingPuzzle4: InputClues = [
+export const testPuzzle4: InputClues = [
   ["0", "0", "0", "0", "0", "0", "0", "6", "0"],
   ["0", "0", "0", "3", "8", "0", "1", "9", "0"],
   ["0", "0", "7", "5", "0", "0", "3", "4", "2"],
@@ -68,7 +66,7 @@ export const testingPuzzle4: InputClues = [
 ];
 
 // hard
-export const testingPuzzle5: InputClues = [
+export const testPuzzle5: InputClues = [
   ["0", "0", "2", "0", "1", "0", "0", "0", "0"],
   ["1", "0", "0", "0", "8", "0", "0", "5", "4"],
   ["0", "6", "0", "0", "2", "0", "9", "1", "3"],
@@ -81,7 +79,7 @@ export const testingPuzzle5: InputClues = [
 ];
 
 // expert
-export const testingPuzzle6: InputClues = [
+export const testPuzzle6: InputClues = [
   ["0", "8", "0", "5", "0", "0", "0", "0", "0"],
   ["0", "0", "0", "0", "3", "0", "2", "0", "0"],
   ["0", "0", "9", "0", "2", "0", "7", "0", "0"],
@@ -94,7 +92,7 @@ export const testingPuzzle6: InputClues = [
 ];
 
 // expert
-export const testingPuzzle7: InputClues = [
+export const testPuzzle7: InputClues = [
   ["6", "0", "0", "1", "7", "0", "0", "0", "5"],
   ["0", "0", "0", "0", "4", "0", "0", "2", "0"],
   ["0", "0", "0", "0", "0", "0", "8", "9", "0"],
@@ -107,7 +105,7 @@ export const testingPuzzle7: InputClues = [
 ];
 
 // expert
-export const testingPuzzle8: InputClues = [
+export const testPuzzle8: InputClues = [
   ["0", "7", "0", "0", "0", "0", "6", "0", "8"],
   ["0", "5", "0", "0", "4", "0", "0", "0", "0"],
   ["3", "0", "0", "0", "0", "6", "0", "0", "0"],
@@ -120,7 +118,7 @@ export const testingPuzzle8: InputClues = [
 ];
 
 // expert
-export const testingPuzzle9: InputClues = [
+export const testPuzzle9: InputClues = [
   ["0", "1", "6", "0", "0", "0", "0", "0", "2"],
   ["0", "0", "0", "0", "0", "0", "6", "0", "0"],
   ["0", "5", "0", "0", "3", "0", "1", "0", "0"],
@@ -133,7 +131,7 @@ export const testingPuzzle9: InputClues = [
 ];
 
 // yWing test
-export const testingPuzzle10: InputClues = [
+export const testPuzzle10: InputClues = [
   ["9", "0", "0", "2", "0", "0", "7", "5", "0"],
   ["0", "5", "0", "6", "9", "0", "2", "3", "1"],
   ["4", "2", "0", "0", "0", "0", "0", "0", "0"],

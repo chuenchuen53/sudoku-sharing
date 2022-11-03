@@ -42,7 +42,7 @@ import { VirtualLineType } from "@/Sudoku/type";
 import type { Highlight } from "@/views/SudokuPage/type";
 import type { CellWithIndex, InputValueData, SudokuElementWithZero } from "@/Sudoku/type";
 
-const s = reactive(new SudokuSolver(tp.testingPuzzle0));
+const s = reactive(new SudokuSolver(tp.testPuzzle3));
 const highlight = ref<Highlight>({
   element: "0",
   cell: [],
@@ -78,7 +78,6 @@ const updateInvalidHighlight = () => {
     .map((x) => x.duplicatedCells)
     .filter((x) => x.length)
     .flat(1);
-  console.log("file: Sudoku.vue ~ line 61 ~ updateInvalidHighlight ~ result", result);
   highlight.value.invalid = result;
 };
 
