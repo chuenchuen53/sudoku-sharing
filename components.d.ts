@@ -11,6 +11,8 @@ declare module '@vue/runtime-core' {
     HighlightElementToggle: typeof import('./src/components/HighlightElementToggle.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SideBar: typeof import('./src/components/SideBar.vue')['default']
     SudokuBoard: typeof import('./src/components/SudokuBoard.vue')['default']
+    SudokuGrid: typeof import('./src/components/SudokuGrid.vue')['default']
   }
 }

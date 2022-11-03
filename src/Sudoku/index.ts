@@ -22,7 +22,7 @@ export interface CheckVirtualLineDuplicateResult {
   duplicatedCells: CellWithIndex[];
 }
 
-type ValidateDetail = Record<"row" | "column" | "box", CheckVirtualLineDuplicateResult[]>;
+type ValidateDetail = Record<VirtualLineType, CheckVirtualLineDuplicateResult[]>;
 
 export const candidatesFactory = (defaultValue: boolean, elements?: SudokuElement[]) => {
   if (!elements) {
@@ -182,7 +182,7 @@ export default class Sudoku {
     );
   }
 
-  getAllRelatedCells(cell: CellWithIndex): VirtualLine {
+  getAllRelatedCells(cell: CellWithIndex): CellWithIndex[] {
     const row = this.getRow(cell.rowIndex);
     const column = this.getColumn(cell.columnIndex);
     const box = this.getBoxFromRowColumnIndex(cell.rowIndex, cell.columnIndex);
@@ -305,9 +305,9 @@ export default class Sudoku {
     const columnDetail = allColumns.map((x) => this.checkVirtualLineDuplicate(x, type));
     const boxDetail = allBoxes.map((x) => this.checkVirtualLineDuplicate(x, type));
     const validateDetail = {
-      row: rowDetail,
-      column: columnDetail,
-      box: boxDetail,
+      [VirtualLineType.ROW]: rowDetail,
+      [VirtualLineType.COLUMN]: columnDetail,
+      [VirtualLineType.BOX]: boxDetail,
     };
     const isValid =
       !rowDetail.some((x) => x.haveDuplicate) &&

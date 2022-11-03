@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import SudokuBoard from "./components/SudokuBoard.vue";
+import SudokuPage from "./views/SudokuPage/SudokuPage.vue";
 </script>
 
 <template>
   <RouterView />
-  <SudokuBoard />
+  <SudokuPage />
 </template>
 
 <style scoped lang="scss"></style>
