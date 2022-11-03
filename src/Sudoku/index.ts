@@ -235,6 +235,23 @@ export default class Sudoku {
     this.updateElementMissing();
   }
 
+  removeInputValue({ rowIndex, columnIndex }: { rowIndex: number; columnIndex: number }, update: boolean) {
+    if (this.grid[rowIndex][columnIndex].clue) {
+      console.error("Cannot set input value to a cell with a clue");
+      return;
+    }
+
+    delete this.grid[rowIndex][columnIndex].inputValue;
+
+    if (update) {
+      const { isValid, validateDetail } = this.validatePuzzle("inputValue");
+      this.isValid = isValid;
+      this.validateDetail = validateDetail;
+
+      this.updateElementMissing();
+    }
+  }
+
   clearAllCandidates() {
     for (let i = 0; i < this.grid.length; i++) {
       for (let j = 0; j < this.grid[i].length; j++) {

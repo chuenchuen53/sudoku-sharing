@@ -58,10 +58,16 @@ export default class SudokuSolver extends Sudoku {
 
   getUniqueMissing(type: VirtualLineType): UniqueMissing[] {
     const allVirtualLines = this.getAllVirtualLines(type);
+    console.log(
+      "turbo ~ file: SudokuSolver.ts ~ line 61 ~ SudokuSolver ~ getUniqueMissing ~ allVirtualLines",
+      allVirtualLines
+    );
     const missingArr = this.elementMissing[type];
+    console.log("turbo ~ file: SudokuSolver.ts ~ line 63 ~ SudokuSolver ~ getUniqueMissing ~ missingArr", missingArr);
     const result: UniqueMissing[] = [];
     ArrayUtils.zip(allVirtualLines, missingArr).forEach(([virtualLine, missing]) => {
       const uniqueCandidate = SudokuSolver.getUniqueCandidate(missing);
+      console.log("turbo ~ file: SudokuSolver.ts ~ line 70 ~ SudokuSolver ~ ArrayUtils.zip ~ missing", missing);
       if (uniqueCandidate) result.push({ virtualLine, uniqueCandidate });
     });
     return result;
