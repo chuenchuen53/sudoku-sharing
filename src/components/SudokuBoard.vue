@@ -7,6 +7,7 @@
           :class="{
             highlight: highlight[rowIndex][colIndex],
             selected: selectedCell.row === rowIndex && selectedCell.col === colIndex,
+            tempHighlight: tempCellHighlight.some((x) => x.rowIndex === rowIndex && x.columnIndex === colIndex),
           }"
           v-for="(cell, colIndex) in row"
           :key="colIndex"
@@ -17,7 +18,6 @@
             class="clue"
             :class="{
               elementHighlight: elementHighlight === cell.clue,
-              tempHighlight: tempCellHighlight.some((x) => x.rowIndex === rowIndex && x.columnIndex === colIndex),
             }"
           >
             {{ cell.clue }}
@@ -27,7 +27,6 @@
             class="input-value"
             :class="{
               elementHighlight: elementHighlight === cell.inputValue,
-              tempCellHighlight: tempCellHighlight.some((x) => x.rowIndex === rowIndex && x.columnIndex === colIndex),
             }"
           >
             {{ cell.inputValue }}
@@ -64,11 +63,13 @@
     <section>numberOfClues: {{ s.numberOfClues }}</section>
     <section>is valid: {{ s.isValid }}</section>
     <section>
+      <el-button @click="removeHighlight">remove highlight</el-button>
       <el-button @click="clearAllCandidates">clear all candidates</el-button>
       <el-button @click="getBasicCandidates">get basic candidates</el-button>
       <el-button @click="getUniqueMissing">get Unique Missing Candidate</el-button>
+      <el-button @click="getNakedSingles">get naked singles</el-button>
+      <el-button @click="getHiddenSingles">get hidden singles</el-button>
       <!-- todo -->
-      <!-- <el-button @click="sudoku.setNakedSingles">set Unique Missing Candidate</el-button> -->
       <!-- <el-button @click="sudoku.trySolve">try solve</el-button> -->
     </section>
     <section><HighlightElementToggle :highlight="elementHighlight" :set-highlight="setElementHighlight" /></section>
@@ -109,8 +110,8 @@ const s = reactive(new SudokuSolver(tp.testingPuzzle0));
 const inputRef = ref<HTMLInputElement | null>(null);
 
 const elementHighlight = ref<SudokuElementWithZero>("0");
-const tempCellHighlight = reactive<CellWithIndex[]>([]);
-const tempCandidateHighlight = reactive<InputValueData[]>([]);
+const tempCellHighlight = ref<CellWithIndex[]>([]);
+const tempCandidateHighlight = ref<InputValueData[]>([]);
 
 const setElementHighlight = (value: SudokuElementWithZero) => {
   if (elementHighlight.value === value) {
@@ -128,6 +129,11 @@ const handleCellClick = (rowIndex: number, colIndex: number) => {
   }
 };
 
+const removeHighlight = () => {
+  tempCellHighlight.value = [];
+  tempCandidateHighlight.value = [];
+};
+
 const clearAllCandidates = () => {
   s.clearAllCandidates();
 };
@@ -137,9 +143,21 @@ const getBasicCandidates = () => {
 };
 
 const getUniqueMissing = () => {
-  console.log(s.getUniqueMissing(VirtualLineType.ROW));
-  console.log(s.getUniqueMissing(VirtualLineType.COLUMN));
-  console.log(s.getUniqueMissing(VirtualLineType.BOX));
+  const rowResult = s.getUniqueMissing(VirtualLineType.ROW);
+  const columnResult = s.getUniqueMissing(VirtualLineType.COLUMN);
+  const boxResult = s.getUniqueMissing(VirtualLineType.BOX);
+  const cells = [...rowResult, ...columnResult, ...boxResult].map((x) => x.cell);
+  tempCellHighlight.value = cells;
+};
+
+const getNakedSingles = () => {
+  const result = s.getNakedSingles();
+  tempCandidateHighlight.value = result;
+};
+
+const getHiddenSingles = () => {
+  const result = s.getHiddenSingles();
+  tempCandidateHighlight.value = result;
 };
 
 const highlight = computed(() => {
@@ -258,6 +276,10 @@ $temp-candidate-highlight-bgcolor: #ffd700;
         background-color: $related-highlight-bgcolor;
       }
 
+      &.tempHighlight {
+        background-color: $temp-cell-highlight-bgcolor;
+      }
+
       &.selected {
         background-color: $selected-bgcolor;
       }
@@ -277,10 +299,6 @@ $temp-candidate-highlight-bgcolor: #ffd700;
         &.elementHighlight {
           background-color: $element-highlight-bgcolor;
         }
-
-        &.tempHighlight {
-          background-color: $temp-cell-highlight-bgcolor;
-        }
       }
 
       .input-value {
@@ -288,10 +306,6 @@ $temp-candidate-highlight-bgcolor: #ffd700;
 
         &.elementHighlight {
           background-color: $element-highlight-bgcolor;
-        }
-
-        &.tempHighlight {
-          background-color: $temp-cell-highlight-bgcolor;
         }
       }
 

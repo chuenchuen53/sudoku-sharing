@@ -1,4 +1,5 @@
 import ArrayUtils from "@/utils/ArrayUtil";
+import { xor } from "lodash";
 import Sudoku from ".";
 import { candidatesFactory } from ".";
 import type {
@@ -11,6 +12,7 @@ import type {
   Grid,
   InputValueData,
   Cell,
+  CellWithIndex,
 } from "./type";
 
 // todo
@@ -45,6 +47,7 @@ const hiddenCandidatesCount = () => ({
 export interface UniqueMissing {
   virtualLine: VirtualLine;
   uniqueCandidate: SudokuElement;
+  cell: CellWithIndex;
 }
 
 export default class SudokuSolver extends Sudoku {
@@ -58,17 +61,12 @@ export default class SudokuSolver extends Sudoku {
 
   getUniqueMissing(type: VirtualLineType): UniqueMissing[] {
     const allVirtualLines = this.getAllVirtualLines(type);
-    console.log(
-      "turbo ~ file: SudokuSolver.ts ~ line 61 ~ SudokuSolver ~ getUniqueMissing ~ allVirtualLines",
-      allVirtualLines
-    );
     const missingArr = this.elementMissing[type];
-    console.log("turbo ~ file: SudokuSolver.ts ~ line 63 ~ SudokuSolver ~ getUniqueMissing ~ missingArr", missingArr);
     const result: UniqueMissing[] = [];
     ArrayUtils.zip(allVirtualLines, missingArr).forEach(([virtualLine, missing]) => {
       const uniqueCandidate = SudokuSolver.getUniqueCandidate(missing);
-      console.log("turbo ~ file: SudokuSolver.ts ~ line 70 ~ SudokuSolver ~ ArrayUtils.zip ~ missing", missing);
-      if (uniqueCandidate) result.push({ virtualLine, uniqueCandidate });
+      const cell = virtualLine.find((x) => !x.clue && !x.inputValue)!;
+      if (uniqueCandidate) result.push({ virtualLine, uniqueCandidate, cell });
     });
     return result;
   }
