@@ -1,56 +1,11 @@
-import { expect, describe, it, vitest, beforeAll } from "vitest";
-import ArrayUtils from "../src/utils/ArrayUtil";
-import Sudoku, { CheckVirtualLineDuplicateResult, candidatesFactory } from "../src/Sudoku";
+import { expect, describe, it } from "vitest";
+import { candidatesFactory } from "../src/Sudoku";
 import SudokuSolver, { UniqueMissing } from "../src/Sudoku/SudokuSolver";
-import {
-  Candidates,
-  CellWithIndex,
-  InputClues,
-  VirtualLineType,
-  SudokuElement,
-  InputValueData,
-  VirtualLine,
-  SudokuElementWithZero,
-} from "../src/Sudoku/type";
-import exp from "constants";
-
-const inputValueDataFactory = (r: number, c: number, v: SudokuElement): InputValueData => {
-  return {
-    rowIndex: r,
-    columnIndex: c,
-    value: v,
-  };
-};
-
-// const virtualLineFactory = (
-//   clue: SudokuElementWithZero[],
-//   inputValue: SudokuElementWithZero[],
-//   candidates: (Candidates | undefined)[]
-// ): VirtualLine => {
-//   return ArrayUtils.zip3(clue, inputValue, candidates).map((element, index) => {
-//     const [clue, inputValue, candidates] = element;
-//     return {
-//       clue: clue === "0" ? undefined : clue,
-//       inputValue: clue !== "0" || inputValue === "0" ? undefined : inputValue,
-//       candidates: clue !== "0" || inputValue !== "0" ? undefined : candidates,
-//       rowIndex: 0,
-//       columnIndex: index,
-//     };
-//   });
-// };
-
-const candidatesLineFactory = (candidates: (SudokuElement[] | undefined)[]): VirtualLine => {
-  return candidates.map((candidates, index) => {
-    return {
-      candidates: candidates ? candidatesFactory(true, candidates) : undefined,
-      rowIndex: 0,
-      columnIndex: index,
-    };
-  });
-};
+import { InputClues, VirtualLineType, SudokuElement, VirtualLine } from "../src/Sudoku/type";
+import TU from "./utils";
 
 // easy
-export const testingPuzzle0: InputClues = [
+export const testPuzzle0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
   ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
   ["0", "0", "8", "0", "0", "0", "4", "0", "9"],
@@ -60,18 +15,6 @@ export const testingPuzzle0: InputClues = [
   ["5", "8", "0", "7", "0", "4", "9", "1", "3"],
   ["1", "0", "0", "3", "0", "0", "0", "0", "0"],
   ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
-];
-
-const testPuzzle1: InputClues = [
-  ["2", "0", "0", "0", "0", "0", "8", "6", "0"],
-  ["0", "0", "0", "0", "4", "2", "0", "0", "0"],
-  ["0", "1", "0", "0", "6", "0", "0", "4", "7"],
-  ["3", "4", "5", "0", "2", "0", "0", "0", "1"],
-  ["7", "2", "0", "0", "0", "0", "4", "0", "9"],
-  ["8", "0", "0", "0", "0", "0", "5", "0", "6"],
-  ["0", "0", "2", "0", "3", "0", "0", "0", "0"],
-  ["0", "0", "0", "6", "8", "0", "0", "1", "2"],
-  ["5", "0", "8", "0", "0", "0", "0", "0", "4"],
 ];
 
 describe("sudoku solver", () => {
@@ -94,9 +37,11 @@ describe("sudoku solver", () => {
   });
 
   it("getUniqueMissing", () => {
-    const fn: (vl: VirtualLine, e: SudokuElement) => UniqueMissing = (vl, e) => ({
+    const cf = (r: number, c: number) => ({ rowIndex: r, columnIndex: c });
+    const fn: (vl: VirtualLine, e: SudokuElement, r: number, c: number) => UniqueMissing = (vl, e, r, c) => ({
       virtualLine: vl,
       uniqueCandidate: e,
+      cell: cf(r, c),
     });
 
     const clue: InputClues = [
@@ -111,34 +56,34 @@ describe("sudoku solver", () => {
       ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
     ];
     const s = new SudokuSolver(clue);
-    expect(s.getUniqueMissing(VirtualLineType.ROW)).toStrictEqual([fn(s.getRow(0), "1")]);
-    expect(s.getUniqueMissing(VirtualLineType.COLUMN)).toStrictEqual([fn(s.getColumn(0), "3")]);
-    expect(s.getUniqueMissing(VirtualLineType.BOX)).toStrictEqual([fn(s.getBoxFromBoxIndex(3), "5")]);
+    expect(s.getUniqueMissing(VirtualLineType.ROW)).toStrictEqual([fn(s.getRow(0), "1", 0, 2)]);
+    expect(s.getUniqueMissing(VirtualLineType.COLUMN)).toStrictEqual([fn(s.getColumn(0), "3", 8, 0)]);
+    expect(s.getUniqueMissing(VirtualLineType.BOX)).toStrictEqual([fn(s.getBoxFromBoxIndex(3), "5", 4, 2)]);
   });
 
   it("getNakedSingles", () => {
-    const s = new SudokuSolver(testingPuzzle0);
+    const s = new SudokuSolver(testPuzzle0);
     s.getBasicCandidates();
     const nakedSingles = s.getNakedSingles();
     expect(nakedSingles).toStrictEqual([
-      inputValueDataFactory(0, 7, "3"),
-      inputValueDataFactory(2, 1, "5"),
-      inputValueDataFactory(3, 5, "8"),
-      inputValueDataFactory(4, 2, "5"),
-      inputValueDataFactory(4, 3, "9"),
-      inputValueDataFactory(4, 6, "7"),
-      inputValueDataFactory(5, 0, "4"),
-      inputValueDataFactory(5, 5, "2"),
-      inputValueDataFactory(5, 7, "9"),
-      inputValueDataFactory(6, 2, "6"),
-      inputValueDataFactory(6, 4, "2"),
-      inputValueDataFactory(7, 1, "7"),
-      inputValueDataFactory(8, 0, "3"),
+      TU.inputValueDataFactory(0, 7, "3"),
+      TU.inputValueDataFactory(2, 1, "5"),
+      TU.inputValueDataFactory(3, 5, "8"),
+      TU.inputValueDataFactory(4, 2, "5"),
+      TU.inputValueDataFactory(4, 3, "9"),
+      TU.inputValueDataFactory(4, 6, "7"),
+      TU.inputValueDataFactory(5, 0, "4"),
+      TU.inputValueDataFactory(5, 5, "2"),
+      TU.inputValueDataFactory(5, 7, "9"),
+      TU.inputValueDataFactory(6, 2, "6"),
+      TU.inputValueDataFactory(6, 4, "2"),
+      TU.inputValueDataFactory(7, 1, "7"),
+      TU.inputValueDataFactory(8, 0, "3"),
     ]);
   });
 
   it("getHiddenSingleFromVirtualLine", () => {
-    const line = candidatesLineFactory([
+    const line = TU.candidatesLineFactory([
       undefined,
       undefined,
       ["5"],
@@ -150,13 +95,13 @@ describe("sudoku solver", () => {
       ["5", "6", "7"],
     ]);
     expect(SudokuSolver.getHiddenSingleFromVirtualLine(line)).toStrictEqual([
-      inputValueDataFactory(0, 4, "4"),
-      inputValueDataFactory(0, 8, "6"),
+      TU.inputValueDataFactory(0, 4, "4"),
+      TU.inputValueDataFactory(0, 8, "6"),
     ]);
   });
 
   it("getHiddenSingleFromVirtualLine", () => {
-    const line = candidatesLineFactory([
+    const line = TU.candidatesLineFactory([
       ["2", "3"],
       undefined,
       ["2", "3", "6"],
@@ -167,68 +112,68 @@ describe("sudoku solver", () => {
       undefined,
       ["3"],
     ]);
-    expect(SudokuSolver.getHiddenSingleFromVirtualLine(line)).toStrictEqual([inputValueDataFactory(0, 2, "6")]);
+    expect(SudokuSolver.getHiddenSingleFromVirtualLine(line)).toStrictEqual([TU.inputValueDataFactory(0, 2, "6")]);
   });
 
   it("getHiddenSingleFromVirtualLines", () => {
-    const s = new SudokuSolver(testingPuzzle0);
+    const s = new SudokuSolver(testPuzzle0);
     s.getBasicCandidates();
     const lines = s.getAllRows();
     const result = SudokuSolver.getHiddenSingleFromVirtualLines(lines);
     console.log("file: solver.test.ts ~ line 178 ~ it ~ result", result);
     const expectedResult = [
-      inputValueDataFactory(0, 2, "1"),
-      inputValueDataFactory(0, 0, "2"),
-      inputValueDataFactory(1, 1, "4"),
-      inputValueDataFactory(2, 7, "7"),
-      inputValueDataFactory(3, 6, "3"),
-      inputValueDataFactory(3, 8, "5"),
-      inputValueDataFactory(4, 4, "4"),
-      inputValueDataFactory(4, 8, "6"),
-      inputValueDataFactory(7, 8, "4"),
-      inputValueDataFactory(7, 2, "9"),
-      inputValueDataFactory(8, 4, "1"),
+      TU.inputValueDataFactory(0, 2, "1"),
+      TU.inputValueDataFactory(0, 0, "2"),
+      TU.inputValueDataFactory(1, 1, "4"),
+      TU.inputValueDataFactory(2, 7, "7"),
+      TU.inputValueDataFactory(3, 6, "3"),
+      TU.inputValueDataFactory(3, 8, "5"),
+      TU.inputValueDataFactory(4, 4, "4"),
+      TU.inputValueDataFactory(4, 8, "6"),
+      TU.inputValueDataFactory(7, 8, "4"),
+      TU.inputValueDataFactory(7, 2, "9"),
+      TU.inputValueDataFactory(8, 4, "1"),
     ];
     expectedResult.forEach((e) => expect(result).toContainEqual(e));
     expect(result).toStrictEqual(expectedResult);
   });
 
   it("getHiddenSingles", () => {
-    const s = new SudokuSolver(testingPuzzle0);
+    const s = new SudokuSolver(testPuzzle0);
     s.getBasicCandidates();
     const result = s.getHiddenSingles();
     const expectedResult = [
       // row
-      inputValueDataFactory(0, 2, "1"),
-      inputValueDataFactory(0, 0, "2"),
-      inputValueDataFactory(1, 1, "4"),
-      inputValueDataFactory(2, 7, "7"),
-      inputValueDataFactory(3, 6, "3"),
-      inputValueDataFactory(3, 8, "5"),
-      inputValueDataFactory(4, 4, "4"),
-      inputValueDataFactory(4, 8, "6"),
-      inputValueDataFactory(7, 8, "4"),
-      inputValueDataFactory(7, 2, "9"),
-      inputValueDataFactory(8, 4, "1"),
+      TU.inputValueDataFactory(0, 2, "1"),
+      TU.inputValueDataFactory(0, 0, "2"),
+      TU.inputValueDataFactory(1, 1, "4"),
+      TU.inputValueDataFactory(2, 7, "7"),
+      TU.inputValueDataFactory(3, 6, "3"),
+      TU.inputValueDataFactory(3, 8, "5"),
+      TU.inputValueDataFactory(4, 4, "4"),
+      TU.inputValueDataFactory(4, 8, "6"),
+      TU.inputValueDataFactory(7, 8, "4"),
+      TU.inputValueDataFactory(7, 2, "9"),
+      TU.inputValueDataFactory(8, 4, "1"),
       // column
-      inputValueDataFactory(2, 0, "6"),
-      // inputValueDataFactory(1, 1, "4"), // repeated in row
-      // inputValueDataFactory(7, 2, "9"), // repeated in row
-      // inputValueDataFactory(4, 4, "4"), // repeated in row
-      inputValueDataFactory(7, 5, "6"),
-      inputValueDataFactory(1, 6, "1"),
-      // inputValueDataFactory(7, 8, "4"), // repeated in row
-      // inputValueDataFactory(4, 8, "6"), // repeated in row
+      TU.inputValueDataFactory(2, 0, "6"),
+      // TU.inputValueDataFactory(1, 1, "4"), // repeated in row
+      // TU.inputValueDataFactory(7, 2, "9"), // repeated in row
+      // TU.inputValueDataFactory(4, 4, "4"), // repeated in row
+      TU.inputValueDataFactory(7, 5, "6"),
+      TU.inputValueDataFactory(1, 6, "1"),
+      // TU.inputValueDataFactory(7, 8, "4"), // repeated in row
+      // TU.inputValueDataFactory(4, 8, "6"), // repeated in row
       // box
-      // inputValueDataFactory(1, 1, "4"), // repeated in row
-      // inputValueDataFactory(1, 6, "1"), // repeated in column
-      // inputValueDataFactory(2, 7, "7"), // repeated in row
-      // inputValueDataFactory(4, 4, "4"), // repeated in column
-      // inputValueDataFactory(4, 8, "6"), // repeated in column
-      // inputValueDataFactory(7, 2, "9"), // repeated in row
-      // inputValueDataFactory(8, 4, "1"), // repeated in row
-      // inputValueDataFactory(7, 5, "6"), // repeated in column
-      // inputValueDataFactory(7, 8, "4"), // repeated in row
+      // TU.inputValueDataFactory(1, 1, "4"), // repeated in row
+      // TU.inputValueDataFactory(1, 6, "1"), // repeated in column
+      // TU.inputValueDataFactory(2, 7, "7"), // repeated in row
+      // TU.inputValueDataFactory(4, 4, "4"), // repeated in column
+      // TU.inputValueDataFactory(4, 8, "6"), // repeated in column
+      // TU.inputValueDataFactory(7, 2, "9"), // repeated in row
+      // TU.inputValueDataFactory(8, 4, "1"), // repeated in row
+      // TU.inputValueDataFactory(7, 5, "6"), // repeated in column
+      // TU.inputValueDataFactory(7, 8, "4"), // repeated in row
     ];
     expectedResult.forEach((e) => expect(result).toContainEqual(e));
     expect(result).toStrictEqual(expectedResult);

@@ -9,9 +9,7 @@ import {
   SudokuElement,
   InputValueData,
 } from "../src/sudoku/type";
-import exp from "constants";
-
-const emptyPuzzle: InputClues = ArrayUtils.create2DArray(9, 9, "0");
+import TU from "./utils";
 
 export const testPuzzle0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -49,23 +47,15 @@ const testPuzzle2: InputClues = [
   ["0", "0", "4", "0", "6", "0", "9", "0", "8"],
 ];
 
-const validateDetailTemplate: () => Record<"row" | "column" | "box", CheckVirtualLineDuplicateResult[]> = () => {
+const validateDetailTemplate: () => Record<VirtualLineType, CheckVirtualLineDuplicateResult[]> = () => {
   const t = () =>
     Array(9)
       .fill(null)
       .map((_) => ({ haveDuplicate: false, duplicatedCells: [] as CellWithIndex[] }));
   return {
-    row: t(),
-    column: t(),
-    box: t(),
-  };
-};
-
-const inputValueDataFactory = (r: number, c: number, v: SudokuElement): InputValueData => {
-  return {
-    rowIndex: r,
-    columnIndex: c,
-    value: v,
+    [VirtualLineType.ROW]: t(),
+    [VirtualLineType.COLUMN]: t(),
+    [VirtualLineType.BOX]: t(),
   };
 };
 
@@ -80,7 +70,7 @@ describe("sudoku basic", () => {
   });
 
   it("createPuzzle", () => {
-    const sudoku = new Sudoku(emptyPuzzle);
+    const sudoku = new Sudoku(TU.emptyPuzzle());
     const grid1 = sudoku.createPuzzle(testPuzzle1);
     const grid1Expected = [
       [{ clue: "2" }, {}, {}, {}, {}, {}, { clue: "8" }, { clue: "6" }, {}],
@@ -116,18 +106,18 @@ describe("sudoku basic", () => {
     invalidClues1[0][1] = "2";
     const s1 = new Sudoku(invalidClues1);
     const s1DetailExpected = validateDetailTemplate();
-    s1DetailExpected.row[0].haveDuplicate = true;
-    s1DetailExpected.row[0].duplicatedCells.push(
+    s1DetailExpected[VirtualLineType.ROW][0].haveDuplicate = true;
+    s1DetailExpected[VirtualLineType.ROW][0].duplicatedCells.push(
       { clue: "2", rowIndex: 0, columnIndex: 0 },
       { clue: "2", rowIndex: 0, columnIndex: 1 }
     );
-    s1DetailExpected.column[1].haveDuplicate = true;
-    s1DetailExpected.column[1].duplicatedCells.push(
+    s1DetailExpected[VirtualLineType.COLUMN][1].haveDuplicate = true;
+    s1DetailExpected[VirtualLineType.COLUMN][1].duplicatedCells.push(
       { clue: "2", rowIndex: 0, columnIndex: 1 },
       { clue: "2", rowIndex: 4, columnIndex: 1 }
     );
-    s1DetailExpected.box[0].haveDuplicate = true;
-    s1DetailExpected.box[0].duplicatedCells.push(
+    s1DetailExpected[VirtualLineType.BOX][0].haveDuplicate = true;
+    s1DetailExpected[VirtualLineType.BOX][0].duplicatedCells.push(
       { clue: "2", rowIndex: 0, columnIndex: 0 },
       { clue: "2", rowIndex: 0, columnIndex: 1 }
     );
@@ -143,18 +133,18 @@ describe("sudoku basic", () => {
     const s1 = new Sudoku(testPuzzle1);
     s1.setInputValue({ rowIndex: 0, columnIndex: 1, value: "2" }, true);
     const s1DetailExpected = validateDetailTemplate();
-    s1DetailExpected.row[0].haveDuplicate = true;
-    s1DetailExpected.row[0].duplicatedCells.push(
+    s1DetailExpected[VirtualLineType.ROW][0].haveDuplicate = true;
+    s1DetailExpected[VirtualLineType.ROW][0].duplicatedCells.push(
       { clue: "2", rowIndex: 0, columnIndex: 0 },
       { inputValue: "2", rowIndex: 0, columnIndex: 1 }
     );
-    s1DetailExpected.column[1].haveDuplicate = true;
-    s1DetailExpected.column[1].duplicatedCells.push(
+    s1DetailExpected[VirtualLineType.COLUMN][1].haveDuplicate = true;
+    s1DetailExpected[VirtualLineType.COLUMN][1].duplicatedCells.push(
       { inputValue: "2", rowIndex: 0, columnIndex: 1 },
       { clue: "2", rowIndex: 4, columnIndex: 1 }
     );
-    s1DetailExpected.box[0].haveDuplicate = true;
-    s1DetailExpected.box[0].duplicatedCells.push(
+    s1DetailExpected[VirtualLineType.BOX][0].haveDuplicate = true;
+    s1DetailExpected[VirtualLineType.BOX][0].duplicatedCells.push(
       { clue: "2", rowIndex: 0, columnIndex: 0 },
       { inputValue: "2", rowIndex: 0, columnIndex: 1 }
     );
@@ -174,8 +164,8 @@ describe("sudoku basic", () => {
     invalidClues1[2][6] = "1";
     const s1 = new Sudoku(invalidClues1);
     const s1DetailExpected = validateDetailTemplate();
-    s1DetailExpected.row[2].haveDuplicate = true;
-    s1DetailExpected.row[2].duplicatedCells.push(
+    s1DetailExpected[VirtualLineType.ROW][2].haveDuplicate = true;
+    s1DetailExpected[VirtualLineType.ROW][2].duplicatedCells.push(
       { clue: "6", rowIndex: 2, columnIndex: 0 },
       { clue: "1", rowIndex: 2, columnIndex: 1 },
       { clue: "1", rowIndex: 2, columnIndex: 3 },
@@ -198,28 +188,28 @@ describe("sudoku basic", () => {
 
   it("setInputValue", () => {
     const s1 = new Sudoku(testPuzzle1);
-    s1.setInputValue(inputValueDataFactory(2, 0, "9"), false);
+    s1.setInputValue(TU.inputValueDataFactory(2, 0, "9"), false);
     expect(s1.grid[2][0].inputValue).toBe("9");
     expect(s1.elementMissing.ROW[2]["9"]).toBe(true);
   });
 
   it("setInputValue", () => {
     const s1 = new Sudoku(testPuzzle1);
-    s1.setInputValue(inputValueDataFactory(2, 0, "9"), true);
+    s1.setInputValue(TU.inputValueDataFactory(2, 0, "9"), true);
     expect(s1.grid[2][0].inputValue).toBe("9");
     expect(s1.elementMissing.ROW[2]["9"]).toBe(false);
   });
 
   it("setInputValue", () => {
     const s1 = new Sudoku(testPuzzle1);
-    s1.setInputValue(inputValueDataFactory(2, 0, "1"), false);
+    s1.setInputValue(TU.inputValueDataFactory(2, 0, "1"), false);
     expect(s1.grid[2][0].inputValue).toBe("1");
     expect(s1.isValid).toBe(true);
   });
 
   it("setInputValue", () => {
     const s1 = new Sudoku(testPuzzle1);
-    s1.setInputValue(inputValueDataFactory(2, 0, "1"), true);
+    s1.setInputValue(TU.inputValueDataFactory(2, 0, "1"), true);
 
     const expectedDetail = [
       {
@@ -236,15 +226,15 @@ describe("sudoku basic", () => {
 
     expect(s1.grid[2][0].inputValue).toBe("1");
     expect(s1.isValid).toBe(false);
-    expect(s1.validateDetail.row[2].haveDuplicate).toBe(true);
-    expect(s1.validateDetail.row[2].duplicatedCells).toStrictEqual(expectedDetail);
-    expect(s1.validateDetail.box[0].haveDuplicate).toBe(true);
-    expect(s1.validateDetail.box[0].duplicatedCells).toStrictEqual(expectedDetail);
+    expect(s1.validateDetail[VirtualLineType.ROW][2].haveDuplicate).toBe(true);
+    expect(s1.validateDetail[VirtualLineType.ROW][2].duplicatedCells).toStrictEqual(expectedDetail);
+    expect(s1.validateDetail[VirtualLineType.BOX][0].haveDuplicate).toBe(true);
+    expect(s1.validateDetail[VirtualLineType.BOX][0].duplicatedCells).toStrictEqual(expectedDetail);
   });
 
   it("setInputValues", () => {
     const s = new Sudoku(testPuzzle1);
-    s.setInputValues([inputValueDataFactory(2, 0, "9"), inputValueDataFactory(2, 2, "3")]);
+    s.setInputValues([TU.inputValueDataFactory(2, 0, "9"), TU.inputValueDataFactory(2, 2, "3")]);
     expect(s.grid[2][0].inputValue).toBe("9");
     expect(s.grid[2][2].inputValue).toBe("3");
     expect(s.isValid).toBe(true);
@@ -266,14 +256,14 @@ describe("sudoku basic", () => {
       },
     ];
 
-    s.setInputValues([inputValueDataFactory(2, 0, "1"), inputValueDataFactory(2, 2, "3")]);
+    s.setInputValues([TU.inputValueDataFactory(2, 0, "1"), TU.inputValueDataFactory(2, 2, "3")]);
     expect(s.grid[2][0].inputValue).toBe("1");
     expect(s.grid[2][2].inputValue).toBe("3");
     expect(s.isValid).toBe(false);
-    expect(s.validateDetail.row[2].haveDuplicate).toBe(true);
-    expect(s.validateDetail.row[2].duplicatedCells).toStrictEqual(expectedDetail);
-    expect(s.validateDetail.box[0].haveDuplicate).toBe(true);
-    expect(s.validateDetail.box[0].duplicatedCells).toStrictEqual(expectedDetail);
+    expect(s.validateDetail[VirtualLineType.ROW][2].haveDuplicate).toBe(true);
+    expect(s.validateDetail[VirtualLineType.ROW][2].duplicatedCells).toStrictEqual(expectedDetail);
+    expect(s.validateDetail[VirtualLineType.BOX][0].haveDuplicate).toBe(true);
+    expect(s.validateDetail[VirtualLineType.BOX][0].duplicatedCells).toStrictEqual(expectedDetail);
   });
 
   it("numberOfClues", () => {
