@@ -1,14 +1,7 @@
 import { expect, describe, it, vitest, beforeAll } from "vitest";
 import ArrayUtils from "../src/utils/ArrayUtil";
-import Sudoku, { CheckVirtualLineDuplicateResult, candidatesFactory } from "../src/Sudoku";
-import {
-  Candidates,
-  CellWithIndex,
-  InputClues,
-  VirtualLineType,
-  SudokuElement,
-  InputValueData,
-} from "../src/sudoku/type";
+import Sudoku, { candidatesFactory } from "../src/Sudoku/Sudoku";
+import { CellWithIndex, InputClues, VirtualLineType, CheckVirtualLineDuplicateResult } from "../src/Sudoku/type";
 import TU from "./utils";
 
 export const testPuzzle0: InputClues = [
@@ -23,6 +16,7 @@ export const testPuzzle0: InputClues = [
   ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
 ];
 
+// medium
 const testPuzzle1: InputClues = [
   ["2", "0", "0", "0", "0", "0", "8", "6", "0"],
   ["0", "0", "0", "0", "4", "2", "0", "0", "0"],
@@ -190,14 +184,12 @@ describe("sudoku basic", () => {
     const s1 = new Sudoku(testPuzzle1);
     s1.setInputValue(TU.inputValueDataFactory(2, 0, "9"), false);
     expect(s1.grid[2][0].inputValue).toBe("9");
-    expect(s1.elementMissing.ROW[2]["9"]).toBe(true);
   });
 
   it("setInputValue", () => {
     const s1 = new Sudoku(testPuzzle1);
     s1.setInputValue(TU.inputValueDataFactory(2, 0, "9"), true);
     expect(s1.grid[2][0].inputValue).toBe("9");
-    expect(s1.elementMissing.ROW[2]["9"]).toBe(false);
   });
 
   it("setInputValue", () => {
@@ -841,131 +833,9 @@ describe("sudoku basic", () => {
     expect(s.missingInVirtualLine(s.getBoxFromBoxIndex(2))).toStrictEqual(b2a);
   });
 
-  it("getCombinedMissing", () => {
-    const s = new Sudoku(testPuzzle0);
-    s.getCombinedMissing();
-
-    const arr: [number, number, Candidates][] = [
-      [0, 0, candidatesFactory(true, ["2", "3"])],
-      [0, 2, candidatesFactory(true, ["1", "3"])],
-      [0, 7, candidatesFactory(true, ["3"])],
-      [1, 1, candidatesFactory(true, ["4", "5"])],
-      [1, 2, candidatesFactory(true, ["1", "3", "5", "6"])],
-      [1, 3, candidatesFactory(true, ["2", "5", "8", "9"])],
-      [1, 4, candidatesFactory(true, ["1", "2", "3", "8", "9"])],
-      [1, 5, candidatesFactory(true, ["1", "2", "5", "8"])],
-      [1, 6, candidatesFactory(true, ["1", "2", "3"])],
-      [1, 7, candidatesFactory(true, ["3", "6"])],
-      [1, 8, candidatesFactory(true, ["2", "6"])],
-      [2, 0, candidatesFactory(true, ["2", "3", "6"])],
-      [2, 1, candidatesFactory(true, ["5"])],
-      [2, 3, candidatesFactory(true, ["2", "5"])],
-      [2, 4, candidatesFactory(true, ["1", "2", "3"])],
-      [2, 5, candidatesFactory(true, ["1", "2", "5"])],
-      [2, 7, candidatesFactory(true, ["3", "6", "7"])],
-      [3, 4, candidatesFactory(true, ["7", "8"])],
-      [3, 5, candidatesFactory(true, ["8"])],
-      [3, 6, candidatesFactory(true, ["3", "7"])],
-      [3, 8, candidatesFactory(true, ["5", "7"])],
-      [4, 2, candidatesFactory(true, ["5"])],
-      [4, 3, candidatesFactory(true, ["9"])],
-      [4, 4, candidatesFactory(true, ["4", "7", "9"])],
-      [4, 6, candidatesFactory(true, ["7"])],
-      [4, 8, candidatesFactory(true, ["5", "6", "7"])],
-      [5, 0, candidatesFactory(true, ["4"])],
-      [5, 5, candidatesFactory(true, ["2"])],
-      [5, 7, candidatesFactory(true, ["9"])],
-      [6, 2, candidatesFactory(true, ["6"])],
-      [6, 4, candidatesFactory(true, ["2"])],
-      [7, 1, candidatesFactory(true, ["7"])],
-      [7, 2, candidatesFactory(true, ["6", "9"])],
-      [7, 4, candidatesFactory(true, ["2", "8"])],
-      [7, 5, candidatesFactory(true, ["2", "5", "6", "8"])],
-      [7, 6, candidatesFactory(true, ["2", "7"])],
-      [7, 7, candidatesFactory(true, ["5", "7", "8"])],
-      [7, 8, candidatesFactory(true, ["2", "4", "5", "7"])],
-      [8, 0, candidatesFactory(true, ["3"])],
-      [8, 3, candidatesFactory(true, ["5", "8"])],
-      [8, 4, candidatesFactory(true, ["1", "8"])],
-      [8, 7, candidatesFactory(true, ["5", "7", "8"])],
-      [8, 8, candidatesFactory(true, ["5", "7"])],
-    ];
-
-    arr.forEach(([r, c, candidates]) => expect(s.grid[r][c].candidates).toStrictEqual(candidates));
-
-    const ns = new Sudoku(testPuzzle0);
-    arr.forEach(([r, c, candidates]) => ns.setCandidates(r, c, candidates));
-    expect(ns.grid).toStrictEqual(s.grid);
-  });
-
-  it("getCombinedMissing", () => {
-    const s = new Sudoku(testPuzzle1);
-    s.getCombinedMissing();
-
-    const arr: [number, number, Candidates][] = [
-      [0, 1, candidatesFactory(true, ["3", "5", "7", "9"])],
-      [0, 2, candidatesFactory(true, ["3", "4", "7", "9"])],
-      [0, 3, candidatesFactory(true, ["1", "3", "5", "7", "9"])],
-      [0, 4, candidatesFactory(true, ["1", "5", "7", "9"])],
-      [0, 5, candidatesFactory(true, ["1", "3", "5", "7", "9"])],
-      [0, 8, candidatesFactory(true, ["3", "5"])],
-      [1, 0, candidatesFactory(true, ["6", "9"])],
-      [1, 1, candidatesFactory(true, ["3", "5", "6", "7", "8", "9"])],
-      [1, 2, candidatesFactory(true, ["3", "6", "7", "9"])],
-      [1, 3, candidatesFactory(true, ["1", "3", "5", "7", "8", "9"])],
-      [1, 6, candidatesFactory(true, ["1", "3", "9"])],
-      [1, 7, candidatesFactory(true, ["3", "5", "9"])],
-      [1, 8, candidatesFactory(true, ["3", "5"])],
-      [2, 0, candidatesFactory(true, ["9"])],
-      [2, 2, candidatesFactory(true, ["3", "9"])],
-      [2, 3, candidatesFactory(true, ["3", "5", "8", "9"])],
-      [2, 5, candidatesFactory(true, ["3", "5", "8", "9"])],
-      [2, 6, candidatesFactory(true, ["2", "3", "9"])],
-      [3, 3, candidatesFactory(true, ["7", "8", "9"])],
-      [3, 5, candidatesFactory(true, ["6", "7", "8", "9"])],
-      [3, 6, candidatesFactory(true, ["7"])],
-      [3, 7, candidatesFactory(true, ["7", "8"])],
-      [4, 2, candidatesFactory(true, ["1", "6"])],
-      [4, 3, candidatesFactory(true, ["1", "3", "5", "8"])],
-      [4, 4, candidatesFactory(true, ["1", "5"])],
-      [4, 5, candidatesFactory(true, ["1", "3", "5", "6", "8"])],
-      [4, 7, candidatesFactory(true, ["3", "8"])],
-      [5, 1, candidatesFactory(true, ["9"])],
-      [5, 2, candidatesFactory(true, ["1", "9"])],
-      [5, 3, candidatesFactory(true, ["1", "3", "4", "7", "9"])],
-      [5, 4, candidatesFactory(true, ["1", "7", "9"])],
-      [5, 5, candidatesFactory(true, ["1", "3", "4", "7", "9"])],
-      [5, 7, candidatesFactory(true, ["2", "3", "7"])],
-      [6, 0, candidatesFactory(true, ["1", "4", "6", "9"])],
-      [6, 1, candidatesFactory(true, ["6", "7", "9"])],
-      [6, 3, candidatesFactory(true, ["1", "4", "5", "7", "9"])],
-      [6, 5, candidatesFactory(true, ["1", "4", "5", "7", "9"])],
-      [6, 6, candidatesFactory(true, ["6", "7", "9"])],
-      [6, 7, candidatesFactory(true, ["5", "7", "8", "9"])],
-      [6, 8, candidatesFactory(true, ["5", "8"])],
-      [7, 0, candidatesFactory(true, ["4", "9"])],
-      [7, 1, candidatesFactory(true, ["3", "7", "9"])],
-      [7, 2, candidatesFactory(true, ["3", "4", "7", "9"])],
-      [7, 5, candidatesFactory(true, ["4", "5", "7", "9"])],
-      [7, 6, candidatesFactory(true, ["3", "7", "9"])],
-      [8, 1, candidatesFactory(true, ["3", "6", "7", "9"])],
-      [8, 3, candidatesFactory(true, ["1", "2", "7", "9"])],
-      [8, 4, candidatesFactory(true, ["1", "7", "9"])],
-      [8, 5, candidatesFactory(true, ["1", "7", "9"])],
-      [8, 6, candidatesFactory(true, ["3", "6", "7", "9"])],
-      [8, 7, candidatesFactory(true, ["3", "7", "9"])],
-    ];
-
-    arr.forEach(([r, c, candidates]) => expect(s.grid[r][c].candidates).toStrictEqual(candidates));
-
-    const ns = new Sudoku(testPuzzle1);
-    arr.forEach(([r, c, candidates]) => ns.setCandidates(r, c, candidates));
-    expect(ns.grid).toStrictEqual(s.grid);
-  });
-
   it("clearAllCandidates", () => {
     const s = new Sudoku(testPuzzle0);
-    s.getCombinedMissing();
+    s.setCandidates(0, 0, candidatesFactory(true, ["2", "3"]));
     expect(s.grid.some((x) => x.some((y) => y.candidates))).toBe(true);
     s.clearAllCandidates();
     expect(s.grid.some((x) => x.some((y) => y.candidates))).toBe(false);

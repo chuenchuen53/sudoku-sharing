@@ -60,6 +60,7 @@ export default class SudokuSolver extends Sudoku {
   }
 
   getUniqueMissing(type: VirtualLineType): UniqueMissing[] {
+    this.updateElementMissing();
     const allVirtualLines = this.getAllVirtualLines(type);
     const missingArr = this.elementMissing[type];
     const result: UniqueMissing[] = [];

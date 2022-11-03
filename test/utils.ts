@@ -1,4 +1,4 @@
-import { candidatesFactory } from "../src/Sudoku";
+import { candidatesFactory } from "../src/Sudoku/Sudoku";
 import { InputClues, InputValueData, SudokuElement, VirtualLine } from "../src/Sudoku/type";
 import ArrayUtils from "../src/utils/ArrayUtil";
 
