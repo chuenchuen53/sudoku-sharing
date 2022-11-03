@@ -1,18 +1,19 @@
 import ArrayUtils from "@/utils/ArrayUtil";
 import { xor } from "lodash";
-import Sudoku from ".";
-import { candidatesFactory } from ".";
+import Sudoku from "./Sudoku";
+import { candidatesFactory } from "./Sudoku";
+import { VirtualLineType } from "./type";
 import type {
   Stats,
   Candidates,
   InputClues,
-  VirtualLineType,
   SudokuElement,
   VirtualLine,
   Grid,
   InputValueData,
   Cell,
   CellWithIndex,
+  ElementMissing,
 } from "./type";
 
 // todo
@@ -51,12 +52,11 @@ export interface UniqueMissing {
 }
 
 export default class SudokuSolver extends Sudoku {
+  public elementMissing: ElementMissing;
+
   constructor(clues: InputClues) {
     super(clues);
-  }
-
-  getBasicCandidates(): Grid {
-    return this.getCombinedMissing();
+    this.elementMissing = this.updateElementMissing();
   }
 
   getUniqueMissing(type: VirtualLineType): UniqueMissing[] {
@@ -69,6 +69,36 @@ export default class SudokuSolver extends Sudoku {
       if (uniqueCandidate) result.push({ virtualLine, uniqueCandidate, cell });
     });
     return result;
+  }
+
+  getBasicCandidates(): Grid {
+    this.updateElementMissing();
+    const missingInRows = this.elementMissing[VirtualLineType.ROW];
+    const missingInColumns = this.elementMissing[VirtualLineType.COLUMN];
+    const missingInBoxes = this.elementMissing[VirtualLineType.BOX];
+
+    for (let i = 0; i < this.grid.length; i++) {
+      for (let j = 0; j < this.grid[i].length; j++) {
+        if (this.grid[i][j].clue || this.grid[i][j].inputValue) continue;
+
+        const boxIndex = this.getBoxIndex(i, j);
+        const missingRow = missingInRows[i];
+        const missingColumn = missingInColumns[j];
+        const missingBox = missingInBoxes[boxIndex];
+        const candidates = candidatesFactory(false);
+
+        for (const key in candidates) {
+          const typedKey = key as SudokuElement;
+          if (missingRow[typedKey] && missingColumn[typedKey] && missingBox[typedKey]) {
+            candidates[typedKey] = true;
+          }
+        }
+
+        this.setCandidates(i, j, candidates);
+      }
+    }
+
+    return this.grid;
   }
 
   getNakedSingles(): InputValueData[] {
@@ -92,14 +122,6 @@ export default class SudokuSolver extends Sudoku {
   static numberOfCandidates(candidates: Candidates): number {
     const entries = Object.entries(candidates);
     return entries.reduce((acc, [_, value]) => (value ? acc + 1 : acc), 0);
-  }
-
-  private loopGrid(callback: (rowIndex: number, columnIndex: number, cell: Cell, row?: Cell[]) => void): void {
-    this.grid.forEach((row, rowIndex) =>
-      row.forEach((cell, columnIndex) => {
-        callback(rowIndex, columnIndex, cell, row);
-      })
-    );
   }
 
   static getUniqueCandidate(candidates: Candidates): SudokuElement | null {
@@ -132,6 +154,25 @@ export default class SudokuSolver extends Sudoku {
       result.push(...lineResult);
     });
     return result;
+  }
+
+  private updateElementMissing() {
+    const fn = (line: VirtualLine[]) => line.map((x) => this.missingInVirtualLine(x));
+    this.elementMissing = {
+      [VirtualLineType.ROW]: fn(this.getAllRows()),
+      [VirtualLineType.COLUMN]: fn(this.getAllColumns()),
+      [VirtualLineType.BOX]: fn(this.getAllBoxes()),
+    };
+
+    return this.elementMissing;
+  }
+
+  private loopGrid(callback: (rowIndex: number, columnIndex: number, cell: Cell, row?: Cell[]) => void): void {
+    this.grid.forEach((row, rowIndex) =>
+      row.forEach((cell, columnIndex) => {
+        callback(rowIndex, columnIndex, cell, row);
+      })
+    );
   }
 
   // rowColumnLockInBox(type: "row" | "column", index: number): InputValueData[] {

@@ -49,3 +49,10 @@ export interface Stats {
 
 export type SudokuElementWithZero = SudokuElement | "0";
 export type InputClues = SudokuElementWithZero[][];
+
+export interface CheckVirtualLineDuplicateResult {
+  haveDuplicate: boolean;
+  duplicatedCells: CellWithIndex[];
+}
+
+export type ValidateDetail = Record<VirtualLineType, CheckVirtualLineDuplicateResult[]>;

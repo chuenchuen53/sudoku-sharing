@@ -1,28 +1,17 @@
 import ArrayUtils from "@/utils/ArrayUtil";
-import CalcUtil from "@/utils/CalcUtil";
-import ObjUtil from "@/utils/ObjUtil";
-import {
-  type SudokuElement,
-  type SudokuIndex,
-  type Cell,
-  type Candidates,
-  type CellWithIndex,
-  type ElementMissing,
-  type InputValueData,
-  type Grid,
-  type Stats,
-  type VirtualLine,
-  type InputClues,
-  type RowColumn,
-  VirtualLineType,
+import { VirtualLineType } from "./type";
+import type {
+  SudokuElement,
+  Candidates,
+  CellWithIndex,
+  InputValueData,
+  Grid,
+  VirtualLine,
+  InputClues,
+  RowColumn,
+  CheckVirtualLineDuplicateResult,
+  ValidateDetail,
 } from "./type";
-
-export interface CheckVirtualLineDuplicateResult {
-  haveDuplicate: boolean;
-  duplicatedCells: CellWithIndex[];
-}
-
-type ValidateDetail = Record<VirtualLineType, CheckVirtualLineDuplicateResult[]>;
 
 export const candidatesFactory = (defaultValue: boolean, elements?: SudokuElement[]) => {
   if (!elements) {
@@ -57,7 +46,6 @@ export default class Sudoku {
   public numberOfClues: number;
   public isValid: boolean;
   public validateDetail: ValidateDetail;
-  public elementMissing: ElementMissing;
 
   constructor(clues: InputClues) {
     this.grid = this.createPuzzle(clues);
@@ -65,22 +53,10 @@ export default class Sudoku {
     const { isValid, validateDetail } = this.validatePuzzle("clue");
     this.isValid = isValid;
     this.validateDetail = validateDetail;
-    this.elementMissing = this.updateElementMissing();
   }
 
   private getNumberOfClues() {
     return this.grid.reduce((acc, row) => acc + row.reduce((acc, cell) => (cell.clue ? acc + 1 : acc), 0), 0);
-  }
-
-  private updateElementMissing() {
-    const fn = (line: VirtualLine[]) => line.map((x) => this.missingInVirtualLine(x));
-    this.elementMissing = {
-      [VirtualLineType.ROW]: fn(this.getAllRows()),
-      [VirtualLineType.COLUMN]: fn(this.getAllColumns()),
-      [VirtualLineType.BOX]: fn(this.getAllBoxes()),
-    };
-
-    return this.elementMissing;
   }
 
   createPuzzle(clues: InputClues): Grid {
@@ -221,8 +197,6 @@ export default class Sudoku {
       const { isValid, validateDetail } = this.validatePuzzle("inputValue");
       this.isValid = isValid;
       this.validateDetail = validateDetail;
-
-      this.updateElementMissing();
     }
   }
 
@@ -232,7 +206,6 @@ export default class Sudoku {
     const { isValid, validateDetail } = this.validatePuzzle("inputValue");
     this.isValid = isValid;
     this.validateDetail = validateDetail;
-    this.updateElementMissing();
   }
 
   removeInputValue({ rowIndex, columnIndex }: { rowIndex: number; columnIndex: number }, update: boolean) {
@@ -247,8 +220,6 @@ export default class Sudoku {
       const { isValid, validateDetail } = this.validatePuzzle("inputValue");
       this.isValid = isValid;
       this.validateDetail = validateDetail;
-
-      this.updateElementMissing();
     }
   }
 
@@ -315,34 +286,5 @@ export default class Sudoku {
       !boxDetail.some((x) => x.haveDuplicate);
 
     return { isValid, validateDetail };
-  }
-
-  getCombinedMissing() {
-    const missingInRows = this.elementMissing[VirtualLineType.ROW];
-    const missingInColumns = this.elementMissing[VirtualLineType.COLUMN];
-    const missingInBoxes = this.elementMissing[VirtualLineType.BOX];
-
-    for (let i = 0; i < this.grid.length; i++) {
-      for (let j = 0; j < this.grid[i].length; j++) {
-        if (this.grid[i][j].clue || this.grid[i][j].inputValue) continue;
-
-        const boxIndex = this.getBoxIndex(i, j);
-        const missingRow = missingInRows[i];
-        const missingColumn = missingInColumns[j];
-        const missingBox = missingInBoxes[boxIndex];
-        const candidates = candidatesFactory(false);
-
-        for (const key in candidates) {
-          const typedKey = key as SudokuElement;
-          if (missingRow[typedKey] && missingColumn[typedKey] && missingBox[typedKey]) {
-            candidates[typedKey] = true;
-          }
-        }
-
-        this.setCandidates(i, j, candidates);
-      }
-    }
-
-    return this.grid;
   }
 }
