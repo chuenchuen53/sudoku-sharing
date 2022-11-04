@@ -32,7 +32,8 @@ function getPuzzle(input: string) {
 const allPuzzleResult: AllPuzzleResult = {};
 const allOverallResult: AllOverallResult = {};
 
-const filename = "robatron";
+// const filename = "robatron";
+const filename = "sudoku-dot-com";
 const sample = JSON.parse(fs.readFileSync(`./sample/${filename}.json`).toString());
 
 for (const key in sample) {
