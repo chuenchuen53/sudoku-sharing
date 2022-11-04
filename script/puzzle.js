@@ -1,7 +1,7 @@
-const input = "016000002000000600050030100000003420000002070000651000300500000002090000400000089";
+const input = "014860237762340018083172600027081306836007041105436782259718460648203100301694825";
 
 function getPuzzle() {
-  const arr = input.split("").map((x) => (x === "0" ? null : x));
+  const arr = input.split("");
   const newArr = [];
   while (arr.length) newArr.push(arr.splice(0, 9));
   return newArr;

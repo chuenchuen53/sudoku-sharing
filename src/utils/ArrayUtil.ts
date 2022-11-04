@@ -1,7 +1,3 @@
-import type { Candidates, VirtualLine } from "@/Sudoku/type";
-
-type Iterableify<T> = { [K in keyof T]: Iterable<T[K]> };
-
 export default class ArrayUtils {
   static create2DArray<T extends string | number | boolean | Object>(
     rows: number,
@@ -56,7 +52,3 @@ export default class ArrayUtils {
     return result;
   }
 }
-
-type A = [number, string];
-type B = [number, string, boolean];
-type C = B extends A ? true : false;

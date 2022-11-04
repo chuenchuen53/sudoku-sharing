@@ -1,5 +1,4 @@
-import ArrayUtils from "@/utils/ArrayUtil";
-import { xor } from "lodash";
+import ArrayUtils from "../utils/ArrayUtil";
 import Sudoku from "./Sudoku";
 import { candidatesFactory } from "./Sudoku";
 import { VirtualLineType } from "./type";

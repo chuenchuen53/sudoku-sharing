@@ -1,4 +1,4 @@
-import ArrayUtils from "@/utils/ArrayUtil";
+import ArrayUtils from "../utils/ArrayUtil";
 import { VirtualLineType } from "./type";
 import type {
   SudokuElement,
