@@ -19,12 +19,21 @@
       </div>
     </div>
     <div class="right-container">
-      <SudokuHint
-        :get-unique-missing="getUniqueMissing"
-        :get-basic-candidates="getBasicCandidates"
-        :get-naked-singles="getNakedSingles"
-        :get-hidden-singles="getHiddenSingles"
-      />
+      <div class="d-flex">
+        <SudokuHint
+          class="mx"
+          :get-unique-missing="getUniqueMissing"
+          :get-basic-candidates="getBasicCandidates"
+          :get-naked-singles="getNakedSingles"
+          :get-hidden-singles="getHiddenSingles"
+        />
+        <div>
+          <StatsTable class="mx" :stats="s.stats" />
+          <div class="solve-button-container">
+            <el-button @click="() => s.trySolve()">try solve</el-button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -38,6 +47,7 @@ import "element-plus/es/components/button/style/css";
 import SudokuSolver from "@/Sudoku/SudokuSolver";
 import SudokuGrid from "../../components/SudokuGrid.vue";
 import SudokuHint from "../../components/SudokuHint.vue";
+import StatsTable from "@/components/StatsTable.vue";
 import { VirtualLineType } from "@/Sudoku/type";
 import type { Highlight } from "@/views/SudokuPage/type";
 import type { CellWithIndex, InputValueData, SudokuElementWithZero } from "@/Sudoku/type";
@@ -123,10 +133,27 @@ const getHiddenSingles = () => {
   margin-top: 24px;
 }
 
+.mx {
+  margin-left: 24px;
+  margin-right: 24px;
+}
+
 .left-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.d-flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.solve-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  width: 100%;
 }
 
 #sudoku-page {

@@ -287,4 +287,11 @@ export default class Sudoku {
 
     return { isValid, validateDetail };
   }
+
+  get solved(): boolean {
+    const { isValid, validateDetail } = this.validatePuzzle("inputValue");
+    this.isValid = isValid;
+    this.validateDetail = validateDetail;
+    return this.isValid && this.grid.every((row) => row.every((cell) => cell.clue || cell.inputValue));
+  }
 }

@@ -16,14 +16,11 @@ import type {
   ElementMissing,
 } from "./type";
 
-// todo
-// const statsTemplate: () => Stats = () => ({
-//   rowUniqueMissing: 0,
-//   columnUniqueMissing: 0,
-//   boxUniqueMissing: 0,
-//   nakedSingles: 0,
-//   hiddenSingles: 0,
-// });
+const statsTemplate: () => Stats = () => ({
+  uniqueMissing: 0,
+  nakedSingle: 0,
+  hiddenSingle: 0,
+});
 
 // const createAllElementsArr = (): SudokuElement[] => ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
@@ -53,10 +50,12 @@ export interface UniqueMissing {
 
 export default class SudokuSolver extends Sudoku {
   public elementMissing: ElementMissing;
+  public stats: Stats;
 
   constructor(clues: InputClues) {
     super(clues);
     this.elementMissing = this.updateElementMissing();
+    this.stats = statsTemplate();
   }
 
   getUniqueMissing(type: VirtualLineType): UniqueMissing[] {
@@ -118,6 +117,49 @@ export default class SudokuSolver extends Sudoku {
     const columnResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllColumns());
     const boxResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllBoxes());
     return Sudoku.removeDuplicatesInputValueData([...rowResult, ...columnResult, ...boxResult]);
+  }
+
+  setUniqueMissing(): boolean {
+    const row = this.getUniqueMissing(VirtualLineType.ROW);
+    const column = this.getUniqueMissing(VirtualLineType.COLUMN);
+    const box = this.getUniqueMissing(VirtualLineType.BOX);
+    const inputValues: InputValueData[] = Sudoku.removeDuplicatesInputValueData(
+      [...row, ...column, ...box].map((x) => ({
+        rowIndex: x.cell.rowIndex,
+        columnIndex: x.cell.columnIndex,
+        value: x.uniqueCandidate,
+      }))
+    );
+    if (!inputValues.length) return false;
+    this.setInputValues(inputValues);
+    this.stats.uniqueMissing += inputValues.length;
+    return true;
+  }
+
+  setNakedSingles(): boolean {
+    const nakedSingles = this.getNakedSingles();
+    if (!nakedSingles.length) return false;
+    this.setInputValues(nakedSingles);
+    this.stats.nakedSingle += nakedSingles.length;
+    return true;
+  }
+
+  setHiddenSingles(): boolean {
+    const hiddenSingles = this.getHiddenSingles();
+    if (!hiddenSingles.length) return false;
+    this.setInputValues(hiddenSingles);
+    this.stats.hiddenSingle += hiddenSingles.length;
+    return true;
+  }
+
+  trySolve(): boolean {
+    if (this.setUniqueMissing()) return this.trySolve();
+
+    this.getBasicCandidates();
+    if (this.setNakedSingles()) return this.trySolve();
+    if (this.setHiddenSingles()) return this.trySolve();
+
+    return this.solved;
   }
 
   static numberOfCandidates(candidates: Candidates): number {
@@ -744,62 +786,6 @@ export default class SudokuSolver extends Sudoku {
   //     .flatMap((x) => x.elimination)
   //     .filter((x) => x) as InputValueData[];
   //   return elimination;
-  // }
-
-  // setRowUniqueMissing(): boolean {
-  //   const uniqueMissing = this.getUniqueMissing("row");
-  //   if (uniqueMissing.length) {
-  //     this.setInputValue(uniqueMissing);
-  //     this.stats.rowUniqueMissing += uniqueMissing.length;
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  // setColumnUniqueMissing(): boolean {
-  //   const uniqueMissing = this.getUniqueMissing("column");
-  //   if (uniqueMissing.length) {
-  //     this.setInputValue(uniqueMissing);
-  //     this.stats.columnUniqueMissing += uniqueMissing.length;
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  // setBoxUniqueMissing(): boolean {
-  //   const uniqueMissing = this.getUniqueMissing("box");
-  //   if (uniqueMissing.length) {
-  //     this.setInputValue(uniqueMissing);
-  //     this.stats.boxUniqueMissing += uniqueMissing.length;
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  // setNakedSingles(): boolean {
-  //   const nakedSingles = this.getNakedSingles();
-  //   if (nakedSingles.length) {
-  //     this.setInputValue(nakedSingles);
-  //     this.stats.nakedSingles += nakedSingles.length;
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  // setHiddenSingles(): boolean {
-  //   const hiddenSingles = this.getHiddenSingles();
-
-  //   if (hiddenSingles.length) {
-  //     this.setInputValue(hiddenSingles);
-  //     this.stats.hiddenSingles += hiddenSingles.length;
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
   // }
 
   // trySolve(): void {
