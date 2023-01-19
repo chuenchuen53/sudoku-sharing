@@ -1,6 +1,5 @@
 import ArrayUtils from "../utils/ArrayUtil";
-import Sudoku from "./Sudoku";
-import { candidatesFactory } from "./Sudoku";
+import Sudoku, { candidatesFactory } from "./Sudoku";
 import { VirtualLineType } from "./type";
 import type {
   Stats,
