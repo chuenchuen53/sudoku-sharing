@@ -533,17 +533,17 @@ describe("sudoku basic", () => {
     expect(s.getAllVirtualLines(VirtualLineType.BOX)).toStrictEqual(s.getAllBoxes());
   });
 
-  it("getAllRelatedBoxesInLine", () => {
+  it("getAllRelatedBoxesInRowOrColumn", () => {
     const s = new Sudoku(testPuzzle1);
-    const r0 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 0);
-    const r1 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 1);
-    const r2 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 2);
-    const r3 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 3);
-    const r4 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 4);
-    const r5 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 5);
-    const r6 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 6);
-    const r7 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 7);
-    const r8 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 8);
+    const r0 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 0);
+    const r1 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 1);
+    const r2 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 2);
+    const r3 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 3);
+    const r4 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 4);
+    const r5 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 5);
+    const r6 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 6);
+    const r7 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 7);
+    const r8 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 8);
 
     const allBoxes = s.getAllBoxes();
     const b012 = allBoxes.slice(0, 3);
@@ -560,17 +560,17 @@ describe("sudoku basic", () => {
     expect(r8).toStrictEqual(b678);
   });
 
-  it("getAllRelatedBoxesInLine", () => {
+  it("getAllRelatedBoxesInRowOrColumn", () => {
     const s = new Sudoku(testPuzzle1);
-    const c0 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 0);
-    const c1 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 1);
-    const c2 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 2);
-    const c3 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 3);
-    const c4 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 4);
-    const c5 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 5);
-    const c6 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 6);
-    const c7 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 7);
-    const c8 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 8);
+    const c0 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 0);
+    const c1 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 1);
+    const c2 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 2);
+    const c3 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 3);
+    const c4 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 4);
+    const c5 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 5);
+    const c6 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 6);
+    const c7 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 7);
+    const c8 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 8);
 
     const allBoxes = s.getAllBoxes();
     const b036 = [allBoxes[0], allBoxes[3], allBoxes[6]];
@@ -587,17 +587,17 @@ describe("sudoku basic", () => {
     expect(c8).toStrictEqual(b678);
   });
 
-  it("getAllRelatedLinesInBox", () => {
+  it("getAllRelatedRowsOrColumnsInBox", () => {
     const s = new Sudoku(testPuzzle1);
-    const b0 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 0);
-    const b1 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 1);
-    const b2 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 2);
-    const b3 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 3);
-    const b4 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 4);
-    const b5 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 5);
-    const b6 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 6);
-    const b7 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 7);
-    const b8 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 8);
+    const b0 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 0);
+    const b1 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 1);
+    const b2 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 2);
+    const b3 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 3);
+    const b4 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 4);
+    const b5 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 5);
+    const b6 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 6);
+    const b7 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 7);
+    const b8 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 8);
 
     const allRows = s.getAllRows();
     const r012 = allRows.slice(0, 3);
@@ -614,17 +614,17 @@ describe("sudoku basic", () => {
     expect(b8).toStrictEqual(r678);
   });
 
-  it("getAllRelatedLinesInBox", () => {
+  it("getAllRelatedRowsOrColumnsInBox", () => {
     const s = new Sudoku(testPuzzle1);
-    const b0 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 0);
-    const b1 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 1);
-    const b2 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 2);
-    const b3 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 3);
-    const b4 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 4);
-    const b5 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 5);
-    const b6 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 6);
-    const b7 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 7);
-    const b8 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 8);
+    const b0 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 0);
+    const b1 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 1);
+    const b2 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 2);
+    const b3 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 3);
+    const b4 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 4);
+    const b5 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 5);
+    const b6 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 6);
+    const b7 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 7);
+    const b8 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 8);
 
     const allColumns = s.getAllColumns();
     const c012 = allColumns.slice(0, 3);

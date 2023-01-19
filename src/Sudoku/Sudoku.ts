@@ -120,7 +120,7 @@ export default class Sudoku {
     }
   }
 
-  getAllRelatedBoxesInLine(lineType: RowColumn, lineIndex: number): VirtualLine[] {
+  getAllRelatedBoxesInRowOrColumn(lineType: RowColumn, lineIndex: number): VirtualLine[] {
     const boxes: VirtualLine[] = [];
     for (let i = 0; i < 9; i += 3) {
       lineType === VirtualLineType.ROW
@@ -130,16 +130,14 @@ export default class Sudoku {
     return boxes;
   }
 
-  getAllRelatedLinesInBox(lineType: RowColumn, boxIndex: number): VirtualLine[] {
+  getAllRelatedRowsOrColumnsInBox(lineType: RowColumn, boxIndex: number): VirtualLine[] {
     const firstIndex = this.boxFirstLineIndex(boxIndex, lineType);
     const getLine = lineType === VirtualLineType.ROW ? this.getRow.bind(this) : this.getColumn.bind(this);
     return [getLine(firstIndex), getLine(firstIndex + 1), getLine(firstIndex + 2)];
   }
 
   getVirtualLinesIntersections(line1: VirtualLine, line2: VirtualLine): CellWithIndex[] {
-    return line1.filter((cell) =>
-      line2.some((x) => x.rowIndex === cell.rowIndex && x.columnIndex === cell.columnIndex)
-    );
+    return line1.filter((x) => line2.some((y) => Sudoku.isSamePos(x, y)));
   }
 
   getAllRelatedCells(cell: CellWithIndex): CellWithIndex[] {
