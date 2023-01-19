@@ -255,7 +255,6 @@ describe("sudoku solver", () => {
     s.getBasicCandidates();
     const lines = s.getAllRows();
     const result = SudokuSolver.getHiddenSingleFromVirtualLines(lines);
-    console.log("file: solver.test.ts ~ line 178 ~ it ~ result", result);
     const expectedResult = [
       TU.inputValueDataFactory(0, 2, "1"),
       TU.inputValueDataFactory(0, 0, "2"),

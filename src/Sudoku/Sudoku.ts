@@ -1,4 +1,4 @@
-import ArrayUtils from "../utils/ArrayUtil";
+import ArrUtil from "../utils/ArrUtil";
 import { VirtualLineType } from "./type";
 import type {
   SudokuElement,
@@ -11,6 +11,7 @@ import type {
   RowColumn,
   CheckVirtualLineDuplicateResult,
   ValidateDetail,
+  Cell,
 } from "./type";
 
 export const candidatesFactory = (defaultValue: boolean, elements?: SudokuElement[]) => {
@@ -48,27 +49,14 @@ export default class Sudoku {
   public validateDetail: ValidateDetail;
 
   constructor(clues: InputClues) {
-    this.grid = this.createPuzzle(clues);
-    this.numberOfClues = this.getNumberOfClues();
+    this.grid = this.createGrid(clues);
+    this.numberOfClues = this.grid.reduce(
+      (acc, row) => acc + row.reduce((acc, cell) => (cell.clue ? acc + 1 : acc), 0),
+      0
+    );
     const { isValid, validateDetail } = this.validatePuzzle("clue");
     this.isValid = isValid;
     this.validateDetail = validateDetail;
-  }
-
-  private getNumberOfClues() {
-    return this.grid.reduce((acc, row) => acc + row.reduce((acc, cell) => (cell.clue ? acc + 1 : acc), 0), 0);
-  }
-
-  createPuzzle(clues: InputClues): Grid {
-    if (clues.length !== 9 || clues.some((x) => x.length !== 9)) throw new Error("Invalid input clues");
-    const grid: Grid = ArrayUtils.create2DArray(9, 9, {});
-    clues.forEach((row, i) =>
-      row.forEach((clue, j) => {
-        if (clue !== "0") grid[i][j].clue = clue;
-      })
-    );
-
-    return grid;
   }
 
   getRow(rowIndex: number): VirtualLine {
@@ -148,10 +136,6 @@ export default class Sudoku {
     return [getLine(firstIndex), getLine(firstIndex + 1), getLine(firstIndex + 2)];
   }
 
-  static isSamePos(c1: CellWithIndex, c2: CellWithIndex): boolean {
-    return c1.rowIndex === c2.rowIndex && c1.columnIndex === c2.columnIndex;
-  }
-
   getVirtualLinesIntersections(line1: VirtualLine, line2: VirtualLine): CellWithIndex[] {
     return line1.filter((cell) =>
       line2.some((x) => x.rowIndex === cell.rowIndex && x.columnIndex === cell.columnIndex)
@@ -209,12 +193,9 @@ export default class Sudoku {
   }
 
   removeInputValue({ rowIndex, columnIndex }: { rowIndex: number; columnIndex: number }, update: boolean) {
-    if (this.grid[rowIndex][columnIndex].clue) {
-      console.error("Cannot set input value to a cell with a clue");
-      return;
+    if (this.grid[rowIndex][columnIndex].inputValue) {
+      delete this.grid[rowIndex][columnIndex].inputValue;
     }
-
-    delete this.grid[rowIndex][columnIndex].inputValue;
 
     if (update) {
       const { isValid, validateDetail } = this.validatePuzzle("inputValue");
@@ -243,27 +224,6 @@ export default class Sudoku {
     return missing;
   }
 
-  private checkVirtualLineDuplicate(
-    virtualLine: VirtualLine,
-    key: Extract<keyof CellWithIndex, "clue" | "inputValue">
-  ): CheckVirtualLineDuplicateResult {
-    const duplicatedCells: CellWithIndex[] = [];
-    const values = key === "clue" ? virtualLine.map((x) => x.clue) : virtualLine.map((x) => x.clue ?? x.inputValue);
-    values.forEach(
-      (x, ix, arr) => x && arr.some((y, iy) => ix !== iy && x === y && duplicatedCells.push(virtualLine[ix]))
-    );
-    const haveDuplicate = duplicatedCells.length > 0;
-    return { haveDuplicate, duplicatedCells };
-  }
-
-  static removeDuplicatesInputValueData(data: InputValueData[]) {
-    return data.filter(
-      (cur, index, self) =>
-        index ===
-        self.findIndex((x) => x.rowIndex === cur.rowIndex && x.columnIndex === cur.columnIndex && x.value === cur.value)
-    );
-  }
-
   validatePuzzle(type: Extract<keyof CellWithIndex, "clue" | "inputValue">): {
     isValid: boolean;
     validateDetail: ValidateDetail;
@@ -286,6 +246,43 @@ export default class Sudoku {
       !boxDetail.some((x) => x.haveDuplicate);
 
     return { isValid, validateDetail };
+  }
+
+  private createGrid(clues: InputClues): Grid {
+    if (clues.length !== 9 || clues.some((x) => x.length !== 9)) throw new Error("Invalid input clues");
+    const grid: Grid = ArrUtil.create2DArray<Cell>(9, 9, {});
+    clues.forEach((row, i) =>
+      row.forEach((clue, j) => {
+        if (clue !== "0") grid[i][j].clue = clue;
+      })
+    );
+
+    return grid;
+  }
+
+  private checkVirtualLineDuplicate(
+    virtualLine: VirtualLine,
+    key: Extract<keyof CellWithIndex, "clue" | "inputValue">
+  ): CheckVirtualLineDuplicateResult {
+    const duplicatedCells: CellWithIndex[] = [];
+    const values = key === "clue" ? virtualLine.map((x) => x.clue) : virtualLine.map((x) => x.clue ?? x.inputValue);
+    values.forEach(
+      (x, ix, arr) => x && arr.some((y, iy) => ix !== iy && x === y && duplicatedCells.push(virtualLine[ix]))
+    );
+    const haveDuplicate = duplicatedCells.length > 0;
+    return { haveDuplicate, duplicatedCells };
+  }
+
+  static isSamePos(c1: CellWithIndex, c2: CellWithIndex): boolean {
+    return c1.rowIndex === c2.rowIndex && c1.columnIndex === c2.columnIndex;
+  }
+
+  static removeDuplicatesInputValueData(data: InputValueData[]) {
+    return data.filter(
+      (cur, index, self) =>
+        index ===
+        self.findIndex((x) => x.rowIndex === cur.rowIndex && x.columnIndex === cur.columnIndex && x.value === cur.value)
+    );
   }
 
   get solved(): boolean {

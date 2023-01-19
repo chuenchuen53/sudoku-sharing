@@ -1,4 +1,4 @@
-import ArrayUtils from "../utils/ArrayUtil";
+import ArrUtil from "../utils/ArrUtil";
 import Sudoku, { candidatesFactory } from "./Sudoku";
 import { VirtualLineType } from "./type";
 import type {
@@ -61,7 +61,7 @@ export default class SudokuSolver extends Sudoku {
     const allVirtualLines = this.getAllVirtualLines(type);
     const missingArr = this.elementMissing[type];
     const result: UniqueMissing[] = [];
-    ArrayUtils.zip(allVirtualLines, missingArr).forEach(([virtualLine, missing]) => {
+    ArrUtil.zip2(allVirtualLines, missingArr).forEach(([virtualLine, missing]) => {
       const uniqueCandidate = SudokuSolver.getUniqueCandidate(missing);
       const cell = virtualLine.find((x) => !x.clue && !x.inputValue)!;
       if (uniqueCandidate) result.push({ virtualLine, uniqueCandidate, cell });

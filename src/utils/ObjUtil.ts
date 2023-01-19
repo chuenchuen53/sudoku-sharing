@@ -1,9 +1,9 @@
-interface OneLayerObj {
+interface OneLayerBooleanObj {
   [x: string]: boolean;
 }
 
 export default class OjbUtils {
-  static shallowEquality(obj1: OneLayerObj, obj2: OneLayerObj): boolean {
+  static boolObjEquality(obj1: OneLayerBooleanObj, obj2: OneLayerBooleanObj): boolean {
     const keys1 = Object.keys(obj1);
     const keys2 = Object.keys(obj2);
     if (keys1.length !== keys2.length) {
