@@ -1,4 +1,4 @@
-import { candidatesFactory } from "../src/Sudoku/Sudoku";
+import Sudoku from "../src/Sudoku/Sudoku";
 import { InputClues, InputValueData, SudokuElement, VirtualLine } from "../src/Sudoku/type";
 import ArrUtil from "../src/utils/ArrUtil";
 
@@ -16,7 +16,7 @@ export default class TU {
   static candidatesLineFactory = (candidates: (SudokuElement[] | undefined)[]): VirtualLine => {
     return candidates.map((candidates, index) => {
       return {
-        candidates: candidates ? candidatesFactory(true, candidates) : undefined,
+        candidates: candidates ? Sudoku.candidatesFactory(true, candidates) : undefined,
         rowIndex: 0,
         columnIndex: index,
       };

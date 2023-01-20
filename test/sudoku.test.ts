@@ -1,8 +1,10 @@
 import { expect, describe, it, vitest, beforeAll } from "vitest";
 import ArrUtil from "../src/utils/ArrUtil";
-import Sudoku, { candidatesFactory } from "../src/Sudoku/Sudoku";
+import Sudoku from "../src/Sudoku/Sudoku";
 import { CellWithIndex, InputClues, VirtualLineType, CheckVirtualLineDuplicateResult } from "../src/Sudoku/type";
 import TU from "./utils";
+
+const candidatesFactory = Sudoku.candidatesFactory;
 
 const testPuzzle0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -796,11 +798,11 @@ describe("sudoku basic", () => {
     const input3 = { rowIndex: 3, columnIndex: 6, value: "3" } as const;
     const input4 = { rowIndex: 3, columnIndex: 6, value: "4" } as const;
 
-    expect(Sudoku.removeDuplicatesInputValueData([input1, input2])).toStrictEqual([input1]);
-    expect(Sudoku.removeDuplicatesInputValueData([input1, input2, input1, input1])).toStrictEqual([input1]);
-    expect(Sudoku.removeDuplicatesInputValueData([input1, input3])).toStrictEqual([input1, input3]);
-    expect(Sudoku.removeDuplicatesInputValueData([input3, input4])).toStrictEqual([input3, input4]);
-    expect(Sudoku.removeDuplicatesInputValueData([input1, input2, input3, input4])).toStrictEqual([
+    expect(Sudoku.removeDuplicatedInputValueData([input1, input2])).toStrictEqual([input1]);
+    expect(Sudoku.removeDuplicatedInputValueData([input1, input2, input1, input1])).toStrictEqual([input1]);
+    expect(Sudoku.removeDuplicatedInputValueData([input1, input3])).toStrictEqual([input1, input3]);
+    expect(Sudoku.removeDuplicatedInputValueData([input3, input4])).toStrictEqual([input3, input4]);
+    expect(Sudoku.removeDuplicatedInputValueData([input1, input2, input3, input4])).toStrictEqual([
       input1,
       input3,
       input4,

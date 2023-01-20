@@ -14,34 +14,6 @@ import type {
   Cell,
 } from "./type";
 
-export const candidatesFactory = (defaultValue: boolean, elements?: SudokuElement[]) => {
-  if (!elements) {
-    return {
-      "1": defaultValue,
-      "2": defaultValue,
-      "3": defaultValue,
-      "4": defaultValue,
-      "5": defaultValue,
-      "6": defaultValue,
-      "7": defaultValue,
-      "8": defaultValue,
-      "9": defaultValue,
-    };
-  } else {
-    return {
-      "1": elements.includes("1") ? defaultValue : !defaultValue,
-      "2": elements.includes("2") ? defaultValue : !defaultValue,
-      "3": elements.includes("3") ? defaultValue : !defaultValue,
-      "4": elements.includes("4") ? defaultValue : !defaultValue,
-      "5": elements.includes("5") ? defaultValue : !defaultValue,
-      "6": elements.includes("6") ? defaultValue : !defaultValue,
-      "7": elements.includes("7") ? defaultValue : !defaultValue,
-      "8": elements.includes("8") ? defaultValue : !defaultValue,
-      "9": elements.includes("9") ? defaultValue : !defaultValue,
-    };
-  }
-};
-
 export default class Sudoku {
   public grid: Grid;
   public numberOfClues: number;
@@ -211,7 +183,7 @@ export default class Sudoku {
   }
 
   missingInVirtualLine(virtualLine: VirtualLine): Candidates {
-    const missing = candidatesFactory(true);
+    const missing = Sudoku.candidatesFactory(true);
     virtualLine.forEach((cell) => {
       if (cell.clue) {
         missing[cell.clue] = false;
@@ -275,12 +247,40 @@ export default class Sudoku {
     return c1.rowIndex === c2.rowIndex && c1.columnIndex === c2.columnIndex;
   }
 
-  static removeDuplicatesInputValueData(data: InputValueData[]) {
+  static removeDuplicatedInputValueData(data: InputValueData[]) {
     return data.filter(
       (cur, index, self) =>
         index ===
         self.findIndex((x) => x.rowIndex === cur.rowIndex && x.columnIndex === cur.columnIndex && x.value === cur.value)
     );
+  }
+
+  static candidatesFactory(defaultValue: boolean, elements?: SudokuElement[]) {
+    if (!elements) {
+      return {
+        "1": defaultValue,
+        "2": defaultValue,
+        "3": defaultValue,
+        "4": defaultValue,
+        "5": defaultValue,
+        "6": defaultValue,
+        "7": defaultValue,
+        "8": defaultValue,
+        "9": defaultValue,
+      };
+    } else {
+      return {
+        "1": elements.includes("1") ? defaultValue : !defaultValue,
+        "2": elements.includes("2") ? defaultValue : !defaultValue,
+        "3": elements.includes("3") ? defaultValue : !defaultValue,
+        "4": elements.includes("4") ? defaultValue : !defaultValue,
+        "5": elements.includes("5") ? defaultValue : !defaultValue,
+        "6": elements.includes("6") ? defaultValue : !defaultValue,
+        "7": elements.includes("7") ? defaultValue : !defaultValue,
+        "8": elements.includes("8") ? defaultValue : !defaultValue,
+        "9": elements.includes("9") ? defaultValue : !defaultValue,
+      };
+    }
   }
 
   get solved(): boolean {
