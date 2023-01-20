@@ -1,7 +1,8 @@
 import ArrUtil from "../utils/ArrUtil";
 import Sudoku from "./Sudoku";
-import { VirtualLineType } from "./type";
-import type {
+import {
+  VirtualLineType,
+  type RowColumn,
   Stats,
   Candidates,
   InputClues,
@@ -221,109 +222,113 @@ export default class SudokuSolver extends Sudoku {
     return result;
   }
 
-  // rowColumnLockInBox(type: "row" | "column", index: number): InputValueData[] {
-  //   const result: InputValueData[] = [];
-  //   const missing = type === "row" ? this.elementMissing.rows[index] : this.elementMissing.columns[index];
-  //   const relatedBoxes = type === "row" ? this.getAllRelatedBoxesInLine(index) : this.getAllRelatedBoxesInColumn(index);
+  rowColumnLockInBox(type: RowColumn, index: number): InputValueData[] {
+    const result: InputValueData[] = [];
+    const missing = this.elementMissing[type][index];
+    const relatedBoxes = this.getAllRelatedBoxesInRowOrColumn(type, index);
 
-  //   for (const key in missing) {
-  //     const sudokuElement = key as Element;
-  //     if (!missing[sudokuElement]) continue;
+    for (const key in missing) {
+      const sudokuElement = key as SudokuElement;
+      if (!missing[sudokuElement]) continue;
 
-  //     const boxContained = relatedBoxes.map((box) =>
-  //       box.some(
-  //         (cell) =>
-  //           (type === "row" ? cell.rowIndex : cell.columnIndex) === index &&
-  //           !cell.clue &&
-  //           !cell.inputValue &&
-  //           cell.candidates &&
-  //           cell.candidates[sudokuElement]
-  //       )
-  //     );
+      const boxContained = relatedBoxes.map((box) =>
+        box.some(
+          (cell) =>
+            (type === VirtualLineType.ROW ? cell.rowIndex : cell.columnIndex) === index &&
+            cell.candidates &&
+            cell.candidates[sudokuElement] &&
+            !cell.clue &&
+            !cell.inputValue
+        )
+      );
 
-  //     const numberOfBoxContained = boxContained.reduce((acc, cur) => acc + (cur ? 1 : 0), 0);
-  //     if (numberOfBoxContained === 1) {
-  //       const lockedBox = relatedBoxes[boxContained.indexOf(true)];
-  //       const excludedCells = lockedBox.filter(
-  //         (x) =>
-  //           (type === "row" ? x.rowIndex : x.columnIndex) !== index &&
-  //           !x.clue &&
-  //           !x.inputValue &&
-  //           x.candidates &&
-  //           x.candidates[sudokuElement]
-  //       );
-  //       excludedCells.forEach((cell) =>
-  //         result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement })
-  //       );
-  //     }
-  //   }
+      const numberOfBoxContained = boxContained.reduce((acc, cur) => acc + (cur ? 1 : 0), 0);
+      if (numberOfBoxContained === 1) {
+        const lockedBox = relatedBoxes[boxContained.indexOf(true)];
+        const excludedCells = lockedBox.filter(
+          (cell) =>
+            (type === VirtualLineType.ROW ? cell.rowIndex : cell.columnIndex) !== index &&
+            cell.candidates &&
+            cell.candidates[sudokuElement] &&
+            !cell.clue &&
+            !cell.inputValue
+        );
+        excludedCells.forEach((cell) =>
+          result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement })
+        );
+      }
+    }
 
-  //   return result;
-  // }
+    return result;
+  }
 
-  // boxLockInRowColumn(type: "row" | "column", boxIndex: number): InputValueData[] {
-  //   const result: InputValueData[] = [];
-  //   const missing = this.elementMissing.boxes[boxIndex];
-  //   const relatedLines = this.getAllRelatedLinesInBox(type, boxIndex);
-  //   const box = this.getAllBoxes()[boxIndex];
+  boxLockInRowColumn(type: RowColumn, boxIndex: number): InputValueData[] {
+    const result: InputValueData[] = [];
+    const missing = this.elementMissing[VirtualLineType.BOX][boxIndex];
+    const relatedLines = this.getAllRelatedRowsOrColumnsInBox(type, boxIndex);
+    const box = this.getAllBoxes()[boxIndex];
 
-  //   for (const key in missing) {
-  //     const sudokuElement = key as Element;
-  //     if (!missing[sudokuElement]) continue;
+    for (const key in missing) {
+      const sudokuElement = key as SudokuElement;
+      if (!missing[sudokuElement]) continue;
 
-  //     const cellsContained = box.filter((x) => !x.clue && !x.inputValue && x.candidates && x.candidates[sudokuElement]);
-  //     const allInSameLine =
-  //       cellsContained.length &&
-  //       cellsContained.every((x) =>
-  //         type === "row" ? x.rowIndex === cellsContained[0].rowIndex : x.columnIndex === cellsContained[0].columnIndex
-  //       );
-  //     if (allInSameLine) {
-  //       const lineIndex = type === "row" ? cellsContained[0].rowIndex : cellsContained[0].columnIndex;
-  //       const virtualLine = relatedLines.find((x) => (type === "row" ? x[0].rowIndex : x[0].columnIndex) === lineIndex);
-  //       if (!virtualLine) continue;
-  //       const excludedCells = virtualLine.filter(
-  //         (x) =>
-  //           this.getBoxIndex(x.rowIndex, x.columnIndex) !== boxIndex &&
-  //           !x.clue &&
-  //           !x.inputValue &&
-  //           x.candidates &&
-  //           x.candidates[sudokuElement]
-  //       );
-  //       excludedCells.forEach((cell) =>
-  //         result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement })
-  //       );
-  //     }
-  //   }
+      const cellsContained = box.filter((x) => x.candidates && x.candidates[sudokuElement] && !x.clue && !x.inputValue);
+      if (cellsContained.length === 0) continue;
 
-  //   return result;
-  // }
+      const allInSameLine = cellsContained.every((x) =>
+        type === VirtualLineType.ROW
+          ? x.rowIndex === cellsContained[0].rowIndex
+          : x.columnIndex === cellsContained[0].columnIndex
+      );
+      if (allInSameLine) {
+        const lineIndex = type === VirtualLineType.ROW ? cellsContained[0].rowIndex : cellsContained[0].columnIndex;
+        const virtualLine = relatedLines.find(
+          (x) => (type === VirtualLineType.ROW ? x[0].rowIndex : x[0].columnIndex) === lineIndex
+        );
+        if (!virtualLine) continue;
+        const excludedCells = virtualLine.filter(
+          (x) =>
+            this.getBoxIndex(x.rowIndex, x.columnIndex) !== boxIndex &&
+            !x.clue &&
+            !x.inputValue &&
+            x.candidates &&
+            x.candidates[sudokuElement]
+        );
+        excludedCells.forEach((cell) =>
+          result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement })
+        );
+      }
+    }
 
-  // getRemovalDueToLockedCandidates(): InputValueData[] {
-  //   const idx: SudokuIndex[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    return result;
+  }
 
-  //   const row = idx.map((x) => this.rowColumnLockInBox("row", x));
-  //   const column = idx.map((x) => this.rowColumnLockInBox("column", x));
-  //   const boxRow = idx.map((x) => this.boxLockInRowColumn("row", x));
-  //   const boxColumn = idx.map((x) => this.boxLockInRowColumn("column", x));
+  getRemovalDueToLockedCandidates(): InputValueData[] {
+    const idx: SudokuIndex[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
-  //   const arr: InputValueData[] = [...row.flat(), ...column.flat(), ...boxRow.flat(), ...boxColumn.flat()];
-  //   return this.removeDuplicatesInputValueData(arr);
-  // }
+    const row = idx.map((x) => this.rowColumnLockInBox("row", x));
+    const column = idx.map((x) => this.rowColumnLockInBox("column", x));
+    const boxRow = idx.map((x) => this.boxLockInRowColumn("row", x));
+    const boxColumn = idx.map((x) => this.boxLockInRowColumn("column", x));
 
-  // removeElementInCandidates(inputValueDataArr: InputValueData[]): boolean {
-  //   if (!inputValueDataArr.length) {
-  //     return false;
-  //   } else {
-  //     inputValueDataArr.forEach((inputValueData) => {
-  //       const { rowIndex, columnIndex, value } = inputValueData;
-  //       const cell = this.grid[rowIndex][columnIndex];
-  //       if (cell.candidates) {
-  //         cell.candidates[value] = false;
-  //       }
-  //     });
-  //     return true;
-  //   }
-  // }
+    const arr: InputValueData[] = [...row.flat(), ...column.flat(), ...boxRow.flat(), ...boxColumn.flat()];
+    return this.removeDuplicatesInputValueData(arr);
+  }
+
+  removeElementInCandidates(inputValueDataArr: InputValueData[]): boolean {
+    if (!inputValueDataArr.length) {
+      return false;
+    } else {
+      inputValueDataArr.forEach((inputValueData) => {
+        const { rowIndex, columnIndex, value } = inputValueData;
+        const cell = this.grid[rowIndex][columnIndex];
+        if (cell.candidates) {
+          cell.candidates[value] = false;
+        }
+      });
+      return true;
+    }
+  }
 
   // getCandidatesArr(candidates: Candidates): Element[] {
   //   const entries = Object.entries(candidates) as [Element, boolean][];
