@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { reactive, computed, ref, defineProps } from "vue";
-import ArrayUtil from "../utils/ArrayUtil";
+import ArrayUtil from "../utils/ArrUtil";
 import type { CellWithIndex, Grid, InputValueData } from "@/Sudoku/type";
 import type { Highlight } from "@/views/SudokuPage/type";
 import type SudokuSolver from "@/Sudoku/SudokuSolver";

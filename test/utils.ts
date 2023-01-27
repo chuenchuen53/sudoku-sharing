@@ -1,9 +1,9 @@
-import { candidatesFactory } from "../src/Sudoku/Sudoku";
+import Sudoku from "../src/Sudoku/Sudoku";
 import { InputClues, InputValueData, SudokuElement, VirtualLine } from "../src/Sudoku/type";
-import ArrayUtils from "../src/utils/ArrayUtil";
+import ArrUtil from "../src/utils/ArrUtil";
 
 export default class TU {
-  static emptyPuzzle = (): InputClues => ArrayUtils.create2DArray(9, 9, "0");
+  static emptyPuzzle = (): InputClues => ArrUtil.create2DArray(9, 9, "0");
 
   static inputValueDataFactory = (r: number, c: number, v: SudokuElement): InputValueData => {
     return {
@@ -16,7 +16,7 @@ export default class TU {
   static candidatesLineFactory = (candidates: (SudokuElement[] | undefined)[]): VirtualLine => {
     return candidates.map((candidates, index) => {
       return {
-        candidates: candidates ? candidatesFactory(true, candidates) : undefined,
+        candidates: candidates ? Sudoku.candidatesFactory(true, candidates) : undefined,
         rowIndex: 0,
         columnIndex: index,
       };

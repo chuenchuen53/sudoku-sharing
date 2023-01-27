@@ -1,10 +1,12 @@
 import { expect, describe, it, vitest, beforeAll } from "vitest";
-import ArrayUtils from "../src/utils/ArrayUtil";
-import Sudoku, { candidatesFactory } from "../src/Sudoku/Sudoku";
+import ArrUtil from "../src/utils/ArrUtil";
+import Sudoku from "../src/Sudoku/Sudoku";
 import { CellWithIndex, InputClues, VirtualLineType, CheckVirtualLineDuplicateResult } from "../src/Sudoku/type";
 import TU from "./utils";
 
-export const testPuzzle0: InputClues = [
+const candidatesFactory = Sudoku.candidatesFactory;
+
+const testPuzzle0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
   ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
   ["0", "0", "8", "0", "0", "0", "4", "0", "9"],
@@ -14,6 +16,18 @@ export const testPuzzle0: InputClues = [
   ["5", "8", "0", "7", "0", "4", "9", "1", "3"],
   ["1", "0", "0", "3", "0", "0", "0", "0", "0"],
   ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
+];
+
+const testPuzzle0Solution: InputClues = [
+  ["2", "9", "1", "4", "6", "7", "5", "3", "8"],
+  ["7", "4", "3", "8", "9", "5", "1", "6", "2"],
+  ["6", "5", "8", "2", "3", "1", "4", "7", "9"],
+  ["9", "6", "2", "1", "7", "8", "3", "4", "5"],
+  ["8", "1", "5", "9", "4", "3", "7", "2", "6"],
+  ["4", "3", "7", "6", "5", "2", "8", "9", "1"],
+  ["5", "8", "6", "7", "2", "4", "9", "1", "3"],
+  ["1", "7", "9", "3", "8", "6", "2", "5", "4"],
+  ["3", "2", "4", "5", "1", "9", "6", "8", "7"],
 ];
 
 // medium
@@ -58,15 +72,14 @@ describe("sudoku basic", () => {
     vitest.spyOn(console, "error").mockImplementation(() => {});
   });
 
-  it("createPuzzle", () => {
+  it("createGrid throw error", () => {
     const ic = JSON.parse(JSON.stringify(testPuzzle0)).push(["0", "0", "0", "0", "0", "0", "0", "0", "0"]);
     expect(() => new Sudoku(ic)).toThrow();
   });
 
-  it("createPuzzle", () => {
-    const sudoku = new Sudoku(TU.emptyPuzzle());
-    const grid1 = sudoku.createPuzzle(testPuzzle1);
-    const grid1Expected = [
+  it("createGrid 1", () => {
+    const sudoku = new Sudoku(testPuzzle1);
+    const gridExpected = [
       [{ clue: "2" }, {}, {}, {}, {}, {}, { clue: "8" }, { clue: "6" }, {}],
       [{}, {}, {}, {}, { clue: "4" }, { clue: "2" }, {}, {}, {}],
       [{}, { clue: "1" }, {}, {}, { clue: "6" }, {}, {}, { clue: "4" }, { clue: "7" }],
@@ -77,9 +90,12 @@ describe("sudoku basic", () => {
       [{}, {}, {}, { clue: "6" }, { clue: "8" }, {}, {}, { clue: "1" }, { clue: "2" }],
       [{ clue: "5" }, {}, { clue: "8" }, {}, {}, {}, {}, {}, { clue: "4" }],
     ];
+    expect(sudoku.grid).toStrictEqual(gridExpected);
+  });
 
-    const grid2 = sudoku.createPuzzle(testPuzzle2);
-    const grid2Expected = [
+  it("createGrid 2", () => {
+    const sudoku = new Sudoku(testPuzzle2);
+    const gridExpected = [
       [{}, { clue: "3" }, {}, { clue: "9" }, {}, {}, {}, {}, {}],
       [{ clue: "6" }, {}, {}, { clue: "2" }, {}, {}, { clue: "8" }, {}, {}],
       [{ clue: "8" }, {}, {}, { clue: "6" }, { clue: "1" }, {}, { clue: "5" }, { clue: "4" }, { clue: "9" }],
@@ -90,13 +106,11 @@ describe("sudoku basic", () => {
       [{ clue: "1" }, {}, {}, {}, {}, {}, {}, { clue: "6" }, {}],
       [{}, {}, { clue: "4" }, {}, { clue: "6" }, {}, { clue: "9" }, {}, { clue: "8" }],
     ];
-
-    expect(grid1).toStrictEqual(grid1Expected);
-    expect(grid2).toStrictEqual(grid2Expected);
+    expect(sudoku.grid).toStrictEqual(gridExpected);
   });
 
   it("validatePuzzle", () => {
-    const invalidClues1: InputClues = ArrayUtils.cloneArr(testPuzzle1);
+    const invalidClues1: InputClues = ArrUtil.cloneArr(testPuzzle1);
     invalidClues1[0][1] = "2";
     const s1 = new Sudoku(invalidClues1);
     const s1DetailExpected = validateDetailTemplate();
@@ -151,7 +165,7 @@ describe("sudoku basic", () => {
   });
 
   it("validatePuzzle", () => {
-    const invalidClues1: InputClues = ArrayUtils.cloneArr(testPuzzle1);
+    const invalidClues1: InputClues = ArrUtil.cloneArr(testPuzzle1);
 
     invalidClues1[2][0] = "6";
     invalidClues1[2][3] = "1";
@@ -256,6 +270,22 @@ describe("sudoku basic", () => {
     expect(s.validateDetail[VirtualLineType.ROW][2].duplicatedCells).toStrictEqual(expectedDetail);
     expect(s.validateDetail[VirtualLineType.BOX][0].haveDuplicate).toBe(true);
     expect(s.validateDetail[VirtualLineType.BOX][0].duplicatedCells).toStrictEqual(expectedDetail);
+  });
+
+  it("removeInputValue", () => {
+    const s = new Sudoku(testPuzzle0);
+    s.setInputValue({ rowIndex: 0, columnIndex: 0, value: "9" }, true);
+    expect(s.isValid).toBe(false);
+    s.removeInputValue({ rowIndex: 0, columnIndex: 0 }, false);
+    expect(s.isValid).toBe(false);
+  });
+
+  it("removeInputValue", () => {
+    const s = new Sudoku(testPuzzle0);
+    s.setInputValue({ rowIndex: 0, columnIndex: 0, value: "9" }, true);
+    expect(s.isValid).toBe(false);
+    s.removeInputValue({ rowIndex: 0, columnIndex: 0 }, true);
+    expect(s.isValid).toBe(true);
   });
 
   it("numberOfClues", () => {
@@ -505,17 +535,17 @@ describe("sudoku basic", () => {
     expect(s.getAllVirtualLines(VirtualLineType.BOX)).toStrictEqual(s.getAllBoxes());
   });
 
-  it("getAllRelatedBoxesInLine", () => {
+  it("getAllRelatedBoxesInRowOrColumn", () => {
     const s = new Sudoku(testPuzzle1);
-    const r0 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 0);
-    const r1 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 1);
-    const r2 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 2);
-    const r3 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 3);
-    const r4 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 4);
-    const r5 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 5);
-    const r6 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 6);
-    const r7 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 7);
-    const r8 = s.getAllRelatedBoxesInLine(VirtualLineType.ROW, 8);
+    const r0 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 0);
+    const r1 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 1);
+    const r2 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 2);
+    const r3 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 3);
+    const r4 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 4);
+    const r5 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 5);
+    const r6 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 6);
+    const r7 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 7);
+    const r8 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.ROW, 8);
 
     const allBoxes = s.getAllBoxes();
     const b012 = allBoxes.slice(0, 3);
@@ -532,17 +562,17 @@ describe("sudoku basic", () => {
     expect(r8).toStrictEqual(b678);
   });
 
-  it("getAllRelatedBoxesInLine", () => {
+  it("getAllRelatedBoxesInRowOrColumn", () => {
     const s = new Sudoku(testPuzzle1);
-    const c0 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 0);
-    const c1 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 1);
-    const c2 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 2);
-    const c3 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 3);
-    const c4 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 4);
-    const c5 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 5);
-    const c6 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 6);
-    const c7 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 7);
-    const c8 = s.getAllRelatedBoxesInLine(VirtualLineType.COLUMN, 8);
+    const c0 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 0);
+    const c1 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 1);
+    const c2 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 2);
+    const c3 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 3);
+    const c4 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 4);
+    const c5 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 5);
+    const c6 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 6);
+    const c7 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 7);
+    const c8 = s.getAllRelatedBoxesInRowOrColumn(VirtualLineType.COLUMN, 8);
 
     const allBoxes = s.getAllBoxes();
     const b036 = [allBoxes[0], allBoxes[3], allBoxes[6]];
@@ -559,17 +589,17 @@ describe("sudoku basic", () => {
     expect(c8).toStrictEqual(b678);
   });
 
-  it("getAllRelatedLinesInBox", () => {
+  it("getAllRelatedRowsOrColumnsInBox", () => {
     const s = new Sudoku(testPuzzle1);
-    const b0 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 0);
-    const b1 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 1);
-    const b2 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 2);
-    const b3 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 3);
-    const b4 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 4);
-    const b5 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 5);
-    const b6 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 6);
-    const b7 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 7);
-    const b8 = s.getAllRelatedLinesInBox(VirtualLineType.ROW, 8);
+    const b0 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 0);
+    const b1 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 1);
+    const b2 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 2);
+    const b3 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 3);
+    const b4 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 4);
+    const b5 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 5);
+    const b6 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 6);
+    const b7 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 7);
+    const b8 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.ROW, 8);
 
     const allRows = s.getAllRows();
     const r012 = allRows.slice(0, 3);
@@ -586,17 +616,17 @@ describe("sudoku basic", () => {
     expect(b8).toStrictEqual(r678);
   });
 
-  it("getAllRelatedLinesInBox", () => {
+  it("getAllRelatedRowsOrColumnsInBox", () => {
     const s = new Sudoku(testPuzzle1);
-    const b0 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 0);
-    const b1 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 1);
-    const b2 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 2);
-    const b3 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 3);
-    const b4 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 4);
-    const b5 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 5);
-    const b6 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 6);
-    const b7 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 7);
-    const b8 = s.getAllRelatedLinesInBox(VirtualLineType.COLUMN, 8);
+    const b0 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 0);
+    const b1 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 1);
+    const b2 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 2);
+    const b3 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 3);
+    const b4 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 4);
+    const b5 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 5);
+    const b6 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 6);
+    const b7 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 7);
+    const b8 = s.getAllRelatedRowsOrColumnsInBox(VirtualLineType.COLUMN, 8);
 
     const allColumns = s.getAllColumns();
     const c012 = allColumns.slice(0, 3);
@@ -768,11 +798,11 @@ describe("sudoku basic", () => {
     const input3 = { rowIndex: 3, columnIndex: 6, value: "3" } as const;
     const input4 = { rowIndex: 3, columnIndex: 6, value: "4" } as const;
 
-    expect(Sudoku.removeDuplicatesInputValueData([input1, input2])).toStrictEqual([input1]);
-    expect(Sudoku.removeDuplicatesInputValueData([input1, input2, input1, input1])).toStrictEqual([input1]);
-    expect(Sudoku.removeDuplicatesInputValueData([input1, input3])).toStrictEqual([input1, input3]);
-    expect(Sudoku.removeDuplicatesInputValueData([input3, input4])).toStrictEqual([input3, input4]);
-    expect(Sudoku.removeDuplicatesInputValueData([input1, input2, input3, input4])).toStrictEqual([
+    expect(Sudoku.removeDuplicatedInputValueData([input1, input2])).toStrictEqual([input1]);
+    expect(Sudoku.removeDuplicatedInputValueData([input1, input2, input1, input1])).toStrictEqual([input1]);
+    expect(Sudoku.removeDuplicatedInputValueData([input1, input3])).toStrictEqual([input1, input3]);
+    expect(Sudoku.removeDuplicatedInputValueData([input3, input4])).toStrictEqual([input3, input4]);
+    expect(Sudoku.removeDuplicatedInputValueData([input1, input2, input3, input4])).toStrictEqual([
       input1,
       input3,
       input4,
@@ -839,5 +869,22 @@ describe("sudoku basic", () => {
     expect(s.grid.some((x) => x.some((y) => y.candidates))).toBe(true);
     s.clearAllCandidates();
     expect(s.grid.some((x) => x.some((y) => y.candidates))).toBe(false);
+  });
+
+  it("solved", () => {
+    const s = new Sudoku(testPuzzle0);
+    expect(s.solved).toBe(false);
+
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (testPuzzle0[r][c] === "0") {
+          const value = testPuzzle0Solution[r][c];
+          if (value === "0") throw new Error("testPuzzle0Solution has a 0");
+          s.setInputValue({ rowIndex: r, columnIndex: c, value }, true);
+        }
+      }
+    }
+
+    expect(s.solved).toBe(true);
   });
 });

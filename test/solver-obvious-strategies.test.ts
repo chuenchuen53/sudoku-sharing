@@ -1,11 +1,13 @@
 import { expect, describe, it } from "vitest";
-import { candidatesFactory } from "../src/Sudoku/Sudoku";
+import Sudoku from "../src/Sudoku/Sudoku";
 import SudokuSolver, { UniqueMissing } from "../src/Sudoku/SudokuSolver";
 import { InputClues, VirtualLineType, SudokuElement, VirtualLine, Candidates } from "../src/Sudoku/type";
 import TU from "./utils";
 
+const candidatesFactory = Sudoku.candidatesFactory;
+
 // easy
-export const testPuzzle0: InputClues = [
+const testPuzzle0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
   ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
   ["0", "0", "8", "0", "0", "0", "4", "0", "9"],
@@ -255,7 +257,6 @@ describe("sudoku solver", () => {
     s.getBasicCandidates();
     const lines = s.getAllRows();
     const result = SudokuSolver.getHiddenSingleFromVirtualLines(lines);
-    console.log("file: solver.test.ts ~ line 178 ~ it ~ result", result);
     const expectedResult = [
       TU.inputValueDataFactory(0, 2, "1"),
       TU.inputValueDataFactory(0, 0, "2"),

@@ -40,11 +40,9 @@ export interface InputValueData {
 export type ElementMissing = Record<VirtualLineType, Candidates[]>;
 
 export interface Stats {
-  rowUniqueMissing: number;
-  columnUniqueMissing: number;
-  boxUniqueMissing: number;
-  nakedSingles: number;
-  hiddenSingles: number;
+  uniqueMissing: number;
+  nakedSingle: number;
+  hiddenSingle: number;
 }
 
 export type SudokuElementWithZero = SudokuElement | "0";

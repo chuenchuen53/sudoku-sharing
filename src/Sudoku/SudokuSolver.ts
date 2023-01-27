@@ -1,9 +1,8 @@
-import ArrayUtils from "@/utils/ArrayUtil";
-import { xor } from "lodash";
+import ArrUtil from "../utils/ArrUtil";
 import Sudoku from "./Sudoku";
-import { candidatesFactory } from "./Sudoku";
-import { VirtualLineType } from "./type";
-import type {
+import {
+  VirtualLineType,
+  type RowColumn,
   Stats,
   Candidates,
   InputClues,
@@ -16,15 +15,6 @@ import type {
   ElementMissing,
 } from "./type";
 
-// todo
-// const statsTemplate: () => Stats = () => ({
-//   rowUniqueMissing: 0,
-//   columnUniqueMissing: 0,
-//   boxUniqueMissing: 0,
-//   nakedSingles: 0,
-//   hiddenSingles: 0,
-// });
-
 // const createAllElementsArr = (): SudokuElement[] => ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 // const candidatesFromArr = (arr: SudokuElement[]) => {
@@ -32,18 +22,6 @@ import type {
 //   arr.forEach((x) => (candidates[x] = true));
 //   return candidates;
 // };
-
-const hiddenCandidatesCount = () => ({
-  "1": 0,
-  "2": 0,
-  "3": 0,
-  "4": 0,
-  "5": 0,
-  "6": 0,
-  "7": 0,
-  "8": 0,
-  "9": 0,
-});
 
 export interface UniqueMissing {
   virtualLine: VirtualLine;
@@ -53,27 +31,30 @@ export interface UniqueMissing {
 
 export default class SudokuSolver extends Sudoku {
   public elementMissing: ElementMissing;
+  public stats: Stats;
 
   constructor(clues: InputClues) {
     super(clues);
     this.elementMissing = this.updateElementMissing();
+    this.stats = SudokuSolver.statsTemplate();
   }
 
-  getUniqueMissing(type: VirtualLineType): UniqueMissing[] {
+  override setInputValue(...args: Parameters<Sudoku["setInputValue"]>) {
+    super.setInputValue(...args);
     this.updateElementMissing();
-    const allVirtualLines = this.getAllVirtualLines(type);
-    const missingArr = this.elementMissing[type];
-    const result: UniqueMissing[] = [];
-    ArrayUtils.zip(allVirtualLines, missingArr).forEach(([virtualLine, missing]) => {
-      const uniqueCandidate = SudokuSolver.getUniqueCandidate(missing);
-      const cell = virtualLine.find((x) => !x.clue && !x.inputValue)!;
-      if (uniqueCandidate) result.push({ virtualLine, uniqueCandidate, cell });
-    });
-    return result;
   }
 
-  getBasicCandidates(): Grid {
+  override setInputValues(...args: Parameters<Sudoku["setInputValues"]>) {
+    super.setInputValues(...args);
     this.updateElementMissing();
+  }
+
+  override removeInputValue(...args: Parameters<Sudoku["removeInputValue"]>) {
+    super.removeInputValue(...args);
+    this.updateElementMissing();
+  }
+
+  getBasicCandidates(): void {
     const missingInRows = this.elementMissing[VirtualLineType.ROW];
     const missingInColumns = this.elementMissing[VirtualLineType.COLUMN];
     const missingInBoxes = this.elementMissing[VirtualLineType.BOX];
@@ -86,7 +67,7 @@ export default class SudokuSolver extends Sudoku {
         const missingRow = missingInRows[i];
         const missingColumn = missingInColumns[j];
         const missingBox = missingInBoxes[boxIndex];
-        const candidates = candidatesFactory(false);
+        const candidates = Sudoku.candidatesFactory(false);
 
         for (const key in candidates) {
           const typedKey = key as SudokuElement;
@@ -98,14 +79,26 @@ export default class SudokuSolver extends Sudoku {
         this.setCandidates(i, j, candidates);
       }
     }
+  }
 
-    return this.grid;
+  getUniqueMissing(type: VirtualLineType): UniqueMissing[] {
+    const allVirtualLines = this.getAllVirtualLines(type);
+    const missingArr = this.elementMissing[type];
+    const result: UniqueMissing[] = [];
+    ArrUtil.zip2(allVirtualLines, missingArr).forEach(([virtualLine, missing]) => {
+      const uniqueCandidate = SudokuSolver.getUniqueCandidate(missing);
+      if (uniqueCandidate) {
+        const cell = virtualLine.find((x) => !x.clue && !x.inputValue)!;
+        result.push({ virtualLine, uniqueCandidate, cell });
+      }
+    });
+    return result;
   }
 
   getNakedSingles(): InputValueData[] {
     const result: InputValueData[] = [];
     this.loopGrid((rowIndex, columnIndex, cell) => {
-      if (cell.clue || cell.inputValue || !cell.candidates) return;
+      if (!cell.candidates || cell.clue || cell.inputValue) return;
       const entries = Object.entries(cell.candidates) as [SudokuElement, boolean][];
       const candidatesArr = entries.filter(([_, value]) => value);
       if (candidatesArr.length === 1) result.push({ rowIndex, columnIndex, value: candidatesArr[0][0] });
@@ -117,44 +110,50 @@ export default class SudokuSolver extends Sudoku {
     const rowResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllRows());
     const columnResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllColumns());
     const boxResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllBoxes());
-    return Sudoku.removeDuplicatesInputValueData([...rowResult, ...columnResult, ...boxResult]);
+    return Sudoku.removeDuplicatedInputValueData([...rowResult, ...columnResult, ...boxResult]);
   }
 
-  static numberOfCandidates(candidates: Candidates): number {
-    const entries = Object.entries(candidates);
-    return entries.reduce((acc, [_, value]) => (value ? acc + 1 : acc), 0);
+  setUniqueMissing(): boolean {
+    const row = this.getUniqueMissing(VirtualLineType.ROW);
+    const column = this.getUniqueMissing(VirtualLineType.COLUMN);
+    const box = this.getUniqueMissing(VirtualLineType.BOX);
+    const inputValues: InputValueData[] = Sudoku.removeDuplicatedInputValueData(
+      [...row, ...column, ...box].map((x) => ({
+        rowIndex: x.cell.rowIndex,
+        columnIndex: x.cell.columnIndex,
+        value: x.uniqueCandidate,
+      }))
+    );
+    if (!inputValues.length) return false;
+    this.setInputValues(inputValues);
+    this.stats.uniqueMissing += inputValues.length;
+    return true;
   }
 
-  static getUniqueCandidate(candidates: Candidates): SudokuElement | null {
-    const entries = Object.entries(candidates);
-    const candidatesArr = entries.filter(([_, value]) => value) as [SudokuElement, boolean][];
-    return candidatesArr.length === 1 ? candidatesArr[0][0] : null;
+  setNakedSingles(): boolean {
+    const nakedSingles = this.getNakedSingles();
+    if (!nakedSingles.length) return false;
+    this.setInputValues(nakedSingles);
+    this.stats.nakedSingle += nakedSingles.length;
+    return true;
   }
 
-  static getHiddenSingleFromVirtualLine(virtualLine: VirtualLine): InputValueData[] {
-    const result: InputValueData[] = [];
-    const candidatesCount = hiddenCandidatesCount();
-    virtualLine.forEach((cell) => {
-      if (cell.clue || cell.inputValue || !cell.candidates) return;
-      Object.entries(cell.candidates).forEach(([key, bool]) => bool && candidatesCount[key as SudokuElement]++);
-    });
-    Object.entries(candidatesCount).forEach(([key, count]) => {
-      if (count !== 1) return;
-      const sudokuElement = key as SudokuElement;
-      const cell = virtualLine.find((x) => x.candidates && x.candidates[sudokuElement])!;
-      if (SudokuSolver.numberOfCandidates(cell.candidates!) === 1) return; // naked single
-      result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement });
-    });
-    return result;
+  setHiddenSingles(): boolean {
+    const hiddenSingles = this.getHiddenSingles();
+    if (!hiddenSingles.length) return false;
+    this.setInputValues(hiddenSingles);
+    this.stats.hiddenSingle += hiddenSingles.length;
+    return true;
   }
 
-  static getHiddenSingleFromVirtualLines(virtualLines: VirtualLine[]): InputValueData[] {
-    const result: InputValueData[] = [];
-    virtualLines.forEach((virtualLine) => {
-      const lineResult = SudokuSolver.getHiddenSingleFromVirtualLine(virtualLine);
-      result.push(...lineResult);
-    });
-    return result;
+  trySolve(): boolean {
+    if (this.setUniqueMissing()) return this.trySolve();
+
+    this.getBasicCandidates();
+    if (this.setNakedSingles()) return this.trySolve();
+    if (this.setHiddenSingles()) return this.trySolve();
+
+    return this.solved;
   }
 
   private updateElementMissing() {
@@ -176,109 +175,160 @@ export default class SudokuSolver extends Sudoku {
     );
   }
 
-  // rowColumnLockInBox(type: "row" | "column", index: number): InputValueData[] {
-  //   const result: InputValueData[] = [];
-  //   const missing = type === "row" ? this.elementMissing.rows[index] : this.elementMissing.columns[index];
-  //   const relatedBoxes = type === "row" ? this.getAllRelatedBoxesInLine(index) : this.getAllRelatedBoxesInColumn(index);
+  static numberOfCandidates(candidates: Candidates): number {
+    const entries = Object.entries(candidates);
+    return entries.reduce((acc, [_, value]) => (value ? acc + 1 : acc), 0);
+  }
 
-  //   for (const key in missing) {
-  //     const sudokuElement = key as Element;
-  //     if (!missing[sudokuElement]) continue;
+  static getUniqueCandidate(candidates: Candidates): SudokuElement | null {
+    const entries = Object.entries(candidates);
+    const candidatesArr = entries.filter(([_, value]) => value) as [SudokuElement, boolean][];
+    return candidatesArr.length === 1 ? candidatesArr[0][0] : null;
+  }
 
-  //     const boxContained = relatedBoxes.map((box) =>
-  //       box.some(
-  //         (cell) =>
-  //           (type === "row" ? cell.rowIndex : cell.columnIndex) === index &&
-  //           !cell.clue &&
-  //           !cell.inputValue &&
-  //           cell.candidates &&
-  //           cell.candidates[sudokuElement]
-  //       )
-  //     );
+  static getHiddenSingleFromVirtualLine(virtualLine: VirtualLine): InputValueData[] {
+    const result: InputValueData[] = [];
+    const candidatesCount: Record<SudokuElement, number> = {
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+    };
+    virtualLine.forEach((cell) => {
+      if (!cell.candidates || cell.clue || cell.inputValue) return;
+      Object.entries(cell.candidates).forEach(([key, bool]) => bool && candidatesCount[key as SudokuElement]++);
+    });
+    Object.entries(candidatesCount).forEach(([key, count]) => {
+      if (count !== 1) return;
+      const sudokuElement = key as SudokuElement;
+      const cell = virtualLine.find((x) => x.candidates && x.candidates[sudokuElement])!;
+      if (SudokuSolver.numberOfCandidates(cell.candidates!) === 1) return; // naked single
+      result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement });
+    });
+    return result;
+  }
 
-  //     const numberOfBoxContained = boxContained.reduce((acc, cur) => acc + (cur ? 1 : 0), 0);
-  //     if (numberOfBoxContained === 1) {
-  //       const lockedBox = relatedBoxes[boxContained.indexOf(true)];
-  //       const excludedCells = lockedBox.filter(
-  //         (x) =>
-  //           (type === "row" ? x.rowIndex : x.columnIndex) !== index &&
-  //           !x.clue &&
-  //           !x.inputValue &&
-  //           x.candidates &&
-  //           x.candidates[sudokuElement]
-  //       );
-  //       excludedCells.forEach((cell) =>
-  //         result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement })
-  //       );
-  //     }
-  //   }
+  static getHiddenSingleFromVirtualLines(virtualLines: VirtualLine[]): InputValueData[] {
+    const result: InputValueData[] = [];
+    virtualLines.forEach((virtualLine) => {
+      const lineResult = SudokuSolver.getHiddenSingleFromVirtualLine(virtualLine);
+      result.push(...lineResult);
+    });
+    return result;
+  }
 
-  //   return result;
-  // }
+  rowColumnLockInBox(type: RowColumn, index: number): InputValueData[] {
+    const result: InputValueData[] = [];
+    const missing = this.elementMissing[type][index];
+    const relatedBoxes = this.getAllRelatedBoxesInRowOrColumn(type, index);
 
-  // boxLockInRowColumn(type: "row" | "column", boxIndex: number): InputValueData[] {
-  //   const result: InputValueData[] = [];
-  //   const missing = this.elementMissing.boxes[boxIndex];
-  //   const relatedLines = this.getAllRelatedLinesInBox(type, boxIndex);
-  //   const box = this.getAllBoxes()[boxIndex];
+    for (const key in missing) {
+      const sudokuElement = key as SudokuElement;
+      if (!missing[sudokuElement]) continue;
 
-  //   for (const key in missing) {
-  //     const sudokuElement = key as Element;
-  //     if (!missing[sudokuElement]) continue;
+      const boxContained = relatedBoxes.map((box) =>
+        box.some(
+          (cell) =>
+            (type === VirtualLineType.ROW ? cell.rowIndex : cell.columnIndex) === index &&
+            cell.candidates &&
+            cell.candidates[sudokuElement] &&
+            !cell.clue &&
+            !cell.inputValue
+        )
+      );
 
-  //     const cellsContained = box.filter((x) => !x.clue && !x.inputValue && x.candidates && x.candidates[sudokuElement]);
-  //     const allInSameLine =
-  //       cellsContained.length &&
-  //       cellsContained.every((x) =>
-  //         type === "row" ? x.rowIndex === cellsContained[0].rowIndex : x.columnIndex === cellsContained[0].columnIndex
-  //       );
-  //     if (allInSameLine) {
-  //       const lineIndex = type === "row" ? cellsContained[0].rowIndex : cellsContained[0].columnIndex;
-  //       const virtualLine = relatedLines.find((x) => (type === "row" ? x[0].rowIndex : x[0].columnIndex) === lineIndex);
-  //       if (!virtualLine) continue;
-  //       const excludedCells = virtualLine.filter(
-  //         (x) =>
-  //           this.getBoxIndex(x.rowIndex, x.columnIndex) !== boxIndex &&
-  //           !x.clue &&
-  //           !x.inputValue &&
-  //           x.candidates &&
-  //           x.candidates[sudokuElement]
-  //       );
-  //       excludedCells.forEach((cell) =>
-  //         result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement })
-  //       );
-  //     }
-  //   }
+      const numberOfBoxContained = boxContained.reduce((acc, cur) => acc + (cur ? 1 : 0), 0);
+      if (numberOfBoxContained === 1) {
+        const lockedBox = relatedBoxes[boxContained.indexOf(true)];
+        const excludedCells = lockedBox.filter(
+          (cell) =>
+            (type === VirtualLineType.ROW ? cell.rowIndex : cell.columnIndex) !== index &&
+            cell.candidates &&
+            cell.candidates[sudokuElement] &&
+            !cell.clue &&
+            !cell.inputValue
+        );
+        excludedCells.forEach((cell) =>
+          result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement })
+        );
+      }
+    }
 
-  //   return result;
-  // }
+    return result;
+  }
 
-  // getRemovalDueToLockedCandidates(): InputValueData[] {
-  //   const idx: SudokuIndex[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  boxLockInRowColumn(type: RowColumn, boxIndex: number): InputValueData[] {
+    const result: InputValueData[] = [];
+    const missing = this.elementMissing[VirtualLineType.BOX][boxIndex];
+    const relatedLines = this.getAllRelatedRowsOrColumnsInBox(type, boxIndex);
+    const box = this.getAllBoxes()[boxIndex];
 
-  //   const row = idx.map((x) => this.rowColumnLockInBox("row", x));
-  //   const column = idx.map((x) => this.rowColumnLockInBox("column", x));
-  //   const boxRow = idx.map((x) => this.boxLockInRowColumn("row", x));
-  //   const boxColumn = idx.map((x) => this.boxLockInRowColumn("column", x));
+    for (const key in missing) {
+      const sudokuElement = key as SudokuElement;
+      if (!missing[sudokuElement]) continue;
 
-  //   const arr: InputValueData[] = [...row.flat(), ...column.flat(), ...boxRow.flat(), ...boxColumn.flat()];
-  //   return this.removeDuplicatesInputValueData(arr);
-  // }
+      const cellsContained = box.filter((x) => x.candidates && x.candidates[sudokuElement] && !x.clue && !x.inputValue);
+      if (cellsContained.length === 0) continue;
 
-  // removeElementInCandidates(inputValueDataArr: InputValueData[]): boolean {
-  //   if (!inputValueDataArr.length) {
-  //     return false;
-  //   } else {
-  //     inputValueDataArr.forEach((inputValueData) => {
-  //       const { rowIndex, columnIndex, value } = inputValueData;
-  //       const cell = this.grid[rowIndex][columnIndex];
-  //       if (cell.candidates) {
-  //         cell.candidates[value] = false;
-  //       }
-  //     });
-  //     return true;
-  //   }
-  // }
+      const allInSameLine = cellsContained.every((x) =>
+        type === VirtualLineType.ROW
+          ? x.rowIndex === cellsContained[0].rowIndex
+          : x.columnIndex === cellsContained[0].columnIndex
+      );
+      if (allInSameLine) {
+        const lineIndex = type === VirtualLineType.ROW ? cellsContained[0].rowIndex : cellsContained[0].columnIndex;
+        const virtualLine = relatedLines.find(
+          (x) => (type === VirtualLineType.ROW ? x[0].rowIndex : x[0].columnIndex) === lineIndex
+        );
+        if (!virtualLine) continue;
+        const excludedCells = virtualLine.filter(
+          (x) =>
+            this.getBoxIndex(x.rowIndex, x.columnIndex) !== boxIndex &&
+            !x.clue &&
+            !x.inputValue &&
+            x.candidates &&
+            x.candidates[sudokuElement]
+        );
+        excludedCells.forEach((cell) =>
+          result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement })
+        );
+      }
+    }
+
+    return result;
+  }
+
+  getRemovalDueToLockedCandidates(): InputValueData[] {
+    const idx: SudokuIndex[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+
+    const row = idx.map((x) => this.rowColumnLockInBox("row", x));
+    const column = idx.map((x) => this.rowColumnLockInBox("column", x));
+    const boxRow = idx.map((x) => this.boxLockInRowColumn("row", x));
+    const boxColumn = idx.map((x) => this.boxLockInRowColumn("column", x));
+
+    const arr: InputValueData[] = [...row.flat(), ...column.flat(), ...boxRow.flat(), ...boxColumn.flat()];
+    return this.removeDuplicatesInputValueData(arr);
+  }
+
+  removeElementInCandidates(inputValueDataArr: InputValueData[]): boolean {
+    if (!inputValueDataArr.length) {
+      return false;
+    } else {
+      inputValueDataArr.forEach((inputValueData) => {
+        const { rowIndex, columnIndex, value } = inputValueData;
+        const cell = this.grid[rowIndex][columnIndex];
+        if (cell.candidates) {
+          cell.candidates[value] = false;
+        }
+      });
+      return true;
+    }
+  }
 
   // getCandidatesArr(candidates: Candidates): Element[] {
   //   const entries = Object.entries(candidates) as [Element, boolean][];
@@ -746,62 +796,6 @@ export default class SudokuSolver extends Sudoku {
   //   return elimination;
   // }
 
-  // setRowUniqueMissing(): boolean {
-  //   const uniqueMissing = this.getUniqueMissing("row");
-  //   if (uniqueMissing.length) {
-  //     this.setInputValue(uniqueMissing);
-  //     this.stats.rowUniqueMissing += uniqueMissing.length;
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  // setColumnUniqueMissing(): boolean {
-  //   const uniqueMissing = this.getUniqueMissing("column");
-  //   if (uniqueMissing.length) {
-  //     this.setInputValue(uniqueMissing);
-  //     this.stats.columnUniqueMissing += uniqueMissing.length;
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  // setBoxUniqueMissing(): boolean {
-  //   const uniqueMissing = this.getUniqueMissing("box");
-  //   if (uniqueMissing.length) {
-  //     this.setInputValue(uniqueMissing);
-  //     this.stats.boxUniqueMissing += uniqueMissing.length;
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  // setNakedSingles(): boolean {
-  //   const nakedSingles = this.getNakedSingles();
-  //   if (nakedSingles.length) {
-  //     this.setInputValue(nakedSingles);
-  //     this.stats.nakedSingles += nakedSingles.length;
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  // setHiddenSingles(): boolean {
-  //   const hiddenSingles = this.getHiddenSingles();
-
-  //   if (hiddenSingles.length) {
-  //     this.setInputValue(hiddenSingles);
-  //     this.stats.hiddenSingles += hiddenSingles.length;
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
   // trySolve(): void {
   //   if (this.isValid) {
   //     if (this.setRowUniqueMissing()) return this.trySolve();
@@ -885,4 +879,10 @@ export default class SudokuSolver extends Sudoku {
   //     return;
   //   }
   // }
+
+  static statsTemplate: () => Stats = () => ({
+    uniqueMissing: 0,
+    nakedSingle: 0,
+    hiddenSingle: 0,
+  });
 }
