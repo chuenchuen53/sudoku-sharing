@@ -29,7 +29,7 @@ defineProps<{
   onChange: (value: SudokuElementWithZero) => void;
   removeAllHighlight: () => void;
 }>();
-const arrElements = ["1", "2", "3", "4", "5", "6", "7", "8"] as const;
+const arrElements = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
 </script>
 
 <style lang="scss" scoped>

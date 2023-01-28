@@ -1,19 +1,19 @@
 import ArrUtil from "../utils/ArrUtil";
 import Sudoku from "./Sudoku";
-import {
-  VirtualLineType,
-  type RowColumn,
+import type {
+  RowColumn,
   Stats,
   Candidates,
   InputClues,
   SudokuElement,
   VirtualLine,
-  Grid,
   InputValueData,
   Cell,
   CellWithIndex,
   ElementMissing,
+  SudokuIndex,
 } from "./type";
+import { VirtualLineType } from "./type";
 
 // const createAllElementsArr = (): SudokuElement[] => ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
@@ -266,7 +266,7 @@ export default class SudokuSolver extends Sudoku {
     const result: InputValueData[] = [];
     const missing = this.elementMissing[VirtualLineType.BOX][boxIndex];
     const relatedLines = this.getAllRelatedRowsOrColumnsInBox(type, boxIndex);
-    const box = this.getAllBoxes()[boxIndex];
+    const box = this.getBoxFromBoxIndex(boxIndex);
 
     for (const key in missing) {
       const sudokuElement = key as SudokuElement;
@@ -289,10 +289,10 @@ export default class SudokuSolver extends Sudoku {
         const excludedCells = virtualLine.filter(
           (x) =>
             this.getBoxIndex(x.rowIndex, x.columnIndex) !== boxIndex &&
-            !x.clue &&
-            !x.inputValue &&
             x.candidates &&
-            x.candidates[sudokuElement]
+            x.candidates[sudokuElement] &&
+            !x.clue &&
+            !x.inputValue
         );
         excludedCells.forEach((cell) =>
           result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement })
@@ -306,28 +306,33 @@ export default class SudokuSolver extends Sudoku {
   getRemovalDueToLockedCandidates(): InputValueData[] {
     const idx: SudokuIndex[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
-    const row = idx.map((x) => this.rowColumnLockInBox("row", x));
-    const column = idx.map((x) => this.rowColumnLockInBox("column", x));
-    const boxRow = idx.map((x) => this.boxLockInRowColumn("row", x));
-    const boxColumn = idx.map((x) => this.boxLockInRowColumn("column", x));
+    const rowLockInBox = idx.map((x) => this.rowColumnLockInBox(VirtualLineType.ROW, x));
+    const columnLockInBox = idx.map((x) => this.rowColumnLockInBox(VirtualLineType.COLUMN, x));
+    const boxLockInRow = idx.map((x) => this.boxLockInRowColumn(VirtualLineType.ROW, x));
+    const boxLockInColumn = idx.map((x) => this.boxLockInRowColumn(VirtualLineType.COLUMN, x));
 
-    const arr: InputValueData[] = [...row.flat(), ...column.flat(), ...boxRow.flat(), ...boxColumn.flat()];
-    return this.removeDuplicatesInputValueData(arr);
+    const arr: InputValueData[] = [
+      ...rowLockInBox.flat(),
+      ...columnLockInBox.flat(),
+      ...boxLockInRow.flat(),
+      ...boxLockInColumn.flat(),
+    ];
+    return Sudoku.removeDuplicatedInputValueData(arr);
   }
 
   removeElementInCandidates(inputValueDataArr: InputValueData[]): boolean {
     if (!inputValueDataArr.length) {
       return false;
-    } else {
-      inputValueDataArr.forEach((inputValueData) => {
-        const { rowIndex, columnIndex, value } = inputValueData;
-        const cell = this.grid[rowIndex][columnIndex];
-        if (cell.candidates) {
-          cell.candidates[value] = false;
-        }
-      });
-      return true;
     }
+
+    inputValueDataArr.forEach((inputValueData) => {
+      const { rowIndex, columnIndex, value } = inputValueData;
+      const cell = this.grid[rowIndex][columnIndex];
+      if (cell.candidates) {
+        cell.candidates[value] = false;
+      }
+    });
+    return true;
   }
 
   // getCandidatesArr(candidates: Candidates): Element[] {

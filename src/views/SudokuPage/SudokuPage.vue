@@ -52,7 +52,7 @@ import { VirtualLineType } from "@/Sudoku/type";
 import type { Highlight } from "@/views/SudokuPage/type";
 import type { CellWithIndex, InputValueData, SudokuElementWithZero } from "@/Sudoku/type";
 
-const s = reactive(new SudokuSolver(tp.p3));
+const s = reactive(new SudokuSolver(tp.p1));
 const highlight = ref<Highlight>({
   element: "0",
   cell: [],

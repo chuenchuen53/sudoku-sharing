@@ -13,6 +13,16 @@ export default class TU {
     };
   };
 
+  static inputValueDataArrFactory = (arr: [number, number, SudokuElement][]): InputValueData[] => {
+    return arr.map(([r, c, v]) => TU.inputValueDataFactory(r, c, v));
+  };
+
+  static removeDuplicate2DArray = (arr: [number, number, SudokuElement][]): [number, number, SudokuElement][] => {
+    return arr.filter(
+      ([r, c, v], index) => arr.findIndex(([r2, c2, v2]) => r === r2 && c === c2 && v === v2) === index
+    );
+  };
+
   static candidatesLineFactory = (candidates: (SudokuElement[] | undefined)[]): VirtualLine => {
     return candidates.map((candidates, index) => {
       return {
