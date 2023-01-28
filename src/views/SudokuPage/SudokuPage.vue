@@ -4,6 +4,7 @@
       <SudokuGrid
         :grid="s.grid"
         :highlight="highlight"
+        :removal-of-candidates="removalOfCandidates"
         :get-all-related-cells="s.getAllRelatedCells.bind(s)"
         :set-input-value="setInputValue"
         :remove-input-value="removeInputValue"
@@ -26,6 +27,7 @@
           :get-basic-candidates="getBasicCandidates"
           :get-naked-singles="getNakedSingles"
           :get-hidden-singles="getHiddenSingles"
+          :get-removal-due-to-locked-candidates="getRemovalDueToLockedCandidates"
         />
         <div>
           <StatsTable class="mx" :stats="s.stats" />
@@ -59,6 +61,8 @@ const highlight = ref<Highlight>({
   candidate: [],
   invalid: [],
 });
+
+const removalOfCandidates = ref<InputValueData[]>([]);
 
 const removeAllHighlight = () => {
   highlight.value.element = "0";
@@ -124,6 +128,11 @@ const getNakedSingles = () => {
 const getHiddenSingles = () => {
   const result = s.getHiddenSingles();
   highlight.value.candidate = result;
+};
+
+const getRemovalDueToLockedCandidates = () => {
+  const result = s.getRemovalDueToLockedCandidates();
+  removalOfCandidates.value = result;
 };
 </script>
 

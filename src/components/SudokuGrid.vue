@@ -35,6 +35,9 @@
                 candidateHighlight: highlight.candidate.some(
                   (x) => x.rowIndex === rowIndex && x.columnIndex === columnIndex && x.value === key
                 ),
+                strikeThrough: removalOfCandidates.some(
+                  (x) => x.rowIndex === rowIndex && x.columnIndex === columnIndex && x.value === key
+                ),
               }"
             >
               {{ key }}
@@ -61,6 +64,7 @@ interface SelectedCell {
 const props = defineProps<{
   grid: Grid;
   highlight: Highlight;
+  removalOfCandidates: InputValueData[];
   getAllRelatedCells: InstanceType<typeof SudokuSolver>["getAllRelatedCells"];
   // eslint-disable-next-line no-unused-vars
   setInputValue: (data: InputValueData) => void;
@@ -272,6 +276,10 @@ $invalid-cells-color: var(--el-color-danger);
 
           &.candidateHighlight {
             background-color: $temp-candidate-highlight-bgcolor;
+          }
+
+          &.strikeThrough {
+            text-decoration: line-through solid red 2px;
           }
         }
       }
