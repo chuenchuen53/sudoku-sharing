@@ -29,6 +29,9 @@
           :get-removal-due-to-naked-pairs="getRemovalDueToNakedPairs"
           :get-removal-due-to-naked-triplets="getRemovalDueToNakedTriplets"
           :get-removal-due-to-naked-quads="getRemovalDueToNakedQuads"
+          :get-removal-due-to-hidden-pairs="getRemovalDueToHiddenPairs"
+          :get-removal-due-to-hidden-triplets="getRemovalDueToHiddenTriplets"
+          :get-removal-due-to-hidden-quads="getRemovalDueToHiddenQuads"
         />
         <div>
           <StatsTable class="mx" :stats="s.stats" />
@@ -57,7 +60,7 @@ import type { Highlight } from "@/views/SudokuPage/type";
 import type { CellWithIndex, InputValueData, SudokuElementWithZero } from "@/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
 
-const s = reactive(new SudokuSolver(tp.p4));
+const s = reactive(new SudokuSolver(tp.p6));
 const highlight = ref<Highlight>({
   element: "0",
   cell: [],
@@ -164,6 +167,21 @@ const getRemovalDueToNakedTriplets = () => {
 
 const getRemovalDueToNakedQuads = () => {
   const result = s.getRemovalDueToNakedQuads();
+  removalOfCandidates.value = result;
+};
+
+const getRemovalDueToHiddenPairs = () => {
+  const result = s.getRemovalDueToHiddenPairs();
+  removalOfCandidates.value = result;
+};
+
+const getRemovalDueToHiddenTriplets = () => {
+  const result = s.getRemovalDueToHiddenTriplets();
+  removalOfCandidates.value = result;
+};
+
+const getRemovalDueToHiddenQuads = () => {
+  const result = s.getRemovalDueToHiddenQuads();
   removalOfCandidates.value = result;
 };
 </script>

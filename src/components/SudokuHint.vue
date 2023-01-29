@@ -27,6 +27,15 @@
       <div>
         <el-button @click="getRemovalDueToNakedQuads">Naked Quads</el-button>
       </div>
+      <div>
+        <el-button @click="getRemovalDueToHiddenPairs">Hidden Pairs</el-button>
+      </div>
+      <div>
+        <el-button @click="getRemovalDueToHiddenTriplets">Hidden Triplets</el-button>
+      </div>
+      <div>
+        <el-button @click="getRemovalDueToHiddenQuads">Hidden Quads</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -45,6 +54,9 @@ defineProps<{
   getRemovalDueToNakedPairs: () => void;
   getRemovalDueToNakedTriplets: () => void;
   getRemovalDueToNakedQuads: () => void;
+  getRemovalDueToHiddenPairs: () => void;
+  getRemovalDueToHiddenTriplets: () => void;
+  getRemovalDueToHiddenQuads: () => void;
 }>();
 </script>
 
