@@ -1,8 +1,8 @@
 import { expect, describe, it } from "vitest";
-import Sudoku from "../src/Sudoku/Sudoku";
-import SudokuSolver, { UniqueMissing } from "../src/Sudoku/SudokuSolver";
-import { InputClues, VirtualLineType, SudokuElement, VirtualLine, Candidates } from "../src/Sudoku/type";
-import TU from "./utils";
+import Sudoku from "../../src/Sudoku/Sudoku";
+import SudokuSolver, { UniqueMissing } from "../../src/Sudoku/SudokuSolver";
+import { InputClues, VirtualLineType, SudokuElement, VirtualLine, Candidates } from "../../src/Sudoku/type";
+import TU from "../utils";
 
 const candidatesFactory = Sudoku.candidatesFactory;
 

@@ -28,6 +28,7 @@
           :get-naked-singles="getNakedSingles"
           :get-hidden-singles="getHiddenSingles"
           :get-removal-due-to-locked-candidates="getRemovalDueToLockedCandidates"
+          :get-removal-due-to-naked-pairs="getRemovalDueToNakedPairs"
         />
         <div>
           <StatsTable class="mx" :stats="s.stats" />
@@ -132,6 +133,11 @@ const getHiddenSingles = () => {
 
 const getRemovalDueToLockedCandidates = () => {
   const result = s.getRemovalDueToLockedCandidates();
+  removalOfCandidates.value = result;
+};
+
+const getRemovalDueToNakedPairs = () => {
+  const result = s.getRemovalDueToNakedPairs();
   removalOfCandidates.value = result;
 };
 </script>

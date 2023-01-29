@@ -279,7 +279,7 @@ $invalid-cells-color: var(--el-color-danger);
           }
 
           &.strikeThrough {
-            text-decoration: line-through solid red 2px;
+            text-decoration: line-through solid rgb(255 0 0 / 50%) 2px;
           }
         }
       }

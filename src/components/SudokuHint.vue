@@ -18,6 +18,9 @@
       <div>
         <el-button @click="getRemovalDueToLockedCandidates">Locked Candidates</el-button>
       </div>
+      <div>
+        <el-button @click="getRemovalDueToNakedPairs">Naked Pairs</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -33,6 +36,7 @@ defineProps<{
   getNakedSingles: () => void;
   getHiddenSingles: () => void;
   getRemovalDueToLockedCandidates: () => void;
+  getRemovalDueToNakedPairs: () => void;
 }>();
 </script>
 

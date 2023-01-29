@@ -1,7 +1,7 @@
 import { expect, describe, it } from "vitest";
-import SudokuSolver from "../src/Sudoku/SudokuSolver";
-import { InputClues, SudokuElement, VirtualLineType } from "../src/Sudoku/type";
-import TU from "./utils";
+import SudokuSolver from "../../src/Sudoku/SudokuSolver";
+import { InputClues, SudokuElement, VirtualLineType } from "../../src/Sudoku/type";
+import TU from "../utils";
 
 interface AllResult {
   rowLockInBoxResult: [number, number, SudokuElement][][];
