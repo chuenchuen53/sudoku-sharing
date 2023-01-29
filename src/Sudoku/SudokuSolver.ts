@@ -31,7 +31,7 @@ export interface UniqueMissing {
   cell: CellWithIndex;
 }
 
-export interface NakedPairsTripletsResult {
+export interface NakedPairsTripletsQuadsResult {
   cells: CellWithIndex[];
   elimination: InputValueData[];
 }
@@ -342,8 +342,8 @@ export default class SudokuSolver extends Sudoku {
     return true;
   }
 
-  getNakedPairsFromVirtualLines(virtualLines: VirtualLine[]): NakedPairsTripletsResult[] {
-    const result: NakedPairsTripletsResult[] = [];
+  getNakedPairsFromVirtualLines(virtualLines: VirtualLine[]): NakedPairsTripletsQuadsResult[] {
+    const result: NakedPairsTripletsQuadsResult[] = [];
 
     for (let i = 0; i < virtualLines.length; i++) {
       const virtualLine = virtualLines[i];
@@ -365,11 +365,7 @@ export default class SudokuSolver extends Sudoku {
         const cells = [x, y];
         const elimination: InputValueData[] = [];
         const [c1, c2] = SudokuSolver.getCandidatesArr(x.candidates);
-        const restCells = virtualLine.filter(
-          (z) =>
-            !(z.rowIndex === x.rowIndex && z.columnIndex === x.columnIndex) &&
-            !(z.rowIndex === y.rowIndex && z.columnIndex === y.columnIndex)
-        );
+        const restCells = virtualLine.filter((z) => !Sudoku.isSamePos(x, z) && !Sudoku.isSamePos(y, z));
         restCells.forEach(({ rowIndex, columnIndex, candidates }) => {
           if (candidates?.[c1]) elimination.push({ rowIndex, columnIndex, value: c1 });
           if (candidates?.[c2]) elimination.push({ rowIndex, columnIndex, value: c2 });
@@ -393,93 +389,78 @@ export default class SudokuSolver extends Sudoku {
     return Sudoku.removeDuplicatedInputValueData(elimination);
   }
 
-  // isCandidateIsSubset(subset: Candidates, superset: Candidates): boolean {
-  //   for (const key in subset) {
-  //     const sudokuElement = key as Element;
-  //     if (subset[sudokuElement] && !superset[sudokuElement]) {
-  //       return false;
-  //     }
-  //   }
+  static isCandidateExtendedTheSet(candidates: Candidates, superset: SudokuElement[]): boolean {
+    for (const key in candidates) {
+      const sudokuElement = key as SudokuElement;
+      if (candidates[sudokuElement] && !superset.includes(sudokuElement)) return false;
+    }
 
-  //   return true;
-  // }
+    return true;
+  }
 
-  // getMultipleNakedHelper(
-  //   virtualLines: VirtualLine[],
-  //   sizeOfCandidate: number
-  // ): {
-  //   multiple: CellWithIndex[];
-  //   elimination: InputValueData[];
-  // }[] {
-  //   const result: {
-  //     multiple: CellWithIndex[];
-  //     elimination: InputValueData[];
-  //   }[] = [];
+  getMultipleNakedFromVirtualLines(
+    virtualLines: VirtualLine[],
+    sizeOfCandidate: 3 | 4
+  ): NakedPairsTripletsQuadsResult[] {
+    const result: NakedPairsTripletsQuadsResult[] = [];
 
-  //   for (let i = 0; i < virtualLines.length; i++) {
-  //     const virtualLine = virtualLines[i];
+    for (let i = 0; i < virtualLines.length; i++) {
+      const virtualLine = virtualLines[i];
+      const emptyCells = virtualLine.filter((x) => !x.clue && !x.inputValue);
+      const missingInVirtualLine = this.missingInVirtualLine(virtualLine);
+      const missingArr = SudokuSolver.getCandidatesArr(missingInVirtualLine);
+      if (missingArr.length < sizeOfCandidate) continue;
+      const combinations =
+        sizeOfCandidate === 3 ? CalcUtil.combinations3(missingArr) : CalcUtil.combinations4(missingArr);
 
-  //     const emptyCells = virtualLine.filter((x) => !x.clue && !x.inputValue);
-  //     const missingInVirtualLine = this.missingInVirtualLine(virtualLine);
-  //     const missingArr = this.getCandidatesArr(missingInVirtualLine);
-  //     if (missingArr.length < sizeOfCandidate) continue;
-  //     const combinations = CalcUtil.combinations(missingArr, sizeOfCandidate);
+      for (const comb of combinations) {
+        const cells = emptyCells.filter(
+          (x) => x.candidates && SudokuSolver.isCandidateExtendedTheSet(x.candidates, comb)
+        );
 
-  //     for (const comb of combinations) {
-  //       const superset = candidatesFromArr(comb);
-  //       const subsetCells = emptyCells.filter((x) => x.candidates && this.isCandidateIsSubset(x.candidates, superset));
+        if (cells.length === sizeOfCandidate) {
+          const elimination: InputValueData[] = [];
+          const restCells = emptyCells.filter((x) => !cells.some((y) => Sudoku.isSamePos(x, y)));
+          restCells.forEach(({ rowIndex, columnIndex, candidates }) => {
+            for (const sudokuElement of comb) {
+              if (candidates?.[sudokuElement]) elimination.push({ rowIndex, columnIndex, value: sudokuElement });
+            }
+          });
 
-  //       if (subsetCells.length === sizeOfCandidate) {
-  //         const multiple: CellWithIndex[] = subsetCells;
-  //         const elimination: InputValueData[] = [];
+          result.push({ cells, elimination });
+        }
+      }
+    }
 
-  //         const restCells = emptyCells.filter(
-  //           (x) => !subsetCells.some((y) => y.rowIndex === x.rowIndex && y.columnIndex === x.columnIndex)
-  //         );
-  //         // const restCellsContainerAnyCandidateInComb = restCells.some(
-  //         //   (x) => x.candidates && this.getCandidatesArr(x.candidates).some((y) => comb.includes(y))
-  //         // );
-  //         // if (restCellsContainerAnyCandidateInComb) continue;
+    return result;
+  }
 
-  //         restCells.forEach((cell) => {
-  //           for (const sudokuElement of comb) {
-  //             if (cell.candidates && cell.candidates[sudokuElement]) {
-  //               elimination.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement });
-  //             }
-  //           }
-  //         });
+  getRemovalDueToNakedTriplets(): InputValueData[] {
+    if (!this.isValid) return [];
 
-  //         result.push({ multiple, elimination });
-  //       }
-  //     }
-  //   }
+    const size = 3;
+    const rowResult = this.getMultipleNakedFromVirtualLines(this.getAllRows(), size);
+    const columnResult = this.getMultipleNakedFromVirtualLines(this.getAllColumns(), size);
+    const boxResult = this.getMultipleNakedFromVirtualLines(this.getAllBoxes(), size);
+    const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
 
-  //   return result;
-  // }
+    return Sudoku.removeDuplicatedInputValueData(elimination);
+  }
 
-  // getNakedTriplets(): InputValueData[] {
-  //   if (!this.isValid) return [];
+  getRemovalDueToNakedQuads(): InputValueData[] {
+    if (!this.isValid) return [];
 
-  //   const size = 3;
-  //   const rowResult = this.getMultipleNakedHelper(this.getAllRows(), size);
-  //   const columnResult = this.getMultipleNakedHelper(this.getAllColumns(), size);
-  //   const boxResult = this.getMultipleNakedHelper(this.getAllBoxes(), size);
-  //   const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
+    const size = 4;
+    const rowResult = this.getMultipleNakedFromVirtualLines(this.getAllRows(), size);
+    console.log("file: SudokuSolver.ts:455 ~ SudokuSolver ~ getRemovalDueToNakedQuads ~ rowResult", rowResult);
+    const columnResult = this.getMultipleNakedFromVirtualLines(this.getAllColumns(), size);
+    console.log("file: SudokuSolver.ts:457 ~ SudokuSolver ~ getRemovalDueToNakedQuads ~ columnResult", columnResult);
+    const boxResult = this.getMultipleNakedFromVirtualLines(this.getAllBoxes(), size);
+    console.log("file: SudokuSolver.ts:459 ~ SudokuSolver ~ getRemovalDueToNakedQuads ~ boxResult", boxResult);
+    const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
 
-  //   return elimination;
-  // }
-
-  // getNakedQuads(): InputValueData[] {
-  //   if (!this.isValid) return [];
-
-  //   const size = 4;
-  //   const rowResult = this.getMultipleNakedHelper(this.getAllRows(), size);
-  //   const columnResult = this.getMultipleNakedHelper(this.getAllColumns(), size);
-  //   const boxResult = this.getMultipleNakedHelper(this.getAllBoxes(), size);
-  //   const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
-
-  //   return elimination;
-  // }
+    return Sudoku.removeDuplicatedInputValueData(elimination);
+  }
 
   // getHiddenMultipleHelper(
   //   virtualLines: VirtualLine[],

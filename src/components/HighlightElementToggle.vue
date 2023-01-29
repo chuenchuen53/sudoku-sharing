@@ -11,23 +11,17 @@
         >{{ e }}</el-button
       >
     </el-button-group>
-    <div class="mt">
-      <el-button @click="removeAllHighlight">remove all highlight</el-button>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
 import { ElButton } from "element-plus";
 import "element-plus/es/components/button/style/css";
 import type { SudokuElementWithZero } from "@/Sudoku/type";
 
 defineProps<{
   value: SudokuElementWithZero;
-  // eslint-disable-next-line no-unused-vars
   onChange: (value: SudokuElementWithZero) => void;
-  removeAllHighlight: () => void;
 }>();
 const arrElements = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
 </script>

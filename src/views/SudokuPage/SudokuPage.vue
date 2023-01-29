@@ -9,13 +9,11 @@
         :set-input-value="setInputValue"
         :remove-input-value="removeInputValue"
       />
-      <HighlightElementToggle
-        :value="highlight.element"
-        :on-change="setElementHighlight"
-        :remove-all-highlight="removeAllHighlight"
-        class="mt"
-      />
+      <HighlightElementToggle :value="highlight.element" :on-change="setElementHighlight" class="mt" />
+      <HighlightCellToggle :value="highlight.cell" :on-change="setCellCandidatesCountHighlight" class="mt" />
       <div :style="{ width: '100%', 'margin-left': '18px', 'margin-top': '24px' }">
+        <el-button @click="removeAllHighlight">remove all highlight</el-button>
+        <el-button @click="removeAllRemovalIndication">remove all removal indication</el-button>
         <el-button @click="clearAllCandidates">clear candidates</el-button>
       </div>
     </div>
@@ -29,6 +27,8 @@
           :get-hidden-singles="getHiddenSingles"
           :get-removal-due-to-locked-candidates="getRemovalDueToLockedCandidates"
           :get-removal-due-to-naked-pairs="getRemovalDueToNakedPairs"
+          :get-removal-due-to-naked-triplets="getRemovalDueToNakedTriplets"
+          :get-removal-due-to-naked-quads="getRemovalDueToNakedQuads"
         />
         <div>
           <StatsTable class="mx" :stats="s.stats" />
@@ -45,6 +45,7 @@
 import * as tp from "@/samplePuzzle";
 import { reactive, ref } from "vue";
 import HighlightElementToggle from "../../components/HighlightElementToggle.vue";
+import HighlightCellToggle from "../../components/HighlightCellToggle.vue";
 import { ElButton } from "element-plus";
 import "element-plus/es/components/button/style/css";
 import SudokuSolver from "@/Sudoku/SudokuSolver";
@@ -54,8 +55,9 @@ import StatsTable from "@/components/StatsTable.vue";
 import { VirtualLineType } from "@/Sudoku/type";
 import type { Highlight } from "@/views/SudokuPage/type";
 import type { CellWithIndex, InputValueData, SudokuElementWithZero } from "@/Sudoku/type";
+import Sudoku from "@/Sudoku/Sudoku";
 
-const s = reactive(new SudokuSolver(tp.p1));
+const s = reactive(new SudokuSolver(tp.p4));
 const highlight = ref<Highlight>({
   element: "0",
   cell: [],
@@ -71,6 +73,10 @@ const removeAllHighlight = () => {
   highlight.value.candidate = [];
 };
 
+const removeAllRemovalIndication = () => {
+  removalOfCandidates.value = [];
+};
+
 const clearAllCandidates = () => {
   s.clearAllCandidates();
 };
@@ -80,6 +86,16 @@ const setElementHighlight = (value: SudokuElementWithZero) => {
     highlight.value.element = "0";
   } else {
     highlight.value.element = value;
+  }
+};
+
+const setCellCandidatesCountHighlight = (count: number) => {
+  if (count === 0) {
+    highlight.value.cell = [];
+  } else {
+    const allCells = s.getAllRows().flat(1);
+    const cells = allCells.filter((x) => x.candidates && Sudoku.candidatesCount(x.candidates) < count);
+    highlight.value.cell = cells;
   }
 };
 
@@ -138,6 +154,16 @@ const getRemovalDueToLockedCandidates = () => {
 
 const getRemovalDueToNakedPairs = () => {
   const result = s.getRemovalDueToNakedPairs();
+  removalOfCandidates.value = result;
+};
+
+const getRemovalDueToNakedTriplets = () => {
+  const result = s.getRemovalDueToNakedTriplets();
+  removalOfCandidates.value = result;
+};
+
+const getRemovalDueToNakedQuads = () => {
+  const result = s.getRemovalDueToNakedQuads();
   removalOfCandidates.value = result;
 };
 </script>

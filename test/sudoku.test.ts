@@ -887,4 +887,14 @@ describe("sudoku basic", () => {
 
     expect(s.solved).toBe(true);
   });
+
+  it("candidatesCount", () => {
+    const c1 = candidatesFactory(true, ["1", "2", "3"]);
+    const c2 = candidatesFactory(true, ["1", "2", "3", "4"]);
+    const c3 = candidatesFactory(true, ["2", "5"]);
+
+    expect(Sudoku.candidatesCount(c1)).toBe(3);
+    expect(Sudoku.candidatesCount(c2)).toBe(4);
+    expect(Sudoku.candidatesCount(c3)).toBe(2);
+  });
 });

@@ -283,6 +283,14 @@ export default class Sudoku {
     }
   }
 
+  static candidatesCount(candidates: Candidates): number {
+    let count = 0;
+    for (const key in candidates) {
+      if (candidates[key as SudokuElement]) count++;
+    }
+    return count;
+  }
+
   get solved(): boolean {
     const { isValid, validateDetail } = this.validatePuzzle("inputValue");
     this.isValid = isValid;
