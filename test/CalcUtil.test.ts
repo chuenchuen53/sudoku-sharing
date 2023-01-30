@@ -270,4 +270,70 @@ describe("CalcUtil", () => {
       ["b", "c", "d", "e"],
     ]);
   });
+
+  it("CalcUtil.cartesianProduct test 1", () => {
+    const result = CalcUtil.cartesianProduct([1, 2], [10, 20], [100, 200, 300]);
+
+    expect(result).toStrictEqual([
+      [1, 10, 100],
+      [1, 10, 200],
+      [1, 10, 300],
+      [1, 20, 100],
+      [1, 20, 200],
+      [1, 20, 300],
+      [2, 10, 100],
+      [2, 10, 200],
+      [2, 10, 300],
+      [2, 20, 100],
+      [2, 20, 200],
+      [2, 20, 300],
+    ]);
+  });
+
+  it("CalcUtil.cartesianProduct test 2", () => {
+    const arr1 = [
+      { id: 1, name: "a" },
+      { id: 2, name: "b" },
+      { id: 3, name: "c" },
+    ];
+    const arr2 = [
+      { id: 4, name: "d" },
+      { id: 5, name: "e" },
+    ];
+    const result = CalcUtil.cartesianProduct(arr1, arr2);
+
+    expect(result).toStrictEqual([
+      [
+        { id: 1, name: "a" },
+        { id: 4, name: "d" },
+      ],
+      [
+        { id: 1, name: "a" },
+        { id: 5, name: "e" },
+      ],
+      [
+        { id: 2, name: "b" },
+        { id: 4, name: "d" },
+      ],
+      [
+        { id: 2, name: "b" },
+        { id: 5, name: "e" },
+      ],
+      [
+        { id: 3, name: "c" },
+        { id: 4, name: "d" },
+      ],
+      [
+        { id: 3, name: "c" },
+        { id: 5, name: "e" },
+      ],
+    ]);
+  });
+
+  it("CalcUtil.xor test 1", () => {
+    expect(CalcUtil.xor(true, true)).toBe(false);
+    expect(CalcUtil.xor(true, false)).toBe(true);
+    expect(CalcUtil.xor(false, true)).toBe(true);
+    expect(CalcUtil.xor(false, false)).toBe(false);
+  });
 });

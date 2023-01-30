@@ -46,6 +46,12 @@ export interface XWingSwordfishResult {
   elimination: InputValueData[];
 }
 
+export interface YWingResult {
+  pivot: CellWithIndex;
+  pincers: [CellWithIndex, CellWithIndex];
+  elimination: InputValueData;
+}
+
 export default class SudokuSolver extends Sudoku {
   public elementMissing: ElementMissing;
   public stats: Stats;
@@ -626,126 +632,108 @@ export default class SudokuSolver extends Sudoku {
     const allColumns = this.getAllColumns();
 
     const rowResult = this.getXWingSwordfishFromVirtualLines(VirtualLineType.ROW, allRows, allColumns);
-    console.log("file: SudokuSolver.ts:629 ~ SudokuSolver ~ getXWing ~ rowResult", rowResult);
     const columnResult = this.getXWingSwordfishFromVirtualLines(VirtualLineType.COLUMN, allColumns, allRows);
-    console.log("file: SudokuSolver.ts:631 ~ SudokuSolver ~ getXWing ~ columnResult", columnResult);
     const elimination = [...rowResult, ...columnResult].flatMap((x) => x.elimination);
 
-    return elimination;
+    return Sudoku.removeDuplicatedInputValueData(elimination);
   }
 
-  // // todo the swordfish may not need all rows/cols to have exactly 3 cells
-  // getSwordfish(): InputValueData[] {
-  //   if (!this.isValid) return [];
+  getYWingHelper(): YWingResult[] {
+    const result: YWingResult[] = [];
+    const cellsWithTwoCandidates = this.grid.map((row) =>
+      row.map((cell) => (cell.candidates && SudokuSolver.numberOfCandidates(cell.candidates) === 2) ?? false)
+    );
 
-  //   const rowResult = this.getXWingSwordfishHelper(this.getAllRows(), "row", "swordfish");
-  //   const columnResult = this.getXWingSwordfishHelper(this.getAllColumns(), "column", "swordfish");
-  //   const elimination = [...rowResult, ...columnResult].flatMap((x) => x.elimination);
+    // todo move to static
+    const cellWithTwoCandidatesAndOnlyOneIsAorB = (
+      cell: CellWithIndex,
+      a: SudokuElement,
+      b: SudokuElement
+    ): null | { rowIndex: number; columnIndex: number; same: SudokuElement; diff: SudokuElement } => {
+      if (!cell.candidates || SudokuSolver.numberOfCandidates(cell.candidates) !== 2) return null;
 
-  //   return elimination;
-  // }
+      const candidates = cell.candidates;
+      if (!CalcUtil.xor(candidates[a], candidates[b])) return null;
+      const rowIndex = cell.rowIndex;
+      const columnIndex = cell.columnIndex;
+      const same = candidates[a] ? a : b;
+      const diff = SudokuSolver.getCandidatesArr(cell.candidates).filter((x) => x !== same)[0];
+      return { rowIndex, columnIndex, same, diff };
+    };
 
-  // getYWingHelper(): {
-  //   pivot: CellWithIndex;
-  //   pincers: [CellWithIndex, CellWithIndex];
-  //   elimination: InputValueData | null;
-  // }[] {
-  //   const result: {
-  //     pivot: CellWithIndex;
-  //     pincers: [CellWithIndex, CellWithIndex];
-  //     elimination: InputValueData | null;
-  //   }[] = [];
-  //   const cellsWithTwoCandidates = this.grid.map((row) =>
-  //     row.map((cell) => (cell.candidates && this.numberOfCandidates(cell) === 2) ?? false)
-  //   );
+    // todo move to static
+    const possiblePincersFromLine = (line: VirtualLine, pivot: CellWithIndex, a: SudokuElement, b: SudokuElement) => {
+      return line.reduce((acc, cur, arr) => {
+        if (cur.rowIndex === pivot.rowIndex && cur.columnIndex === pivot.columnIndex) return acc;
+        const pincer = cellWithTwoCandidatesAndOnlyOneIsAorB(cur, a, b);
+        if (pincer) acc.push({ ...pincer, line });
+        return acc;
+      }, [] as { rowIndex: number; columnIndex: number; same: SudokuElement; diff: SudokuElement; line: VirtualLine }[]);
+    };
 
-  //   const cellsWithTwoCandidatesAndOneIsAorB = (
-  //     cell: CellWithIndex,
-  //     a: Element,
-  //     b: Element
-  //   ): null | { rowIndex: number; columnIndex: number; same: Element; diff: Element } => {
-  //     if (!cell.candidates) return null;
-  //     const candidates = cell.candidates;
-  //     const numberOfCandidates = this.numberOfCandidates(cell);
-  //     if (numberOfCandidates !== 2) return null;
-  //     if (!CalcUtil.xor(candidates[a], candidates[b])) return null;
-  //     const rowIndex = cell.rowIndex;
-  //     const columnIndex = cell.columnIndex;
-  //     const same = candidates[a] ? a : b;
-  //     const diff = this.getCandidatesArr(cell.candidates).filter((x) => x !== same)[0];
-  //     return { rowIndex, columnIndex, same, diff };
-  //   };
+    for (let i = 0; i < cellsWithTwoCandidates.length; i++) {
+      for (let j = 0; j < cellsWithTwoCandidates[i].length; j++) {
+        if (!cellsWithTwoCandidates[i][j]) continue;
+        const pivot = { ...this.grid[i][j], rowIndex: i, columnIndex: j };
+        if (!pivot.candidates) continue;
+        const [a, b] = this.getCandidatesArr(pivot.candidates);
+        const pivotRow = this.getRow(i);
+        const pivotColumn = this.getColumn(j);
+        const pivotBox = this.getBoxFromRowColumnIndex(i, j);
+        const possibleRowPincers = possiblePincersFromLine(pivotRow, pivot, a, b);
+        const possibleColumnPincers = possiblePincersFromLine(pivotColumn, pivot, a, b);
+        const possibleBoxPincers = possiblePincersFromLine(pivotBox, pivot, a, b);
 
-  //   const possiblePincersFromLine = (line: VirtualLine, pivot: CellWithIndex, a: Element, b: Element) => {
-  //     return line.reduce((acc, cur, arr) => {
-  //       if (cur.rowIndex === pivot.rowIndex && cur.columnIndex === pivot.columnIndex) return acc;
-  //       const pincer = cellsWithTwoCandidatesAndOneIsAorB(cur, a, b);
-  //       if (pincer) acc.push({ ...pincer, line });
-  //       return acc;
-  //     }, [] as { rowIndex: number; columnIndex: number; same: Element; diff: Element; line: VirtualLine }[]);
-  //   };
+        // AB AC BC
 
-  //   for (let i = 0; i < cellsWithTwoCandidates.length; i++) {
-  //     for (let j = 0; j < cellsWithTwoCandidates[i].length; j++) {
-  //       if (!cellsWithTwoCandidates[i][j]) continue;
-  //       const pivot = { ...this.grid[i][j], rowIndex: i, columnIndex: j };
-  //       if (!pivot.candidates) continue;
-  //       const [a, b] = this.getCandidatesArr(pivot.candidates);
-  //       const pivotRow = this.getRow(i);
-  //       const pivotColumn = this.getColumn(j);
-  //       const pivotBox = this.getBoxFromRowColumnIndex(i, j);
-  //       const possibleRowPincers = possiblePincersFromLine(pivotRow, pivot, a, b);
-  //       const possibleColumnPincers = possiblePincersFromLine(pivotColumn, pivot, a, b);
-  //       const possibleBoxPincers = possiblePincersFromLine(pivotBox, pivot, a, b);
+        const rowColumnProduct = CalcUtil.cartesianProduct(possibleRowPincers, possibleColumnPincers).filter(
+          ([a, b]) => a.same !== b.same && a.diff === b.diff
+        );
+        console.log("file: index.ts ~ line 970 ~ Sudoku ~ getYWingHelper ~ rowColumnProduct", rowColumnProduct);
+        const rowBoxProduct = CalcUtil.cartesianProduct(possibleRowPincers, possibleBoxPincers)
+          .filter(([a, b]) => a.rowIndex === b.rowIndex && a.columnIndex === b.columnIndex)
+          .filter(([a, b]) => a.same !== b.same && a.diff === b.diff);
+        console.log("file: index.ts ~ line 972 ~ Sudoku ~ getYWingHelper ~ rowBoxProduct", rowBoxProduct);
+        const columnBoxProduct = CalcUtil.cartesianProduct(possibleColumnPincers, possibleBoxPincers)
+          .filter(([a, b]) => a.rowIndex === b.rowIndex && a.columnIndex === b.columnIndex)
+          .filter(([a, b]) => a.same !== b.same && a.diff === b.diff);
+        console.log("file: index.ts ~ line 976 ~ Sudoku ~ getYWingHelper ~ columnBoxProduct", columnBoxProduct);
+        const validatePincer = [...rowColumnProduct, ...rowBoxProduct, ...columnBoxProduct];
+        if (!validatePincer.length) continue;
+        console.log(validatePincer);
 
-  //       const rowColumnProduct = CalcUtil.cartesianProduct(possibleRowPincers, possibleColumnPincers).filter(
-  //         ([a, b]) => a.same !== b.same && a.diff === b.diff
-  //       );
-  //       console.log("file: index.ts ~ line 970 ~ Sudoku ~ getYWingHelper ~ rowColumnProduct", rowColumnProduct);
-  //       const rowBoxProduct = CalcUtil.cartesianProduct(possibleRowPincers, possibleBoxPincers)
-  //         .filter(([a, b]) => a.rowIndex === b.rowIndex && a.columnIndex === b.columnIndex)
-  //         .filter(([a, b]) => a.same !== b.same && a.diff === b.diff);
-  //       console.log("file: index.ts ~ line 972 ~ Sudoku ~ getYWingHelper ~ rowBoxProduct", rowBoxProduct);
-  //       const columnBoxProduct = CalcUtil.cartesianProduct(possibleColumnPincers, possibleBoxPincers)
-  //         .filter(([a, b]) => a.rowIndex === b.rowIndex && a.columnIndex === b.columnIndex)
-  //         .filter(([a, b]) => a.same !== b.same && a.diff === b.diff);
-  //       console.log("file: index.ts ~ line 976 ~ Sudoku ~ getYWingHelper ~ columnBoxProduct", columnBoxProduct);
-  //       const validatePincer = [...rowColumnProduct, ...rowBoxProduct, ...columnBoxProduct];
-  //       if (!validatePincer.length) continue;
-  //       console.log(validatePincer);
+        validatePincer.forEach((x) => {
+          const pincers = x;
+          let elimination: InputValueData | null = null;
+          // !wrong type here
+          const p1Intersection = this.getAllRelatedCells(pincers[0]);
+          // !wrong type here
+          const p2Intersection = this.getAllRelatedCells(pincers[1]);
+          const intersection = this.getVirtualLinesIntersections(p1Intersection, p2Intersection).filter(
+            (x) => !Sudoku.isSamePos(x, pivot)
+          );
+          intersection.forEach((x) => {
+            if (x.candidates && x.candidates[pincers[0].diff]) {
+              elimination = { rowIndex: x.rowIndex, columnIndex: x.columnIndex, value: pincers[0].diff };
+            }
+          });
+          result.push({ pivot, pincers, elimination });
+        });
+      }
+    }
 
-  //       validatePincer.forEach((x) => {
-  //         const pincers = x;
-  //         let elimination: InputValueData | null = null;
-  //         // !wrong type here
-  //         const p1Intersection = this.getAllRelatedCells(pincers[0]);
-  //         // !wrong type here
-  //         const p2Intersection = this.getAllRelatedCells(pincers[1]);
-  //         const intersection = this.getVirtualLinesIntersections(p1Intersection, p2Intersection).filter(
-  //           (x) => !Sudoku.isSamePos(x, pivot)
-  //         );
-  //         intersection.forEach((x) => {
-  //           if (x.candidates && x.candidates[pincers[0].diff]) {
-  //             elimination = { rowIndex: x.rowIndex, columnIndex: x.columnIndex, value: pincers[0].diff };
-  //           }
-  //         });
-  //         result.push({ pivot, pincers, elimination });
-  //       });
-  //     }
-  //   }
+    console.log("file: index.ts ~ line 994 ~ Sudoku ~ getYWingHelper ~ result", result);
+    return result;
+  }
 
-  //   console.log("file: index.ts ~ line 994 ~ Sudoku ~ getYWingHelper ~ result", result);
-  //   return result;
-  // }
+  getYWing(): InputValueData[] {
+    if (!this.isValid) return [];
 
-  // getYWing(): InputValueData[] {
-  //   if (!this.isValid) return [];
-
-  //   const elimination = this.getYWingHelper()
-  //     .flatMap((x) => x.elimination)
-  //     .filter((x) => x) as InputValueData[];
-  //   return elimination;
-  // }
+    const elimination = this.getYWingHelper()
+      .flatMap((x) => x.elimination)
+      .filter((x) => x) as InputValueData[];
+    return elimination;
+  }
 
   // trySolve(): void {
   //   if (this.isValid) {
@@ -854,3 +842,14 @@ export default class SudokuSolver extends Sudoku {
     return result;
   }
 }
+
+// // todo the swordfish may not need all rows/cols to have exactly 3 cells
+// getSwordfish(): InputValueData[] {
+//   if (!this.isValid) return [];
+
+//   const rowResult = this.getXWingSwordfishHelper(this.getAllRows(), "row", "swordfish");
+//   const columnResult = this.getXWingSwordfishHelper(this.getAllColumns(), "column", "swordfish");
+//   const elimination = [...rowResult, ...columnResult].flatMap((x) => x.elimination);
+
+//   return elimination;
+// }

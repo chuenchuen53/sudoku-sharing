@@ -272,7 +272,7 @@ describe("sudoku solver", () => {
     expect(result).toEqual(expectResult);
   });
 
-  it("getRemovalDueToXWing test 2", () => {
+  it("getRemovalDueToXWing test 1", () => {
     const s = new SudokuSolver(p0);
     s.getBasicCandidates();
     const result = s.getRemovalDueToXWing();
@@ -293,9 +293,9 @@ describe("sudoku solver", () => {
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
       [0, 7, "1"], // due to element "1" in [6, 5], [6, 7], [8, 5], [8, 7]
       [1, 7, "1"], // due to element "1" in [6, 5], [6, 7], [8, 5], [8, 7]
-      [0, 7, "1"], // due to element "1" in [0, 2], [1, 2], [0, 8], [1, 8]
+      // [0, 7, "1"], // due to element "1" in [0, 2], [1, 2], [0, 8], [1, 8] (duplicate)
       [1, 1, "1"], // due to element "1" in [0, 2], [1, 2], [0, 8], [1, 8]
-      [1, 7, "1"], // due to element "1" in [0, 2], [1, 2], [0, 8], [1, 8]
+      // [1, 7, "1"], // due to element "1" in [0, 2], [1, 2], [0, 8], [1, 8] (duplicate)
       [6, 5, "4"], // due to element "4" in [6, 3], [7, 3], [6, 6], [7, 6]
       [7, 5, "4"], // due to element "4" in [6, 3], [7, 3], [6, 6], [7, 6]
     ]);
