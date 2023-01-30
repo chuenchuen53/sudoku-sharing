@@ -291,6 +291,10 @@ export default class Sudoku {
     return count;
   }
 
+  static allElements(): SudokuElement[] {
+    return ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+  }
+
   get solved(): boolean {
     const { isValid, validateDetail } = this.validatePuzzle("inputValue");
     this.isValid = isValid;

@@ -17,8 +17,6 @@ import type {
 import { VirtualLineType } from "./type";
 import ObjUtil from "@/utils/ObjUtil";
 
-// const createAllElementsArr = (): SudokuElement[] => ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
-
 // const candidatesFromArr = (arr: SudokuElement[]) => {
 //   const candidates = candidatesFactory(false);
 //   arr.forEach((x) => (candidates[x] = true));
@@ -38,6 +36,12 @@ export interface NakedPairsTripletsQuadsResult {
 
 export interface HiddenMultipleFromVirtualLinesResult {
   combination: SudokuElement[];
+  multiple: CellWithIndex[];
+  elimination: InputValueData[];
+}
+
+export interface XWingSwordfishResult {
+  sudokuElement: SudokuElement;
   multiple: CellWithIndex[];
   elimination: InputValueData[];
 }
@@ -555,101 +559,80 @@ export default class SudokuSolver extends Sudoku {
     return Sudoku.removeDuplicatedInputValueData(elimination);
   }
 
-  // getXWingSwordfishHelper(
-  //   virtualLines: VirtualLine[],
-  //   type: "row" | "column",
-  //   calcType: "xWing" | "swordfish"
-  // ): { sudokuElement: Element; multiple: CellWithIndex[]; elimination: InputValueData[] }[] {
-  //   const result: { sudokuElement: Element; multiple: CellWithIndex[]; elimination: InputValueData[] }[] = [];
+  getXWingSwordfishFromVirtualLines(
+    type: VirtualLineType.ROW | VirtualLineType.COLUMN,
+    virtualLines: VirtualLine[],
+    perpendicularVirtualLines: VirtualLine[]
+  ): XWingSwordfishResult[] {
+    const result: XWingSwordfishResult[] = [];
 
-  //   const size = calcType === "xWing" ? 2 : 3;
-  //   const allElements = createAllElementsArr();
+    for (const e of Sudoku.allElements()) {
+      const sudokuElement = e as SudokuElement;
+      const gridWithElementInCandidate = virtualLines.map((line) =>
+        line.map((cell) => (cell.candidates?.[sudokuElement] ? cell : undefined))
+      );
 
-  //   for (const e of allElements) {
-  //     const sudokuElement = e as Element;
-  //     const containElement = virtualLines.map((line) =>
-  //       line.map((x) => (x.candidates && x.candidates[sudokuElement]) ?? false)
-  //     );
-  //     const lineWithTwoCellsContained = containElement.reduce((acc, cur, curIndex) => {
-  //       if (cur.filter((x) => x).length === size) {
-  //         const cells = virtualLines[curIndex].filter((x) => x.candidates && x.candidates[sudokuElement]);
-  //         acc.push({ element: sudokuElement, index: curIndex, cells });
-  //       }
-  //       return acc;
-  //     }, [] as { element: Element; index: number; cells: CellWithIndex[] }[]);
-  //     if (lineWithTwoCellsContained.length >= size) {
-  //       const combinations = CalcUtil.combinations(lineWithTwoCellsContained, size);
-  //       for (const [c1, c2, c3] of combinations) {
-  //         const isSamePosition =
-  //           type === "row"
-  //             ? c1.cells[0].columnIndex === c2.cells[0].columnIndex &&
-  //               c1.cells[1].columnIndex === c2.cells[1].columnIndex &&
-  //               (c3 ? c1.cells[0].columnIndex === c3.cells[0].columnIndex : true)
-  //             : c1.cells[0].rowIndex === c2.cells[0].rowIndex &&
-  //               c1.cells[1].rowIndex === c2.cells[1].rowIndex &&
-  //               (c3 ? c1.cells[0].rowIndex === c3.cells[0].rowIndex : true);
+      const lineWithTwoCellsContained = gridWithElementInCandidate.reduce((acc, line, lineIndex) => {
+        const cells = line.filter((x): x is CellWithIndex => Boolean(x));
+        if (cells.length === 2) acc.push({ lineIndex, cells });
+        return acc;
+      }, [] as { lineIndex: number; cells: CellWithIndex[] }[]);
 
-  //         if (isSamePosition) {
-  //           const transverseIndexes =
-  //             calcType === "xWing"
-  //               ? type === "row"
-  //                 ? [c1.cells[0].columnIndex, c1.cells[1].columnIndex]
-  //                 : [c1.cells[0].rowIndex, c1.cells[1].rowIndex]
-  //               : type === "row"
-  //               ? [c1.cells[0].columnIndex, c1.cells[1].columnIndex, c3.cells[0].columnIndex]
-  //               : [c1.cells[0].rowIndex, c1.cells[1].rowIndex, c3.cells[0].rowIndex];
-  //           const multiple =
-  //             calcType === "xWing"
-  //               ? [c1.cells[0], c1.cells[1], c2.cells[0], c2.cells[1]]
-  //               : [c1.cells[0], c1.cells[1], c2.cells[0], c2.cells[1], c3.cells[0], c3.cells[1]];
-  //           const eliminationLines =
-  //             calcType === "xWing"
-  //               ? type === "row"
-  //                 ? [this.getColumn(transverseIndexes[0]), this.getColumn(transverseIndexes[1])]
-  //                 : [this.getRow(transverseIndexes[0]), this.getRow(transverseIndexes[1])]
-  //               : type === "row"
-  //               ? [
-  //                   this.getColumn(transverseIndexes[0]),
-  //                   this.getColumn(transverseIndexes[1]),
-  //                   this.getColumn(transverseIndexes[1]),
-  //                 ]
-  //               : [
-  //                   this.getRow(transverseIndexes[0]),
-  //                   this.getRow(transverseIndexes[1]),
-  //                   this.getRow(transverseIndexes[1]),
-  //                 ];
-  //           const elimination: InputValueData[] = [];
-  //           eliminationLines.forEach((line) => {
-  //             line.forEach((cell) => {
-  //               if (cell.candidates && cell.candidates[sudokuElement]) {
-  //                 if (!multiple.some((x) => x.rowIndex === cell.rowIndex && x.columnIndex === cell.columnIndex)) {
-  //                   elimination.push({
-  //                     rowIndex: cell.rowIndex,
-  //                     columnIndex: cell.columnIndex,
-  //                     value: sudokuElement,
-  //                   });
-  //                 }
-  //               }
-  //             });
-  //           });
-  //           result.push({ sudokuElement, multiple, elimination });
-  //         }
-  //       }
-  //     }
-  //   }
+      if (lineWithTwoCellsContained.length >= 2) {
+        const combinations = CalcUtil.combinations2(lineWithTwoCellsContained);
+        for (const [line1, line2] of combinations) {
+          const isSamePerpendicularPos =
+            type === VirtualLineType.ROW
+              ? line1.cells[0].columnIndex === line2.cells[0].columnIndex &&
+                line1.cells[1].columnIndex === line2.cells[1].columnIndex
+              : line1.cells[0].rowIndex === line2.cells[0].rowIndex &&
+                line1.cells[1].rowIndex === line2.cells[1].rowIndex;
 
-  //   return result;
-  // }
+          if (isSamePerpendicularPos) {
+            const transverseIndexes =
+              type === VirtualLineType.ROW
+                ? [line1.cells[0].columnIndex, line1.cells[1].columnIndex]
+                : [line1.cells[0].rowIndex, line1.cells[1].rowIndex];
+            const multiple = [line1.cells[0], line1.cells[1], line2.cells[0], line2.cells[1]];
+            const eliminationLines = [
+              perpendicularVirtualLines[transverseIndexes[0]],
+              perpendicularVirtualLines[transverseIndexes[1]],
+            ].filter((x) => x);
+            const elimination: InputValueData[] = [];
+            eliminationLines.forEach((line) => {
+              line.forEach((cell) => {
+                if (cell.candidates?.[sudokuElement] && !multiple.some((x) => Sudoku.isSamePos(x, cell))) {
+                  elimination.push({
+                    rowIndex: cell.rowIndex,
+                    columnIndex: cell.columnIndex,
+                    value: sudokuElement,
+                  });
+                }
+              });
+            });
+            result.push({ sudokuElement, multiple, elimination });
+          }
+        }
+      }
+    }
 
-  // getXWing(): InputValueData[] {
-  //   if (!this.isValid) return [];
+    return result;
+  }
 
-  //   const rowResult = this.getXWingSwordfishHelper(this.getAllRows(), "row", "xWing");
-  //   const columnResult = this.getXWingSwordfishHelper(this.getAllColumns(), "column", "xWing");
-  //   const elimination = [...rowResult, ...columnResult].flatMap((x) => x.elimination);
+  getRemovalDueToXWing(): InputValueData[] {
+    if (!this.isValid) return [];
 
-  //   return elimination;
-  // }
+    const allRows = this.getAllRows();
+    const allColumns = this.getAllColumns();
+
+    const rowResult = this.getXWingSwordfishFromVirtualLines(VirtualLineType.ROW, allRows, allColumns);
+    console.log("file: SudokuSolver.ts:629 ~ SudokuSolver ~ getXWing ~ rowResult", rowResult);
+    const columnResult = this.getXWingSwordfishFromVirtualLines(VirtualLineType.COLUMN, allColumns, allRows);
+    console.log("file: SudokuSolver.ts:631 ~ SudokuSolver ~ getXWing ~ columnResult", columnResult);
+    const elimination = [...rowResult, ...columnResult].flatMap((x) => x.elimination);
+
+    return elimination;
+  }
 
   // // todo the swordfish may not need all rows/cols to have exactly 3 cells
   // getSwordfish(): InputValueData[] {

@@ -32,6 +32,7 @@
           :get-removal-due-to-hidden-pairs="getRemovalDueToHiddenPairs"
           :get-removal-due-to-hidden-triplets="getRemovalDueToHiddenTriplets"
           :get-removal-due-to-hidden-quads="getRemovalDueToHiddenQuads"
+          :get-removal-due-to-x-wing="getRemovalDueToXWing"
         />
         <div>
           <StatsTable class="mx" :stats="s.stats" />
@@ -60,7 +61,7 @@ import type { Highlight } from "@/views/SudokuPage/type";
 import type { CellWithIndex, InputValueData, SudokuElementWithZero } from "@/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
 
-const s = reactive(new SudokuSolver(tp.p6));
+const s = reactive(new SudokuSolver(tp.p0));
 const highlight = ref<Highlight>({
   element: "0",
   cell: [],
@@ -182,6 +183,11 @@ const getRemovalDueToHiddenTriplets = () => {
 
 const getRemovalDueToHiddenQuads = () => {
   const result = s.getRemovalDueToHiddenQuads();
+  removalOfCandidates.value = result;
+};
+
+const getRemovalDueToXWing = () => {
+  const result = s.getRemovalDueToXWing();
   removalOfCandidates.value = result;
 };
 </script>

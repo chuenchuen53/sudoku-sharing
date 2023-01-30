@@ -1,5 +1,5 @@
 import Sudoku from "../src/Sudoku/Sudoku";
-import { InputClues, InputValueData, SudokuElement, VirtualLine } from "../src/Sudoku/type";
+import { InputClues, InputValueData, SudokuElement, VirtualLine, VirtualLineType } from "../src/Sudoku/type";
 import ArrUtil from "../src/utils/ArrUtil";
 
 export default class TU {
@@ -23,13 +23,18 @@ export default class TU {
     );
   };
 
-  static candidatesLineFactory = (candidates: (SudokuElement[] | undefined)[]): VirtualLine => {
-    return candidates.map((candidates, index) => {
-      return {
-        candidates: candidates ? Sudoku.candidatesFactory(true, candidates) : undefined,
-        rowIndex: 0,
-        columnIndex: index,
-      };
-    });
+  static candidatesLineFactory = (
+    candidates: (SudokuElement[] | undefined)[],
+    option?: {
+      type: VirtualLineType.ROW | VirtualLineType.COLUMN;
+      lineIndex: number;
+    }
+  ): VirtualLine => {
+    option = option ?? { type: VirtualLineType.ROW, lineIndex: 0 };
+    return candidates.map((candidates, index) => ({
+      candidates: candidates ? Sudoku.candidatesFactory(true, candidates) : undefined,
+      rowIndex: option.type === VirtualLineType.ROW ? option.lineIndex : index,
+      columnIndex: option.type === VirtualLineType.COLUMN ? option.lineIndex : index,
+    }));
   };
 }

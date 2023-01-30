@@ -36,6 +36,9 @@
       <div>
         <el-button @click="getRemovalDueToHiddenQuads">Hidden Quads</el-button>
       </div>
+      <div>
+        <el-button @click="getRemovalDueToXWing">X-Wing</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -57,6 +60,7 @@ defineProps<{
   getRemovalDueToHiddenPairs: () => void;
   getRemovalDueToHiddenTriplets: () => void;
   getRemovalDueToHiddenQuads: () => void;
+  getRemovalDueToXWing: () => void;
 }>();
 </script>
 
