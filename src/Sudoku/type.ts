@@ -39,10 +39,41 @@ export interface InputValueData {
 
 export type ElementMissing = Record<VirtualLineType, Candidates[]>;
 
-export interface Stats {
+export interface EliminationStrategySetting {
+  lockedCandidates: number;
+  nakedPairs: number;
+  nakedTriplets: number;
+  nakedQuads: number;
+  hiddenPairs: number;
+  hiddenTriplets: number;
+  hiddenQuads: number;
+  xWing: number;
+  yWing: number;
+  // swordfish: number;
+}
+
+export interface InputCount {
   uniqueMissing: number;
   nakedSingle: number;
   hiddenSingle: number;
+}
+
+export interface EliminationCount {
+  lockedCandidates: number;
+  nakedPairs: number;
+  nakedTriplets: number;
+  nakedQuads: number;
+  hiddenPairs: number;
+  hiddenTriplets: number;
+  hiddenQuads: number;
+  xWing: number;
+  yWing: number;
+  // swordfish: number;
+}
+
+export interface SolveStats {
+  inputCount: InputCount;
+  eliminationCount: EliminationCount;
 }
 
 export type SudokuElementWithZero = SudokuElement | "0";

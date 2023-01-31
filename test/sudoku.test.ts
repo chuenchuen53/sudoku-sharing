@@ -994,4 +994,46 @@ describe("sudoku basic", () => {
     expect(fn(8, 7)).toStrictEqual(rcf(8, 7));
     expect(fn(8, 8)).toStrictEqual(rcf(8, 8));
   });
+
+  it("addElementInCandidates", () => {
+    const s0 = new Sudoku(p0);
+
+    const input = TU.inputValueDataArrFactory([
+      [0, 0, "1"],
+      [0, 0, "2"],
+      [0, 0, "3"],
+    ]);
+    expect(s0.addElementInCandidates(input)).toBe(3);
+    expect(s0.grid[0][0].candidates).toStrictEqual(Sudoku.candidatesFactory(true, ["1", "2", "3"]));
+
+    expect(s0.addElementInCandidates(input)).toBe(0);
+  });
+
+  it("removeElementInCandidates", () => {
+    const s0 = new Sudoku(p0);
+
+    const input = TU.inputValueDataArrFactory([
+      [0, 0, "1"],
+      [0, 0, "2"],
+      [0, 0, "3"],
+    ]);
+
+    const remove = TU.inputValueDataArrFactory([
+      [0, 0, "1"],
+      [0, 0, "3"],
+      [0, 0, "4"],
+      [0, 0, "5"],
+      [0, 0, "6"],
+      [0, 0, "7"],
+      [0, 0, "8"],
+      [0, 0, "9"],
+    ]);
+
+    s0.addElementInCandidates(input);
+    expect(s0.removeElementInCandidates(remove)).toBe(2);
+    expect(s0.grid[0][0].candidates).toStrictEqual(Sudoku.candidatesFactory(true, ["2"]));
+
+    expect(s0.removeElementInCandidates(input)).toBe(1);
+    expect(s0.grid[0][0].candidates).toStrictEqual(Sudoku.candidatesFactory(false));
+  });
 });

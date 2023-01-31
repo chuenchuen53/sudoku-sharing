@@ -269,20 +269,36 @@ const testFactory = (sudoku: SudokuSolver, allResult: AllResult) => {
   it("lock candidate overall", () => {
     const result = sudoku.getRemovalDueToLockedCandidates();
 
-    const p0_rowLockInBoxResultFlat = allResult.rowLockInBoxResult.flat() as [number, number, SudokuElement][];
-    const p0_columnLockInBoxResultFlat = allResult.columnLockInBoxResult.flat() as [number, number, SudokuElement][];
-    const p0_boxLockInRowResultFlat = allResult.boxLockInRowResult.flat() as [number, number, SudokuElement][];
-    const p0_boxLockInColumnResultFlat = allResult.boxLockInColumnResult.flat() as [number, number, SudokuElement][];
+    const rowLockInBoxResultFlat = allResult.rowLockInBoxResult.flat() as [number, number, SudokuElement][];
+    const columnLockInBoxResultFlat = allResult.columnLockInBoxResult.flat() as [number, number, SudokuElement][];
+    const boxLockInRowResultFlat = allResult.boxLockInRowResult.flat() as [number, number, SudokuElement][];
+    const boxLockInColumnResultFlat = allResult.boxLockInColumnResult.flat() as [number, number, SudokuElement][];
 
     const arr = TU.removeDuplicate2DArray([
-      ...p0_rowLockInBoxResultFlat,
-      ...p0_columnLockInBoxResultFlat,
-      ...p0_boxLockInRowResultFlat,
-      ...p0_boxLockInColumnResultFlat,
+      ...rowLockInBoxResultFlat,
+      ...columnLockInBoxResultFlat,
+      ...boxLockInRowResultFlat,
+      ...boxLockInColumnResultFlat,
     ]);
 
     const expectedResult = TU.inputValueDataArrFactory(arr);
     expect(result).toStrictEqual(expectedResult);
+  });
+
+  it("removeCandidatesDueToLockedCandidates", () => {
+    const rowLockInBoxResultFlat = allResult.rowLockInBoxResult.flat() as [number, number, SudokuElement][];
+    const columnLockInBoxResultFlat = allResult.columnLockInBoxResult.flat() as [number, number, SudokuElement][];
+    const boxLockInRowResultFlat = allResult.boxLockInRowResult.flat() as [number, number, SudokuElement][];
+    const boxLockInColumnResultFlat = allResult.boxLockInColumnResult.flat() as [number, number, SudokuElement][];
+
+    const arr = TU.removeDuplicate2DArray([
+      ...rowLockInBoxResultFlat,
+      ...columnLockInBoxResultFlat,
+      ...boxLockInRowResultFlat,
+      ...boxLockInColumnResultFlat,
+    ]);
+
+    expect(sudoku.removeCandidatesDueToLockedCandidates()).toBe(arr.length);
   });
 };
 

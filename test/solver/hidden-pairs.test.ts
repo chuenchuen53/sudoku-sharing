@@ -107,4 +107,16 @@ describe("sudoku solver", () => {
     ]);
     expect(result).toStrictEqual(expectResult);
   });
+
+  it("removeCandidatesDueToHiddenPairs test 1", () => {
+    const s = new SudokuSolver(p3);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToHiddenPairs()).toBe(11);
+  });
+
+  it("removeCandidatesDueToHiddenPairs test 2", () => {
+    const s = new SudokuSolver(p4);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToHiddenPairs()).toBe(10);
+  });
 });

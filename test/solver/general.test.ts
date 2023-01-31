@@ -1,7 +1,6 @@
 import { expect, describe, it } from "vitest";
 import Sudoku from "../../src/Sudoku/Sudoku";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import TU from "../utils";
 import type { InputClues, Candidates } from "../../src/Sudoku/type";
 
 const candidatesFactory = Sudoku.candidatesFactory;

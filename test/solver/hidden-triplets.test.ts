@@ -103,4 +103,16 @@ describe("sudoku solver", () => {
     ]);
     expect(result).toStrictEqual(expectResult);
   });
+
+  it("removeCandidatesDueToHiddenTriplets test 1", () => {
+    const s = new SudokuSolver(p3);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToHiddenTriplets()).toBe(10);
+  });
+
+  it("removeCandidatesDueToHiddenTriplets test 2", () => {
+    const s = new SudokuSolver(p4);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToHiddenTriplets()).toBe(13);
+  });
 });

@@ -3,7 +3,7 @@ import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TU from "../utils";
 import type { InputClues, InputValueData, NakedPairsTripletsQuadsResult } from "../../src/Sudoku/type";
 
-const testPuzzle0: InputClues = [
+const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
   ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
   ["0", "0", "8", "0", "0", "0", "4", "0", "9"],
@@ -15,7 +15,7 @@ const testPuzzle0: InputClues = [
   ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
 ];
 
-const testPuzzle1: InputClues = [
+const p1: InputClues = [
   ["2", "0", "0", "0", "0", "0", "8", "6", "0"],
   ["0", "0", "0", "0", "4", "2", "0", "0", "0"],
   ["0", "1", "0", "0", "6", "0", "0", "4", "7"],
@@ -66,7 +66,7 @@ describe("sudoku solver", () => {
   });
 
   it("getRemovalDueToNakedPairs test 1", () => {
-    const s = new SudokuSolver(testPuzzle0);
+    const s = new SudokuSolver(p0);
     s.setBasicCandidates();
     const result = s.getRemovalDueToNakedPairs();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
@@ -79,7 +79,7 @@ describe("sudoku solver", () => {
   });
 
   it("getRemovalDueToNakedPairs test 2", () => {
-    const s = new SudokuSolver(testPuzzle1);
+    const s = new SudokuSolver(p1);
     s.setBasicCandidates();
     const result = s.getRemovalDueToNakedPairs();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
@@ -91,5 +91,17 @@ describe("sudoku solver", () => {
     ]);
 
     expect(result).toStrictEqual(expectResult);
+  });
+
+  it("removeCandidatesDueToNakedPairs test 1", () => {
+    const s = new SudokuSolver(p0);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToNakedPairs()).toStrictEqual(4);
+  });
+
+  it("removeCandidatesDueToNakedPairs test 2", () => {
+    const s = new SudokuSolver(p1);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToNakedPairs()).toStrictEqual(5);
   });
 });

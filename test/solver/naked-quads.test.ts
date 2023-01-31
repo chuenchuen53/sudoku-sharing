@@ -83,7 +83,7 @@ describe("sudoku solver", () => {
     expect(result).toStrictEqual(expectResult);
   });
 
-  it("getRemovalDueToNakedPairs test 1", () => {
+  it("getRemovalDueToNakedPairs test 2", () => {
     const s = new SudokuSolver(p4);
     s.setBasicCandidates();
     const result = s.getRemovalDueToNakedQuads();
@@ -100,5 +100,17 @@ describe("sudoku solver", () => {
       [6, 7, "8"], // due to column 7 - 2578
     ]);
     expect(result).toStrictEqual(expectResult);
+  });
+
+  it("removeCandidatesDueToNakedQuads test 1", () => {
+    const s = new SudokuSolver(p3);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToNakedQuads()).toBe(7);
+  });
+
+  it("removeCandidatesDueToNakedQuads test 2", () => {
+    const s = new SudokuSolver(p4);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToNakedQuads()).toBe(10);
   });
 });

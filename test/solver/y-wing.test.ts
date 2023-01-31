@@ -199,4 +199,10 @@ describe("sudoku solver", () => {
     ]);
     expect(result).toStrictEqual(expectResult);
   });
+
+  it("removeCandidatesDueToYWing test 1", () => {
+    const s = new SudokuSolver(p0);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToYWing()).toBe(3);
+  });
 });

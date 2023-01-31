@@ -298,4 +298,16 @@ describe("sudoku solver", () => {
     ]);
     expect(result).toStrictEqual(expectResult);
   });
+
+  it("removeCandidatesDueToXWing test 1", () => {
+    const s = new SudokuSolver(p0);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToXWing()).toBe(5);
+  });
+
+  it("removeCandidatesDueToXWing test 2", () => {
+    const s = new SudokuSolver(p2);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToXWing()).toBe(5);
+  });
 });

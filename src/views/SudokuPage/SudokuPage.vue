@@ -16,6 +16,12 @@
         <el-button @click="removeAllRemovalIndication">remove all removal indication</el-button>
         <el-button @click="clearAllCandidates">clear candidates</el-button>
       </div>
+      <div :style="{ 'margin-top': '24px' }">
+        <el-button @click="removeCandidatesDueToLockedCandidates">remove locked candidates</el-button>
+        <el-button @click="removeCandidatesDueToNakedPairs">remove naked pairs</el-button>
+        <el-button @click="removeCandidatesDueToNakedTriplets">remove naked triplets</el-button>
+        <el-button @click="removeCandidatesDueToNakedQuads">remove naked quads</el-button>
+      </div>
     </div>
     <div class="right-container">
       <div class="d-flex">
@@ -62,7 +68,7 @@ import SudokuSolver from "@/Sudoku/SudokuSolver";
 import Sudoku from "@/Sudoku/Sudoku";
 import * as tp from "@/samplePuzzle";
 
-const s = reactive(new SudokuSolver(tp.p1));
+const s = reactive(new SudokuSolver(tp.p0));
 const highlight = ref<Highlight>({
   element: "0",
   cell: [],
@@ -193,6 +199,22 @@ const getRemovalDueToXWing = () => {
 const getRemovalDueToYWing = () => {
   const result = s.getRemovalDueToYWing();
   removalOfCandidates.value = result;
+};
+
+const removeCandidatesDueToLockedCandidates = () => {
+  s.removeCandidatesDueToLockedCandidates();
+};
+
+const removeCandidatesDueToNakedPairs = () => {
+  s.removeCandidatesDueToNakedPairs();
+};
+
+const removeCandidatesDueToNakedTriplets = () => {
+  s.removeCandidatesDueToNakedTriplets();
+};
+
+const removeCandidatesDueToNakedQuads = () => {
+  s.removeCandidatesDueToNakedQuads();
 };
 </script>
 

@@ -106,4 +106,16 @@ describe("sudoku solver", () => {
     ]);
     expect(result).toStrictEqual(expectResult);
   });
+
+  it("removeCandidatesDueToNakedTriplets test 1", () => {
+    const s = new SudokuSolver(p3);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToNakedTriplets()).toBe(6);
+  });
+
+  it("removeCandidatesDueToNakedTriplets test 2", () => {
+    const s = new SudokuSolver(p4);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToNakedTriplets()).toBe(23);
+  });
 });

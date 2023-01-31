@@ -288,6 +288,44 @@ export default class Sudoku {
     }
   }
 
+  addElementInCandidates(inputValueDataArr: InputValueData[]): number {
+    let count = 0;
+
+    inputValueDataArr.forEach((inputValueData) => {
+      const { rowIndex, columnIndex, value } = inputValueData;
+      const cell = this.grid[rowIndex][columnIndex];
+
+      if (cell.clue || cell.inputValue) return;
+
+      if (cell.candidates) {
+        if (!cell.candidates[value]) {
+          cell.candidates[value] = true;
+          count++;
+        }
+      } else {
+        cell.candidates = Sudoku.candidatesFactory(true, [value]);
+        count++;
+      }
+    });
+
+    return count;
+  }
+
+  removeElementInCandidates(inputValueDataArr: InputValueData[]): number {
+    let count = 0;
+
+    inputValueDataArr.forEach((inputValueData) => {
+      const { rowIndex, columnIndex, value } = inputValueData;
+      const cell = this.grid[rowIndex][columnIndex];
+      if (cell.candidates?.[value]) {
+        cell.candidates[value] = false;
+        count++;
+      }
+    });
+
+    return count;
+  }
+
   clearAllCandidates() {
     for (let i = 0; i < this.grid.length; i++) {
       for (let j = 0; j < this.grid[i].length; j++) {

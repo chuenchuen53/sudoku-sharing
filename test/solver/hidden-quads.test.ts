@@ -81,4 +81,10 @@ describe("sudoku solver", () => {
     ]);
     expect(result).toStrictEqual(expectResult);
   });
+
+  it("removeCandidatesDueToHiddenQuads test 1", () => {
+    const s = new SudokuSolver(p5);
+    s.setBasicCandidates();
+    expect(s.removeCandidatesDueToHiddenQuads()).toBe(16);
+  });
 });
