@@ -33,6 +33,7 @@
           :get-removal-due-to-hidden-triplets="getRemovalDueToHiddenTriplets"
           :get-removal-due-to-hidden-quads="getRemovalDueToHiddenQuads"
           :get-removal-due-to-x-wing="getRemovalDueToXWing"
+          :get-removal-due-to-y-wing="getRemovalDueToYWing"
         />
         <div>
           <StatsTable class="mx" :stats="s.stats" />
@@ -46,22 +47,22 @@
 </template>
 
 <script setup lang="ts">
-import * as tp from "@/samplePuzzle";
 import { reactive, ref } from "vue";
-import HighlightElementToggle from "../../components/HighlightElementToggle.vue";
-import HighlightCellToggle from "../../components/HighlightCellToggle.vue";
 import { ElButton } from "element-plus";
+import HighlightCellToggle from "../../components/HighlightCellToggle.vue";
+import HighlightElementToggle from "../../components/HighlightElementToggle.vue";
 import "element-plus/es/components/button/style/css";
-import SudokuSolver from "@/Sudoku/SudokuSolver";
 import SudokuGrid from "../../components/SudokuGrid.vue";
 import SudokuHint from "../../components/SudokuHint.vue";
-import StatsTable from "@/components/StatsTable.vue";
-import { VirtualLineType } from "@/Sudoku/type";
 import type { Highlight } from "@/views/SudokuPage/type";
 import type { CellWithIndex, InputValueData, SudokuElementWithZero } from "@/Sudoku/type";
+import { VirtualLineType } from "@/Sudoku/type";
+import StatsTable from "@/components/StatsTable.vue";
+import SudokuSolver from "@/Sudoku/SudokuSolver";
 import Sudoku from "@/Sudoku/Sudoku";
+import * as tp from "@/samplePuzzle";
 
-const s = reactive(new SudokuSolver(tp.p0));
+const s = reactive(new SudokuSolver(tp.p5));
 const highlight = ref<Highlight>({
   element: "0",
   cell: [],
@@ -188,6 +189,11 @@ const getRemovalDueToHiddenQuads = () => {
 
 const getRemovalDueToXWing = () => {
   const result = s.getRemovalDueToXWing();
+  removalOfCandidates.value = result;
+};
+
+const getRemovalDueToYWing = () => {
+  const result = s.getRemovalDueToYWing();
   removalOfCandidates.value = result;
 };
 </script>

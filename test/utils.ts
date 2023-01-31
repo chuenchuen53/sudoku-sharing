@@ -1,5 +1,13 @@
 import Sudoku from "../src/Sudoku/Sudoku";
-import { InputClues, InputValueData, SudokuElement, VirtualLine, VirtualLineType } from "../src/Sudoku/type";
+import { Pincer } from "../src/Sudoku/SudokuSolver";
+import {
+  CellWithIndex,
+  InputClues,
+  InputValueData,
+  SudokuElement,
+  VirtualLine,
+  VirtualLineType,
+} from "../src/Sudoku/type";
 import ArrUtil from "../src/utils/ArrUtil";
 
 export default class TU {
@@ -23,14 +31,60 @@ export default class TU {
     );
   };
 
+  static cellWithIndexFactory = (
+    rowIndex: number,
+    columnIndex: number,
+    option: {
+      clue?: SudokuElement;
+      inputValue?: SudokuElement;
+      candidates?: SudokuElement[];
+    }
+  ): CellWithIndex => {
+    const c: CellWithIndex = {
+      rowIndex,
+      columnIndex,
+    };
+
+    if (option.clue) c.clue = option.clue;
+    if (option.inputValue) c.inputValue = option.inputValue;
+    if (option.candidates) c.candidates = Sudoku.candidatesFactory(true, option.candidates);
+
+    return c;
+  };
+
+  static pincerFactory(cell: CellWithIndex, same: SudokuElement, diff: SudokuElement): Pincer {
+    return {
+      ...cell,
+      same,
+      diff,
+    };
+  }
+
   static candidatesLineFactory = (
     candidates: (SudokuElement[] | undefined)[],
-    option?: {
-      type: VirtualLineType.ROW | VirtualLineType.COLUMN;
-      lineIndex: number;
-    }
+    option?:
+      | {
+          type: VirtualLineType.ROW | VirtualLineType.COLUMN;
+          lineIndex: number;
+        }
+      | {
+          type: VirtualLineType.BOX;
+          boxIndex: number;
+        }
   ): VirtualLine => {
     option = option ?? { type: VirtualLineType.ROW, lineIndex: 0 };
+
+    if (option.type === VirtualLineType.BOX) {
+      const boxIndex = option.boxIndex;
+      const rowIndex = Math.floor(boxIndex / 3) * 3;
+      const columnIndex = (boxIndex % 3) * 3;
+      return candidates.map((candidates, index) => ({
+        candidates: candidates ? Sudoku.candidatesFactory(true, candidates) : undefined,
+        rowIndex: rowIndex + Math.floor(index / 3),
+        columnIndex: columnIndex + (index % 3),
+      }));
+    }
+
     return candidates.map((candidates, index) => ({
       candidates: candidates ? Sudoku.candidatesFactory(true, candidates) : undefined,
       rowIndex: option.type === VirtualLineType.ROW ? option.lineIndex : index,

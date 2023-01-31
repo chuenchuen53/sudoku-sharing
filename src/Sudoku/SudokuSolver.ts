@@ -1,6 +1,7 @@
 import CalcUtil from "../utils/CalcUtil";
 import ArrUtil from "../utils/ArrUtil";
 import Sudoku from "./Sudoku";
+import { VirtualLineType } from "./type";
 import type {
   RowColumn,
   Stats,
@@ -14,7 +15,6 @@ import type {
   ElementMissing,
   SudokuIndex,
 } from "./type";
-import { VirtualLineType } from "./type";
 import ObjUtil from "@/utils/ObjUtil";
 
 // const candidatesFromArr = (arr: SudokuElement[]) => {
@@ -46,10 +46,15 @@ export interface XWingSwordfishResult {
   elimination: InputValueData[];
 }
 
+export interface Pincer extends CellWithIndex {
+  same: SudokuElement;
+  diff: SudokuElement;
+}
+
 export interface YWingResult {
   pivot: CellWithIndex;
-  pincers: [CellWithIndex, CellWithIndex];
-  elimination: InputValueData;
+  pincers: Pincer[];
+  elimination: InputValueData[];
 }
 
 export default class SudokuSolver extends Sudoku {
@@ -555,11 +560,8 @@ export default class SudokuSolver extends Sudoku {
 
     const size = 4;
     const rowResult = this.getHiddenMultipleFromVirtualLines(this.getAllRows(), size);
-    console.log("file: SudokuSolver.ts:548 ~ SudokuSolver ~ getRemovalDueToHiddenQuads ~ rowResult", rowResult);
     const columnResult = this.getHiddenMultipleFromVirtualLines(this.getAllColumns(), size);
-    console.log("file: SudokuSolver.ts:550 ~ SudokuSolver ~ getRemovalDueToHiddenQuads ~ columnResult", columnResult);
     const boxResult = this.getHiddenMultipleFromVirtualLines(this.getAllBoxes(), size);
-    console.log("file: SudokuSolver.ts:552 ~ SudokuSolver ~ getRemovalDueToHiddenQuads ~ boxResult", boxResult);
     const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
 
     return Sudoku.removeDuplicatedInputValueData(elimination);
@@ -638,101 +640,96 @@ export default class SudokuSolver extends Sudoku {
     return Sudoku.removeDuplicatedInputValueData(elimination);
   }
 
-  getYWingHelper(): YWingResult[] {
+  static cellWithTwoCandidatesAndOnlyOneIsAorB(cell: CellWithIndex, a: SudokuElement, b: SudokuElement): null | Pincer {
+    if (
+      !cell.candidates ||
+      SudokuSolver.numberOfCandidates(cell.candidates) !== 2 ||
+      !CalcUtil.xor(cell.candidates[a], cell.candidates[b])
+    ) {
+      return null;
+    }
+
+    const same = cell.candidates[a] ? a : b;
+    const diff = SudokuSolver.getCandidatesArr(cell.candidates).filter((x) => x !== same)[0];
+    return { ...cell, same, diff };
+  }
+
+  static possiblePincersFromLine = (line: VirtualLine, pivot: CellWithIndex): Pincer[] => {
+    if (!line.some((x) => Sudoku.isSamePos(x, pivot))) return [];
+    if (!pivot.candidates) return [];
+
+    const candidatesArr = SudokuSolver.getCandidatesArr(pivot.candidates);
+    if (candidatesArr.length !== 2) return [];
+
+    const [a, b] = candidatesArr;
+
+    return line.reduce((acc, cur) => {
+      if (!Sudoku.isSamePos(cur, pivot)) {
+        const pincer = SudokuSolver.cellWithTwoCandidatesAndOnlyOneIsAorB(cur, a, b);
+        if (pincer) acc.push(pincer);
+      }
+      return acc;
+    }, [] as Pincer[]);
+  };
+
+  static isYWingPattern = (x: Pincer, y: Pincer): boolean => {
+    return !Sudoku.isSamePos(x, y) && x.same !== y.same && x.diff === y.diff;
+  };
+
+  static cartesianProductWithYWingPattern = (a: Pincer[], b: Pincer[]): Pincer[][] => {
+    return CalcUtil.cartesianProduct(a, b).filter(([x, y]) => SudokuSolver.isYWingPattern(x, y));
+  };
+
+  getYWing(): YWingResult[] {
     const result: YWingResult[] = [];
-    const cellsWithTwoCandidates = this.grid.map((row) =>
-      row.map((cell) => (cell.candidates && SudokuSolver.numberOfCandidates(cell.candidates) === 2) ?? false)
+    const cellsWithTwoCandidates = this.getAllRows().map((row) =>
+      row.map((cell) => (cell.candidates && SudokuSolver.numberOfCandidates(cell.candidates) === 2 ? cell : undefined))
     );
-
-    // todo move to static
-    const cellWithTwoCandidatesAndOnlyOneIsAorB = (
-      cell: CellWithIndex,
-      a: SudokuElement,
-      b: SudokuElement
-    ): null | { rowIndex: number; columnIndex: number; same: SudokuElement; diff: SudokuElement } => {
-      if (!cell.candidates || SudokuSolver.numberOfCandidates(cell.candidates) !== 2) return null;
-
-      const candidates = cell.candidates;
-      if (!CalcUtil.xor(candidates[a], candidates[b])) return null;
-      const rowIndex = cell.rowIndex;
-      const columnIndex = cell.columnIndex;
-      const same = candidates[a] ? a : b;
-      const diff = SudokuSolver.getCandidatesArr(cell.candidates).filter((x) => x !== same)[0];
-      return { rowIndex, columnIndex, same, diff };
-    };
-
-    // todo move to static
-    const possiblePincersFromLine = (line: VirtualLine, pivot: CellWithIndex, a: SudokuElement, b: SudokuElement) => {
-      return line.reduce((acc, cur, arr) => {
-        if (cur.rowIndex === pivot.rowIndex && cur.columnIndex === pivot.columnIndex) return acc;
-        const pincer = cellWithTwoCandidatesAndOnlyOneIsAorB(cur, a, b);
-        if (pincer) acc.push({ ...pincer, line });
-        return acc;
-      }, [] as { rowIndex: number; columnIndex: number; same: SudokuElement; diff: SudokuElement; line: VirtualLine }[]);
-    };
 
     for (let i = 0; i < cellsWithTwoCandidates.length; i++) {
       for (let j = 0; j < cellsWithTwoCandidates[i].length; j++) {
-        if (!cellsWithTwoCandidates[i][j]) continue;
-        const pivot = { ...this.grid[i][j], rowIndex: i, columnIndex: j };
-        if (!pivot.candidates) continue;
-        const [a, b] = this.getCandidatesArr(pivot.candidates);
-        const pivotRow = this.getRow(i);
-        const pivotColumn = this.getColumn(j);
-        const pivotBox = this.getBoxFromRowColumnIndex(i, j);
-        const possibleRowPincers = possiblePincersFromLine(pivotRow, pivot, a, b);
-        const possibleColumnPincers = possiblePincersFromLine(pivotColumn, pivot, a, b);
-        const possibleBoxPincers = possiblePincersFromLine(pivotBox, pivot, a, b);
+        const pivot = cellsWithTwoCandidates[i][j];
+        if (!pivot || !pivot.candidates) continue;
 
-        // AB AC BC
+        const possibleRowPincers = SudokuSolver.possiblePincersFromLine(this.getRow(i), pivot);
+        const possibleColumnPincers = SudokuSolver.possiblePincersFromLine(this.getColumn(j), pivot);
+        const possibleBoxPincers = SudokuSolver.possiblePincersFromLine(this.getBoxFromRowColumnIndex(i, j), pivot);
 
-        const rowColumnProduct = CalcUtil.cartesianProduct(possibleRowPincers, possibleColumnPincers).filter(
-          ([a, b]) => a.same !== b.same && a.diff === b.diff
-        );
-        console.log("file: index.ts ~ line 970 ~ Sudoku ~ getYWingHelper ~ rowColumnProduct", rowColumnProduct);
-        const rowBoxProduct = CalcUtil.cartesianProduct(possibleRowPincers, possibleBoxPincers)
-          .filter(([a, b]) => a.rowIndex === b.rowIndex && a.columnIndex === b.columnIndex)
-          .filter(([a, b]) => a.same !== b.same && a.diff === b.diff);
-        console.log("file: index.ts ~ line 972 ~ Sudoku ~ getYWingHelper ~ rowBoxProduct", rowBoxProduct);
-        const columnBoxProduct = CalcUtil.cartesianProduct(possibleColumnPincers, possibleBoxPincers)
-          .filter(([a, b]) => a.rowIndex === b.rowIndex && a.columnIndex === b.columnIndex)
-          .filter(([a, b]) => a.same !== b.same && a.diff === b.diff);
-        console.log("file: index.ts ~ line 976 ~ Sudoku ~ getYWingHelper ~ columnBoxProduct", columnBoxProduct);
+        const fn = SudokuSolver.cartesianProductWithYWingPattern;
+        const rowColumnProduct = fn(possibleRowPincers, possibleColumnPincers);
+        const rowBoxProduct = fn(possibleRowPincers, possibleBoxPincers);
+        const columnBoxProduct = fn(possibleColumnPincers, possibleBoxPincers);
+
         const validatePincer = [...rowColumnProduct, ...rowBoxProduct, ...columnBoxProduct];
-        if (!validatePincer.length) continue;
-        console.log(validatePincer);
-
         validatePincer.forEach((x) => {
           const pincers = x;
-          let elimination: InputValueData | null = null;
-          // !wrong type here
-          const p1Intersection = this.getAllRelatedCells(pincers[0]);
-          // !wrong type here
-          const p2Intersection = this.getAllRelatedCells(pincers[1]);
-          const intersection = this.getVirtualLinesIntersections(p1Intersection, p2Intersection).filter(
+          const elimination: InputValueData[] = [];
+
+          const p1Related = this.getAllRelatedCells(pincers[0]);
+          const p2Related = this.getAllRelatedCells(pincers[1]);
+          const intersection = this.getVirtualLinesIntersections(p1Related, p2Related).filter(
             (x) => !Sudoku.isSamePos(x, pivot)
           );
-          intersection.forEach((x) => {
-            if (x.candidates && x.candidates[pincers[0].diff]) {
-              elimination = { rowIndex: x.rowIndex, columnIndex: x.columnIndex, value: pincers[0].diff };
+          intersection.forEach(({ rowIndex, columnIndex, candidates }) => {
+            if (candidates?.[pincers[0].diff]) {
+              elimination.push({ rowIndex, columnIndex, value: pincers[0].diff });
             }
           });
+
           result.push({ pivot, pincers, elimination });
         });
       }
     }
 
-    console.log("file: index.ts ~ line 994 ~ Sudoku ~ getYWingHelper ~ result", result);
     return result;
   }
 
-  getYWing(): InputValueData[] {
+  getRemovalDueToYWing(): InputValueData[] {
     if (!this.isValid) return [];
 
-    const elimination = this.getYWingHelper()
-      .flatMap((x) => x.elimination)
-      .filter((x) => x) as InputValueData[];
-    return elimination;
+    const result = this.getYWing();
+    const elimination = result.map((x) => x.elimination).flat();
+    return Sudoku.removeDuplicatedInputValueData(elimination);
   }
 
   // trySolve(): void {
@@ -826,7 +823,7 @@ export default class SudokuSolver extends Sudoku {
   });
 
   static sameCandidates(x: Candidates, y: Candidates): boolean {
-    for (let key in x) {
+    for (const key in x) {
       if (x[key as SudokuElement] !== y[key as SudokuElement]) return false;
     }
     return true;
@@ -835,7 +832,7 @@ export default class SudokuSolver extends Sudoku {
   static getCandidatesArr(candidates: Candidates): SudokuElement[] {
     const result: SudokuElement[] = [];
 
-    for (let key in candidates) {
+    for (const key in candidates) {
       if (candidates[key as SudokuElement]) result.push(key as SudokuElement);
     }
 
