@@ -118,7 +118,7 @@ describe("sudoku solver", () => {
     const allRows = [row0, row1, row2, row3, row4, row5, row6, row7, row8];
     const allColumns = [column0, column1, column2, column3, column4, column5, column6, column7, column8];
 
-    const result = SudokuSolver.getXWingSwordfishFromVirtualLines(VirtualLineType.ROW, allRows, allColumns);
+    const result = SudokuSolver.getXWingFromVirtualLines(VirtualLineType.ROW, allRows, allColumns);
     const expectResult: XWingSwordfishResult[] = [
       {
         sudokuElement: "3",
@@ -220,7 +220,7 @@ describe("sudoku solver", () => {
     const allRows = [row0, row1, row2, row3, row4, row5, row6, row7, row8];
     const allColumns = [column0, column1, column2, column3, column4, column5, column6, column7, column8];
 
-    const result = SudokuSolver.getXWingSwordfishFromVirtualLines(VirtualLineType.COLUMN, allColumns, allRows);
+    const result = SudokuSolver.getXWingFromVirtualLines(VirtualLineType.COLUMN, allColumns, allRows);
     const expectResult: XWingSwordfishResult[] = [
       {
         sudokuElement: "3",

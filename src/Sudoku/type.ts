@@ -37,8 +37,6 @@ export interface InputValueData {
   value: SudokuElement;
 }
 
-export type ElementMissing = Record<VirtualLineType, Candidates[]>;
-
 export interface EliminationStrategySetting {
   lockedCandidates: number;
   nakedPairs: number;
