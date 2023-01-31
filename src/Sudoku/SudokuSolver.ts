@@ -749,90 +749,6 @@ export default class SudokuSolver extends Sudoku {
     return count;
   }
 
-  // trySolve(): void {
-  //   if (this.isValid) {
-  //     if (this.setRowUniqueMissing()) return this.trySolve();
-  //     if (this.setColumnUniqueMissing()) return this.trySolve();
-  //     if (this.setBoxUniqueMissing()) return this.trySolve();
-
-  //     this.getCombinedMissing();
-  //     if (this.setNakedSingles()) return this.trySolve();
-  //     if (this.setHiddenSingles()) return this.trySolve();
-
-  //     const removalDueToLockedCandidates = this.getRemovalDueToLockedCandidates();
-  //     if (removalDueToLockedCandidates.length) {
-  //       this.removeElementInCandidates(removalDueToLockedCandidates);
-  //       if (this.setNakedSingles()) return this.trySolve();
-  //       if (this.setHiddenSingles()) return this.trySolve();
-  //     }
-
-  //     const nakedPairsElimination = this.getNakedPairs();
-  //     if (nakedPairsElimination.length) {
-  //       this.removeElementInCandidates(nakedPairsElimination);
-  //       if (this.setNakedSingles()) return this.trySolve();
-  //       if (this.setHiddenSingles()) return this.trySolve();
-  //     }
-
-  //     const nakedTripletsElimination = this.getNakedTriplets();
-  //     if (nakedTripletsElimination.length) {
-  //       this.removeElementInCandidates(nakedTripletsElimination);
-  //       if (this.setNakedSingles()) return this.trySolve();
-  //       if (this.setHiddenSingles()) return this.trySolve();
-  //     }
-
-  //     const nakedQuadsElimination = this.getNakedQuads();
-  //     if (nakedQuadsElimination.length) {
-  //       this.removeElementInCandidates(nakedQuadsElimination);
-  //       if (this.setNakedSingles()) return this.trySolve();
-  //       if (this.setHiddenSingles()) return this.trySolve();
-  //     }
-
-  //     const hiddenPairsElimination = this.getHiddenPairs();
-  //     if (hiddenPairsElimination.length) {
-  //       this.removeElementInCandidates(hiddenPairsElimination);
-  //       if (this.setNakedSingles()) return this.trySolve();
-  //       if (this.setHiddenSingles()) return this.trySolve();
-  //     }
-
-  //     const hiddenTripletsElimination = this.getHiddenTriplets();
-  //     if (hiddenTripletsElimination.length) {
-  //       this.removeElementInCandidates(hiddenTripletsElimination);
-  //       if (this.setNakedSingles()) return this.trySolve();
-  //       if (this.setHiddenSingles()) return this.trySolve();
-  //     }
-
-  //     const hiddenQuadsElimination = this.getHiddenQuads();
-  //     if (hiddenQuadsElimination.length) {
-  //       this.removeElementInCandidates(hiddenQuadsElimination);
-  //       if (this.setNakedSingles()) return this.trySolve();
-  //       if (this.setHiddenSingles()) return this.trySolve();
-  //     }
-
-  //     const xWingElimination = this.getXWing();
-  //     if (xWingElimination.length) {
-  //       this.removeElementInCandidates(xWingElimination);
-  //       if (this.setNakedSingles()) return this.trySolve();
-  //       if (this.setHiddenSingles()) return this.trySolve();
-  //     }
-
-  //     const swordfishElimination = this.getSwordfish();
-  //     if (swordfishElimination.length) {
-  //       this.removeElementInCandidates(swordfishElimination);
-  //       if (this.setNakedSingles()) return this.trySolve();
-  //       if (this.setHiddenSingles()) return this.trySolve();
-  //     }
-
-  //     const yWingElimination = this.getYWing();
-  //     if (yWingElimination.length) {
-  //       this.removeElementInCandidates(yWingElimination);
-  //       if (this.setNakedSingles()) return this.trySolve();
-  //       if (this.setHiddenSingles()) return this.trySolve();
-  //     }
-
-  //     return;
-  //   }
-  // }
-
   resetStats(): void {
     this.stats = SudokuSolver.statsTemplate();
   }
@@ -889,12 +805,28 @@ export default class SudokuSolver extends Sudoku {
   //   this.stats.eliminationCount.swordfish += increment;
   // }
 
+  trySolveByCandidates(): boolean {
+    if (this.setNakedSingles()) return true;
+    if (this.setHiddenSingles()) return true;
+
+    return false;
+  }
+
   trySolve(): boolean {
     if (this.setUniqueMissing()) return this.trySolve();
 
     this.setBasicCandidates();
-    if (this.setNakedSingles()) return this.trySolve();
-    if (this.setHiddenSingles()) return this.trySolve();
+    if (this.trySolveByCandidates()) return this.trySolve();
+
+    if (this.removeCandidatesDueToLockedCandidates() && this.trySolveByCandidates()) return this.trySolve();
+    if (this.removeCandidatesDueToNakedPairs() && this.trySolveByCandidates()) return this.trySolve();
+    if (this.removeCandidatesDueToNakedTriplets() && this.trySolveByCandidates()) return this.trySolve();
+    if (this.removeCandidatesDueToNakedQuads() && this.trySolveByCandidates()) return this.trySolve();
+    if (this.removeCandidatesDueToHiddenPairs() && this.trySolveByCandidates()) return this.trySolve();
+    if (this.removeCandidatesDueToHiddenTriplets() && this.trySolveByCandidates()) return this.trySolve();
+    if (this.removeCandidatesDueToHiddenQuads() && this.trySolveByCandidates()) return this.trySolve();
+    if (this.removeCandidatesDueToXWing() && this.trySolveByCandidates()) return this.trySolve();
+    if (this.removeCandidatesDueToYWing() && this.trySolveByCandidates()) return this.trySolve();
 
     return this.solved;
   }
