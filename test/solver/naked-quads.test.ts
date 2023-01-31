@@ -29,7 +29,6 @@ const p4: InputClues = [
 
 describe("sudoku solver", () => {
   it("getMultipleNakedFromVirtualLines sizeOfCandidate=4", () => {
-    const s = new SudokuSolver(p3);
     const line = TU.candidatesLineFactory([
       ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
       ["1", "2", "4"],
@@ -42,7 +41,7 @@ describe("sudoku solver", () => {
       ["1", "2", "5", "9"],
     ]);
 
-    const result = s.getMultipleNakedFromVirtualLines([line], 4);
+    const result = SudokuSolver.getMultipleNakedFromVirtualLines([line], 4);
     const expectResult: NakedPairsTripletsQuadsResult[] = [
       {
         cells: [line[1], line[2], line[3], line[4]],
@@ -65,7 +64,7 @@ describe("sudoku solver", () => {
 
   it("getRemovalDueToNakedPairs test 1", () => {
     const s = new SudokuSolver(p3);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getRemovalDueToNakedQuads();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
       [4, 7, "3"], // due to row 4 - 3567
@@ -86,7 +85,7 @@ describe("sudoku solver", () => {
 
   it("getRemovalDueToNakedPairs test 1", () => {
     const s = new SudokuSolver(p4);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getRemovalDueToNakedQuads();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
       [1, 8, "5"], // due to row 1 - 2456

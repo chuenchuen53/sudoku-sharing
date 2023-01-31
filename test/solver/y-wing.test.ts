@@ -161,7 +161,7 @@ describe("sudoku solver", () => {
 
   it("getYWing test 1", () => {
     const s = new SudokuSolver(p0);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getYWing();
     const expectResult: YWingResult[] = [
       {
@@ -190,7 +190,7 @@ describe("sudoku solver", () => {
 
   it("getRemovalDueToYWing test 1", () => {
     const s = new SudokuSolver(p0);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getRemovalDueToYWing();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
       [3, 6, "7"],

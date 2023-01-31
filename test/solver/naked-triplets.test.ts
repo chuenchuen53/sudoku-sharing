@@ -42,7 +42,7 @@ describe("sudoku solver", () => {
       ["1", "2", "9"],
     ]);
 
-    const result = s.getMultipleNakedFromVirtualLines([line], 3);
+    const result = SudokuSolver.getMultipleNakedFromVirtualLines([line], 3);
     const expectResult: NakedPairsTripletsQuadsResult[] = [
       {
         cells: [line[1], line[2], line[3]],
@@ -62,7 +62,7 @@ describe("sudoku solver", () => {
 
   it("getRemovalDueToNakedPairs test 1", () => {
     const s = new SudokuSolver(p3);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getRemovalDueToNakedTriplets();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
       [1, 6, "7"], // due to column 6 - 347
@@ -77,7 +77,7 @@ describe("sudoku solver", () => {
 
   it("getRemovalDueToNakedPairs test 2", () => {
     const s = new SudokuSolver(p4);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getRemovalDueToNakedTriplets();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
       [2, 1, "1"], // due to row 2 169

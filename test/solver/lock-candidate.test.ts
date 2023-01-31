@@ -232,7 +232,7 @@ const p1Result: AllResult = {
 };
 
 const testFactory = (sudoku: SudokuSolver, allResult: AllResult) => {
-  sudoku.getBasicCandidates();
+  sudoku.setBasicCandidates();
 
   it("row lock in box candidate", () => {
     for (const index of allIndex) {

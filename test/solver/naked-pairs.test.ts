@@ -29,7 +29,6 @@ const testPuzzle1: InputClues = [
 
 describe("sudoku solver", () => {
   it("getNakedPairsFromVirtualLines", () => {
-    const s = new SudokuSolver(testPuzzle0);
     const line = TU.candidatesLineFactory([
       ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
       ["1", "2", "4"],
@@ -42,7 +41,7 @@ describe("sudoku solver", () => {
       ["5", "6", "7"],
     ]);
 
-    const result = s.getNakedPairsFromVirtualLines([line]);
+    const result = SudokuSolver.getNakedPairsFromVirtualLines([line]);
     const expectResult: NakedPairsTripletsQuadsResult[] = [
       {
         cells: [line[2], line[3]],
@@ -68,7 +67,7 @@ describe("sudoku solver", () => {
 
   it("getRemovalDueToNakedPairs test 1", () => {
     const s = new SudokuSolver(testPuzzle0);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getRemovalDueToNakedPairs();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
       [4, 8, "5"],
@@ -81,7 +80,7 @@ describe("sudoku solver", () => {
 
   it("getRemovalDueToNakedPairs test 2", () => {
     const s = new SudokuSolver(testPuzzle1);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getRemovalDueToNakedPairs();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
       [6, 8, "5"],

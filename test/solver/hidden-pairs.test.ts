@@ -34,7 +34,6 @@ const p4: InputClues = [
 
 describe("sudoku solver", () => {
   it("getHiddenMultipleFromVirtualLines sizeOfCandidate=2", () => {
-    const s = new SudokuSolver(p3);
     const line = TU.candidatesLineFactory([
       ["1", "2", "8", "9"],
       undefined,
@@ -47,7 +46,7 @@ describe("sudoku solver", () => {
       ["5", "6", "7", "8"],
     ]);
 
-    const result = s.getHiddenMultipleFromVirtualLines([line], 2);
+    const result = SudokuSolver.getHiddenMultipleFromVirtualLines([line], 2);
     const expectResult: HiddenMultipleFromVirtualLinesResult[] = [
       {
         combination: ["5", "6"],
@@ -68,7 +67,7 @@ describe("sudoku solver", () => {
 
   it("getRemovalDueToNakedPairs test 1", () => {
     const s = new SudokuSolver(p3);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenPairs();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
       [0, 7, "7"], // due to [1, 2] in column 7
@@ -92,7 +91,7 @@ describe("sudoku solver", () => {
 
   it("getRemovalDueToNakedPairs test 2", () => {
     const s = new SudokuSolver(p4);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenPairs();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
       [4, 4, "2"], // due to [3, 4] in row 4

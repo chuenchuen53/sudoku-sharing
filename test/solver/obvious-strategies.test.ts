@@ -33,7 +33,7 @@ const testPuzzle1: InputClues = [
   ["5", "0", "8", "0", "0", "0", "0", "0", "4"],
 ];
 
-describe("sudoku solver", () => {
+describe("sudoku solver obvious strategies test", () => {
   it("numberOfCandidates", () => {
     const c1 = candidatesFactory(true, ["1"]);
     const c2 = candidatesFactory(true, ["1", "8"]);
@@ -79,7 +79,7 @@ describe("sudoku solver", () => {
 
   it("getCombinedMissing", () => {
     const s = new SudokuSolver(testPuzzle0);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
 
     const arr: [number, number, Candidates][] = [
       [0, 0, candidatesFactory(true, ["2", "3"])],
@@ -136,7 +136,7 @@ describe("sudoku solver", () => {
 
   it("getCombinedMissing", () => {
     const s = new SudokuSolver(testPuzzle1);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
 
     const arr: [number, number, Candidates][] = [
       [0, 1, candidatesFactory(true, ["3", "5", "7", "9"])],
@@ -201,7 +201,7 @@ describe("sudoku solver", () => {
 
   it("getNakedSingles", () => {
     const s = new SudokuSolver(testPuzzle0);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const nakedSingles = s.getNakedSingles();
     expect(nakedSingles).toStrictEqual([
       TU.inputValueDataFactory(0, 7, "3"),
@@ -255,7 +255,7 @@ describe("sudoku solver", () => {
 
   it("getHiddenSingleFromVirtualLines", () => {
     const s = new SudokuSolver(testPuzzle0);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const lines = s.getAllRows();
     const result = SudokuSolver.getHiddenSingleFromVirtualLines(lines);
     const expectedResult = [
@@ -277,7 +277,7 @@ describe("sudoku solver", () => {
 
   it("getHiddenSingles", () => {
     const s = new SudokuSolver(testPuzzle0);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getHiddenSingles();
     const expectedResult = [
       // row

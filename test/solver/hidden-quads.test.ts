@@ -17,7 +17,6 @@ const p5: InputClues = [
 
 describe("sudoku solver", () => {
   it("getHiddenMultipleFromVirtualLines sizeOfCandidate=4", () => {
-    const s = new SudokuSolver(p5);
     const line = TU.candidatesLineFactory([
       ["1", "2", "9"],
       undefined,
@@ -30,7 +29,7 @@ describe("sudoku solver", () => {
       ["5", "6", "7", "8", "9"],
     ]);
 
-    const result = s.getHiddenMultipleFromVirtualLines([line], 4);
+    const result = SudokuSolver.getHiddenMultipleFromVirtualLines([line], 4);
     const expectResult: HiddenMultipleFromVirtualLinesResult[] = [
       {
         combination: ["5", "6", "7", "8"],
@@ -55,7 +54,7 @@ describe("sudoku solver", () => {
 
   it("getRemovalDueToNakedPairs test 1", () => {
     const s = new SudokuSolver(p5);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenQuads();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
       [0, 0, "7"], // due to [3, 4, 5, 9] in row 0

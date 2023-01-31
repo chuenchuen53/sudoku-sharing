@@ -130,7 +130,7 @@ const removeInputValue = (data: CellWithIndex) => {
 };
 
 const getBasicCandidates = () => {
-  s.getBasicCandidates();
+  s.setBasicCandidates();
 };
 
 const getUniqueMissing = () => {

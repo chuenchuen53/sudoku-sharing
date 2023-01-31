@@ -66,8 +66,6 @@ const undefinedCandidates: undefined[] = [
 
 describe("sudoku solver", () => {
   it("x wing test 1", () => {
-    const s = new SudokuSolver(p2);
-
     const row0 = TU.candidatesLineFactory(
       [
         ["1", "2", "4", "5", "7", "8", "9"],
@@ -120,7 +118,7 @@ describe("sudoku solver", () => {
     const allRows = [row0, row1, row2, row3, row4, row5, row6, row7, row8];
     const allColumns = [column0, column1, column2, column3, column4, column5, column6, column7, column8];
 
-    const result = s.getXWingSwordfishFromVirtualLines(VirtualLineType.ROW, allRows, allColumns);
+    const result = SudokuSolver.getXWingSwordfishFromVirtualLines(VirtualLineType.ROW, allRows, allColumns);
     const expectResult: XWingSwordfishResult[] = [
       {
         sudokuElement: "3",
@@ -170,8 +168,6 @@ describe("sudoku solver", () => {
   });
 
   it("x wing test 2", () => {
-    const s = new SudokuSolver(p2);
-
     const column0 = TU.candidatesLineFactory(
       [
         ["1", "2", "4", "5", "7", "8", "9"],
@@ -224,7 +220,7 @@ describe("sudoku solver", () => {
     const allRows = [row0, row1, row2, row3, row4, row5, row6, row7, row8];
     const allColumns = [column0, column1, column2, column3, column4, column5, column6, column7, column8];
 
-    const result = s.getXWingSwordfishFromVirtualLines(VirtualLineType.COLUMN, allColumns, allRows);
+    const result = SudokuSolver.getXWingSwordfishFromVirtualLines(VirtualLineType.COLUMN, allColumns, allRows);
     const expectResult: XWingSwordfishResult[] = [
       {
         sudokuElement: "3",
@@ -275,7 +271,7 @@ describe("sudoku solver", () => {
 
   it("getRemovalDueToXWing test 1", () => {
     const s = new SudokuSolver(p0);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getRemovalDueToXWing();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
       [1, 3, "2"], // due to element "2" in [1, 6], [7, 6], [1, 8], [7, 8]
@@ -289,7 +285,7 @@ describe("sudoku solver", () => {
 
   it("getRemovalDueToXWing test 2", () => {
     const s = new SudokuSolver(p2);
-    s.getBasicCandidates();
+    s.setBasicCandidates();
     const result = s.getRemovalDueToXWing();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
       [0, 7, "1"], // due to element "1" in [6, 5], [6, 7], [8, 5], [8, 7]
