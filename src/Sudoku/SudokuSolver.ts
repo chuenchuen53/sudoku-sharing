@@ -1,5 +1,4 @@
 import CalcUtil from "../utils/CalcUtil";
-import ArrUtil from "../utils/ArrUtil";
 import Sudoku from "./Sudoku";
 import { VirtualLineType } from "./type";
 import type {
@@ -22,14 +21,42 @@ import type {
   YWingResult,
 } from "./type";
 
+interface EliminationStrategySetting {
+  lockedCandidates: number;
+  nakedPairs: number;
+  nakedTriplets: number;
+  nakedQuads: number;
+  hiddenPairs: number;
+  hiddenTriplets: number;
+  hiddenQuads: number;
+  xWing: number;
+  yWing: number;
+  // swordfish: number;
+}
+
+const defaultEliminationStrategySetting = (): EliminationStrategySetting => ({
+  lockedCandidates: 1,
+  nakedPairs: 2,
+  nakedTriplets: 3,
+  nakedQuads: 4,
+  hiddenPairs: 5,
+  hiddenTriplets: 6,
+  hiddenQuads: 7,
+  xWing: 8,
+  yWing: 9,
+  // swordfish: 10,
+});
+
 export default class SudokuSolver extends Sudoku {
   public elementMissing: ElementMissing;
   public stats: Stats;
+  public eliminationStrategySetting: EliminationStrategySetting;
 
   constructor(clues: InputClues) {
     super(clues);
     this.elementMissing = this.updateElementMissing();
     this.stats = SudokuSolver.statsTemplate();
+    this.eliminationStrategySetting = defaultEliminationStrategySetting();
   }
 
   static numberOfCandidates(candidates: Candidates): number {
@@ -61,40 +88,36 @@ export default class SudokuSolver extends Sudoku {
     return candidatesArr.length === 1 ? candidatesArr[0][0] : null;
   }
 
-  static getHiddenSingleFromVirtualLine(virtualLine: VirtualLine): InputValueData[] {
-    const result: InputValueData[] = [];
-    const candidatesCount: Record<SudokuElement, number> = {
-      "1": 0,
-      "2": 0,
-      "3": 0,
-      "4": 0,
-      "5": 0,
-      "6": 0,
-      "7": 0,
-      "8": 0,
-      "9": 0,
-    };
-    virtualLine.forEach((cell) => {
-      if (!cell.candidates || cell.clue || cell.inputValue) return;
-      Object.entries(cell.candidates).forEach(([key, bool]) => bool && candidatesCount[key as SudokuElement]++);
-    });
-    Object.entries(candidatesCount).forEach(([key, count]) => {
-      if (count !== 1) return;
-      const sudokuElement = key as SudokuElement;
-      const cell = virtualLine.find((x) => x.candidates && x.candidates[sudokuElement])!;
-      if (SudokuSolver.numberOfCandidates(cell.candidates!) === 1) return; // naked single
-      result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement });
-    });
-    return result;
-  }
-
   static getHiddenSingleFromVirtualLines(virtualLines: VirtualLine[]): InputValueData[] {
     const result: InputValueData[] = [];
     virtualLines.forEach((virtualLine) => {
-      const lineResult = SudokuSolver.getHiddenSingleFromVirtualLine(virtualLine);
-      result.push(...lineResult);
+      const candidatesCount: Record<SudokuElement, number> = {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+      };
+      virtualLine.forEach((cell) => {
+        if (!cell.candidates || cell.clue || cell.inputValue) return;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        Sudoku.loopCandidates((sudokuElement) => cell.candidates![sudokuElement] && candidatesCount[sudokuElement]++);
+      });
+      Object.entries(candidatesCount).forEach(([key, count]) => {
+        if (count !== 1) return;
+        const sudokuElement = key as SudokuElement;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const cell = virtualLine.find((x) => x.candidates?.[sudokuElement])!;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        if (SudokuSolver.numberOfCandidates(cell.candidates!) === 1) return; // naked single
+        result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement });
+      });
     });
-    return result;
+    return Sudoku.removeDuplicatedInputValueData(result);
   }
 
   static isCandidateExtendedTheSet(candidates: Candidates, superset: SudokuElement[]): boolean {
@@ -209,11 +232,9 @@ export default class SudokuSolver extends Sudoku {
 
   static getCandidatesArr(candidates: Candidates): SudokuElement[] {
     const result: SudokuElement[] = [];
-
-    for (const key in candidates) {
-      if (candidates[key as SudokuElement]) result.push(key as SudokuElement);
-    }
-
+    Sudoku.loopCandidates((sudokuElement) => {
+      if (candidates[sudokuElement]) result.push(sudokuElement);
+    });
     return result;
   }
 

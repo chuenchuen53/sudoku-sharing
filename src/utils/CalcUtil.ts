@@ -1,7 +1,3 @@
-import "lodash.combinations";
-import _ from "lodash";
-import type { Side } from "@floating-ui/core";
-
 export default class CalcUtil {
   static xor = (a: boolean, b: boolean): boolean => {
     return a ? !b : b;
