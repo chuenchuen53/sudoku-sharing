@@ -62,7 +62,7 @@ import SudokuSolver from "@/Sudoku/SudokuSolver";
 import Sudoku from "@/Sudoku/Sudoku";
 import * as tp from "@/samplePuzzle";
 
-const s = reactive(new SudokuSolver(tp.p5));
+const s = reactive(new SudokuSolver(tp.p1));
 const highlight = ref<Highlight>({
   element: "0",
   cell: [],
@@ -134,10 +134,8 @@ const getBasicCandidates = () => {
 };
 
 const getUniqueMissing = () => {
-  const rowResult = s.getUniqueMissing(VirtualLineType.ROW);
-  const columnResult = s.getUniqueMissing(VirtualLineType.COLUMN);
-  const boxResult = s.getUniqueMissing(VirtualLineType.BOX);
-  const cells = [...rowResult, ...columnResult, ...boxResult].map((x) => x.cell);
+  const result = s.getUniqueMissing();
+  const cells = result.map((x) => x.cell);
   highlight.value.cell = cells;
 };
 

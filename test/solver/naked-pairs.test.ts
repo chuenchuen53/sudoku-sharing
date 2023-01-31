@@ -29,7 +29,7 @@ const testPuzzle1: InputClues = [
 
 describe("sudoku solver", () => {
   it("getNakedPairsFromVirtualLines", () => {
-    const line = TU.candidatesLineFactory([
+    const line = TU.virtualLineFactory([
       ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
       ["1", "2", "4"],
       ["1", "2"],

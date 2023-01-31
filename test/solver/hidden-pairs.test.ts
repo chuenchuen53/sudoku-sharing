@@ -34,7 +34,7 @@ const p4: InputClues = [
 
 describe("sudoku solver", () => {
   it("getHiddenMultipleFromVirtualLines sizeOfCandidate=2", () => {
-    const line = TU.candidatesLineFactory([
+    const line = TU.virtualLineFactory([
       ["1", "2", "8", "9"],
       undefined,
       ["1", "2", "3", "4", "9"],

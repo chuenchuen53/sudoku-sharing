@@ -53,8 +53,8 @@ export default class TU {
     };
   }
 
-  static candidatesLineFactory = (
-    candidates: (SudokuElement[] | undefined)[],
+  static virtualLineFactory = (
+    cellInfo: (SudokuElement[] | { clue: SudokuElement } | { inputValue: SudokuElement } | undefined)[],
     option:
       | {
           type: VirtualLineType.ROW | VirtualLineType.COLUMN;
@@ -65,21 +65,33 @@ export default class TU {
           boxIndex: number;
         } = { type: VirtualLineType.ROW, lineIndex: 0 }
   ): VirtualLine => {
-    if (option.type === VirtualLineType.BOX) {
-      const boxIndex = option.boxIndex;
-      const rowIndex = Math.floor(boxIndex / 3) * 3;
-      const columnIndex = (boxIndex % 3) * 3;
-      return candidates.map((candidates, index) => ({
-        candidates: candidates ? Sudoku.candidatesFactory(true, candidates) : undefined,
-        rowIndex: rowIndex + Math.floor(index / 3),
-        columnIndex: columnIndex + (index % 3),
-      }));
+    function getRowColumnIndex(x: number): { rowIndex: number; columnIndex: number } {
+      switch (option.type) {
+        case VirtualLineType.ROW:
+          return { rowIndex: option.lineIndex, columnIndex: x };
+        case VirtualLineType.COLUMN:
+          return { rowIndex: x, columnIndex: option.lineIndex };
+        case VirtualLineType.BOX: {
+          const boxIndex = option.boxIndex;
+          return Sudoku.getRowColumnIndexFromBoxIndexAndCellIndex(boxIndex, x);
+        }
+      }
     }
 
-    return candidates.map((candidates, index) => ({
-      candidates: candidates ? Sudoku.candidatesFactory(true, candidates) : undefined,
-      rowIndex: option.type === VirtualLineType.ROW ? option.lineIndex : index,
-      columnIndex: option.type === VirtualLineType.COLUMN ? option.lineIndex : index,
-    }));
+    return cellInfo.map((info, index) => {
+      const obj: CellWithIndex = getRowColumnIndex(index);
+
+      if (!info) return obj;
+
+      if (Array.isArray(info)) {
+        obj.candidates = Sudoku.candidatesFactory(true, info);
+      } else if ("clue" in info) {
+        obj.clue = info.clue;
+      } else if ("inputValue" in info) {
+        obj.inputValue = info.inputValue;
+      }
+
+      return obj;
+    });
   };
 }

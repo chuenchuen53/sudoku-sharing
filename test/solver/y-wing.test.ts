@@ -59,28 +59,28 @@ describe("sudoku solver", () => {
       ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
     ];
 
-    const row0 = TU.candidatesLineFactory(candidatesArr, { type: VirtualLineType.ROW, lineIndex: 0 });
+    const row0 = TU.virtualLineFactory(candidatesArr, { type: VirtualLineType.ROW, lineIndex: 0 });
     expect(fn(row0, pincer)).toStrictEqual([]);
 
-    const row2 = TU.candidatesLineFactory(candidatesArr, { type: VirtualLineType.ROW, lineIndex: 2 });
+    const row2 = TU.virtualLineFactory(candidatesArr, { type: VirtualLineType.ROW, lineIndex: 2 });
     expect(fn(row2, pincer)).toStrictEqual([
       TU.pincerFactory(cf(2, 0, { candidates: candidatesArr[0] }), "1", "4"),
       TU.pincerFactory(cf(2, 4, { candidates: candidatesArr[4] }), "3", "4"),
     ]);
 
-    const column0 = TU.candidatesLineFactory(candidatesArr, { type: VirtualLineType.COLUMN, lineIndex: 0 });
+    const column0 = TU.virtualLineFactory(candidatesArr, { type: VirtualLineType.COLUMN, lineIndex: 0 });
     expect(fn(column0, pincer)).toStrictEqual([]);
 
-    const column5 = TU.candidatesLineFactory(candidatesArr, { type: VirtualLineType.COLUMN, lineIndex: 5 });
+    const column5 = TU.virtualLineFactory(candidatesArr, { type: VirtualLineType.COLUMN, lineIndex: 5 });
     expect(fn(column5, pincer)).toStrictEqual([
       TU.pincerFactory(cf(0, 5, { candidates: candidatesArr[0] }), "1", "4"),
       TU.pincerFactory(cf(4, 5, { candidates: candidatesArr[4] }), "3", "4"),
     ]);
 
-    const box0 = TU.candidatesLineFactory(candidatesArr, { type: VirtualLineType.BOX, boxIndex: 0 });
+    const box0 = TU.virtualLineFactory(candidatesArr, { type: VirtualLineType.BOX, boxIndex: 0 });
     expect(fn(box0, pincer)).toStrictEqual([]);
 
-    const box1 = TU.candidatesLineFactory(candidatesArr, { type: VirtualLineType.BOX, boxIndex: 1 });
+    const box1 = TU.virtualLineFactory(candidatesArr, { type: VirtualLineType.BOX, boxIndex: 1 });
     expect(fn(box1, pincer)).toStrictEqual([
       TU.pincerFactory(cf(0, 3, { candidates: candidatesArr[0] }), "1", "4"),
       TU.pincerFactory(cf(1, 4, { candidates: candidatesArr[4] }), "3", "4"),

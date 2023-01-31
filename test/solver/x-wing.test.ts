@@ -66,7 +66,7 @@ const undefinedCandidates: undefined[] = [
 
 describe("sudoku solver", () => {
   it("x wing test 1", () => {
-    const row0 = TU.candidatesLineFactory(
+    const row0 = TU.virtualLineFactory(
       [
         ["1", "2", "4", "5", "7", "8", "9"],
         ["3", "4", "5"],
@@ -83,14 +83,14 @@ describe("sudoku solver", () => {
         lineIndex: 0,
       }
     );
-    const row1 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 1 });
-    const row2 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 2 });
-    const row3 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 3 });
-    const row4 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 4 });
-    const row5 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 5 });
-    const row6 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 6 });
-    const row7 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 7 });
-    const row8 = TU.candidatesLineFactory(
+    const row1 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 1 });
+    const row2 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 2 });
+    const row3 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 3 });
+    const row4 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 4 });
+    const row5 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 5 });
+    const row6 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 6 });
+    const row7 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 7 });
+    const row8 = TU.virtualLineFactory(
       [
         ["1", "2", "4", "5", "7", "8", "9"],
         ["1", "2", "3"],
@@ -105,15 +105,15 @@ describe("sudoku solver", () => {
       { type: VirtualLineType.ROW, lineIndex: 8 }
     );
 
-    const column0 = TU.candidatesLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 0 });
-    const column1 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 1 });
-    const column2 = TU.candidatesLineFactory(sampleCandidates, { type: VirtualLineType.COLUMN, lineIndex: 2 });
-    const column3 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 3 });
-    const column4 = TU.candidatesLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 4 });
-    const column5 = TU.candidatesLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 5 });
-    const column6 = TU.candidatesLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 6 });
-    const column7 = TU.candidatesLineFactory(sampleCandidates, { type: VirtualLineType.COLUMN, lineIndex: 7 });
-    const column8 = TU.candidatesLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 8 });
+    const column0 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 0 });
+    const column1 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 1 });
+    const column2 = TU.virtualLineFactory(sampleCandidates, { type: VirtualLineType.COLUMN, lineIndex: 2 });
+    const column3 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 3 });
+    const column4 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 4 });
+    const column5 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 5 });
+    const column6 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 6 });
+    const column7 = TU.virtualLineFactory(sampleCandidates, { type: VirtualLineType.COLUMN, lineIndex: 7 });
+    const column8 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 8 });
 
     const allRows = [row0, row1, row2, row3, row4, row5, row6, row7, row8];
     const allColumns = [column0, column1, column2, column3, column4, column5, column6, column7, column8];
@@ -168,7 +168,7 @@ describe("sudoku solver", () => {
   });
 
   it("x wing test 2", () => {
-    const column0 = TU.candidatesLineFactory(
+    const column0 = TU.virtualLineFactory(
       [
         ["1", "2", "4", "5", "7", "8", "9"],
         ["3", "4", "5"],
@@ -185,14 +185,14 @@ describe("sudoku solver", () => {
         lineIndex: 0,
       }
     );
-    const column1 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 1 });
-    const column2 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 2 });
-    const column3 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 3 });
-    const column4 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 4 });
-    const column5 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 5 });
-    const column6 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 6 });
-    const column7 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 7 });
-    const column8 = TU.candidatesLineFactory(
+    const column1 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 1 });
+    const column2 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 2 });
+    const column3 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 3 });
+    const column4 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 4 });
+    const column5 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 5 });
+    const column6 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 6 });
+    const column7 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 7 });
+    const column8 = TU.virtualLineFactory(
       [
         ["1", "2", "4", "5", "7", "8", "9"],
         ["1", "2", "3"],
@@ -207,15 +207,15 @@ describe("sudoku solver", () => {
       { type: VirtualLineType.COLUMN, lineIndex: 8 }
     );
 
-    const row0 = TU.candidatesLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 0 });
-    const row1 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 1 });
-    const row2 = TU.candidatesLineFactory(sampleCandidates, { type: VirtualLineType.ROW, lineIndex: 2 });
-    const row3 = TU.candidatesLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 3 });
-    const row4 = TU.candidatesLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 4 });
-    const row5 = TU.candidatesLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 5 });
-    const row6 = TU.candidatesLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 6 });
-    const row7 = TU.candidatesLineFactory(sampleCandidates, { type: VirtualLineType.ROW, lineIndex: 7 });
-    const row8 = TU.candidatesLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 8 });
+    const row0 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 0 });
+    const row1 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 1 });
+    const row2 = TU.virtualLineFactory(sampleCandidates, { type: VirtualLineType.ROW, lineIndex: 2 });
+    const row3 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 3 });
+    const row4 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 4 });
+    const row5 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 5 });
+    const row6 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 6 });
+    const row7 = TU.virtualLineFactory(sampleCandidates, { type: VirtualLineType.ROW, lineIndex: 7 });
+    const row8 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 8 });
 
     const allRows = [row0, row1, row2, row3, row4, row5, row6, row7, row8];
     const allColumns = [column0, column1, column2, column3, column4, column5, column6, column7, column8];

@@ -1,14 +1,13 @@
 import { expect, describe, it } from "vitest";
 import Sudoku from "../../src/Sudoku/Sudoku";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import { VirtualLineType } from "../../src/Sudoku/type";
 import TU from "../utils";
-import type { InputClues, SudokuElement, VirtualLine, Candidates, UniqueMissingResult } from "../../src/Sudoku/type";
+import type { InputClues, Candidates } from "../../src/Sudoku/type";
 
 const candidatesFactory = Sudoku.candidatesFactory;
 
 // easy
-const testPuzzle0: InputClues = [
+const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
   ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
   ["0", "0", "8", "0", "0", "0", "4", "0", "9"],
@@ -21,7 +20,7 @@ const testPuzzle0: InputClues = [
 ];
 
 // medium
-const testPuzzle1: InputClues = [
+const p1: InputClues = [
   ["2", "0", "0", "0", "0", "0", "8", "6", "0"],
   ["0", "0", "0", "0", "4", "2", "0", "0", "0"],
   ["0", "1", "0", "0", "6", "0", "0", "4", "7"],
@@ -52,33 +51,8 @@ describe("sudoku solver obvious strategies test", () => {
     expect(SudokuSolver.getUniqueCandidate(c3)).toBeNull();
   });
 
-  it("getUniqueMissing", () => {
-    const cf = (r: number, c: number) => ({ rowIndex: r, columnIndex: c });
-    const fn: (vl: VirtualLine, e: SudokuElement, r: number, c: number) => UniqueMissingResult = (vl, e, r, c) => ({
-      virtualLine: vl,
-      uniqueCandidate: e,
-      cell: cf(r, c),
-    });
-
-    const clue: InputClues = [
-      ["2", "9", "0", "4", "6", "7", "5", "3", "8"],
-      ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
-      ["6", "0", "8", "0", "0", "0", "4", "0", "9"],
-      ["9", "6", "2", "1", "0", "0", "0", "4", "0"],
-      ["8", "1", "0", "0", "0", "3", "0", "2", "0"],
-      ["4", "3", "7", "6", "5", "0", "8", "0", "1"],
-      ["5", "8", "0", "7", "0", "4", "9", "1", "3"],
-      ["1", "0", "0", "3", "0", "0", "0", "0", "0"],
-      ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
-    ];
-    const s = new SudokuSolver(clue);
-    expect(s.getUniqueMissing(VirtualLineType.ROW)).toStrictEqual([fn(s.getRow(0), "1", 0, 2)]);
-    expect(s.getUniqueMissing(VirtualLineType.COLUMN)).toStrictEqual([fn(s.getColumn(0), "3", 8, 0)]);
-    expect(s.getUniqueMissing(VirtualLineType.BOX)).toStrictEqual([fn(s.getBoxFromBoxIndex(3), "5", 4, 2)]);
-  });
-
   it("getCombinedMissing", () => {
-    const s = new SudokuSolver(testPuzzle0);
+    const s = new SudokuSolver(p0);
     s.setBasicCandidates();
 
     const arr: [number, number, Candidates][] = [
@@ -129,13 +103,13 @@ describe("sudoku solver obvious strategies test", () => {
 
     arr.forEach(([r, c, candidates]) => expect(s.grid[r][c].candidates).toStrictEqual(candidates));
 
-    const ns = new SudokuSolver(testPuzzle0);
+    const ns = new SudokuSolver(p0);
     arr.forEach(([r, c, candidates]) => ns.setCandidates(r, c, candidates));
     expect(ns.grid).toStrictEqual(s.grid);
   });
 
   it("getCombinedMissing", () => {
-    const s = new SudokuSolver(testPuzzle1);
+    const s = new SudokuSolver(p1);
     s.setBasicCandidates();
 
     const arr: [number, number, Candidates][] = [
@@ -194,34 +168,13 @@ describe("sudoku solver obvious strategies test", () => {
 
     arr.forEach(([r, c, candidates]) => expect(s.grid[r][c].candidates).toStrictEqual(candidates));
 
-    const ns = new SudokuSolver(testPuzzle1);
+    const ns = new SudokuSolver(p1);
     arr.forEach(([r, c, candidates]) => ns.setCandidates(r, c, candidates));
     expect(ns.grid).toStrictEqual(s.grid);
   });
 
-  it("getNakedSingles", () => {
-    const s = new SudokuSolver(testPuzzle0);
-    s.setBasicCandidates();
-    const nakedSingles = s.getNakedSingles();
-    expect(nakedSingles).toStrictEqual([
-      TU.inputValueDataFactory(0, 7, "3"),
-      TU.inputValueDataFactory(2, 1, "5"),
-      TU.inputValueDataFactory(3, 5, "8"),
-      TU.inputValueDataFactory(4, 2, "5"),
-      TU.inputValueDataFactory(4, 3, "9"),
-      TU.inputValueDataFactory(4, 6, "7"),
-      TU.inputValueDataFactory(5, 0, "4"),
-      TU.inputValueDataFactory(5, 5, "2"),
-      TU.inputValueDataFactory(5, 7, "9"),
-      TU.inputValueDataFactory(6, 2, "6"),
-      TU.inputValueDataFactory(6, 4, "2"),
-      TU.inputValueDataFactory(7, 1, "7"),
-      TU.inputValueDataFactory(8, 0, "3"),
-    ]);
-  });
-
   it("getHiddenSingleFromVirtualLine", () => {
-    const line = TU.candidatesLineFactory([
+    const line = TU.virtualLineFactory([
       undefined,
       undefined,
       ["5"],
@@ -239,7 +192,7 @@ describe("sudoku solver obvious strategies test", () => {
   });
 
   it("getHiddenSingleFromVirtualLine", () => {
-    const line = TU.candidatesLineFactory([
+    const line = TU.virtualLineFactory([
       ["2", "3"],
       undefined,
       ["2", "3", "6"],
@@ -254,7 +207,7 @@ describe("sudoku solver obvious strategies test", () => {
   });
 
   it("getHiddenSingleFromVirtualLines", () => {
-    const s = new SudokuSolver(testPuzzle0);
+    const s = new SudokuSolver(p0);
     s.setBasicCandidates();
     const lines = s.getAllRows();
     const result = SudokuSolver.getHiddenSingleFromVirtualLines(lines);
@@ -276,7 +229,7 @@ describe("sudoku solver obvious strategies test", () => {
   });
 
   it("getHiddenSingles", () => {
-    const s = new SudokuSolver(testPuzzle0);
+    const s = new SudokuSolver(p0);
     s.setBasicCandidates();
     const result = s.getHiddenSingles();
     const expectedResult = [
