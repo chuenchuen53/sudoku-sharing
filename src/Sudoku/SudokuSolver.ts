@@ -3,6 +3,7 @@ import ArrUtil from "../utils/ArrUtil";
 import Sudoku from "./Sudoku";
 import { VirtualLineType } from "./type";
 import type {
+  UniqueMissingResult,
   RowColumn,
   Stats,
   Candidates,
@@ -14,48 +15,12 @@ import type {
   CellWithIndex,
   ElementMissing,
   SudokuIndex,
+  HiddenMultipleFromVirtualLinesResult,
+  NakedPairsTripletsQuadsResult,
+  Pincer,
+  XWingSwordfishResult,
+  YWingResult,
 } from "./type";
-import ObjUtil from "@/utils/ObjUtil";
-
-// const candidatesFromArr = (arr: SudokuElement[]) => {
-//   const candidates = candidatesFactory(false);
-//   arr.forEach((x) => (candidates[x] = true));
-//   return candidates;
-// };
-
-export interface UniqueMissing {
-  virtualLine: VirtualLine;
-  uniqueCandidate: SudokuElement;
-  cell: CellWithIndex;
-}
-
-export interface NakedPairsTripletsQuadsResult {
-  cells: CellWithIndex[];
-  elimination: InputValueData[];
-}
-
-export interface HiddenMultipleFromVirtualLinesResult {
-  combination: SudokuElement[];
-  multiple: CellWithIndex[];
-  elimination: InputValueData[];
-}
-
-export interface XWingSwordfishResult {
-  sudokuElement: SudokuElement;
-  multiple: CellWithIndex[];
-  elimination: InputValueData[];
-}
-
-export interface Pincer extends CellWithIndex {
-  same: SudokuElement;
-  diff: SudokuElement;
-}
-
-export interface YWingResult {
-  pivot: CellWithIndex;
-  pincers: Pincer[];
-  elimination: InputValueData[];
-}
 
 export default class SudokuSolver extends Sudoku {
   public elementMissing: ElementMissing;
@@ -109,10 +74,10 @@ export default class SudokuSolver extends Sudoku {
     }
   }
 
-  getUniqueMissing(type: VirtualLineType): UniqueMissing[] {
+  getUniqueMissing(type: VirtualLineType): UniqueMissingResult[] {
     const allVirtualLines = this.getAllVirtualLines(type);
     const missingArr = this.elementMissing[type];
-    const result: UniqueMissing[] = [];
+    const result: UniqueMissingResult[] = [];
     ArrUtil.zip2(allVirtualLines, missingArr).forEach(([virtualLine, missing]) => {
       const uniqueCandidate = SudokuSolver.getUniqueCandidate(missing);
       if (uniqueCandidate) {

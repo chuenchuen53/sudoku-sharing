@@ -1,8 +1,9 @@
 import { expect, describe, it } from "vitest";
 import Sudoku from "../../src/Sudoku/Sudoku";
-import SudokuSolver, { UniqueMissing } from "../../src/Sudoku/SudokuSolver";
-import { InputClues, VirtualLineType, SudokuElement, VirtualLine, Candidates } from "../../src/Sudoku/type";
+import SudokuSolver from "../../src/Sudoku/SudokuSolver";
+import { VirtualLineType } from "../../src/Sudoku/type";
 import TU from "../utils";
+import type { InputClues, SudokuElement, VirtualLine, Candidates, UniqueMissingResult } from "../../src/Sudoku/type";
 
 const candidatesFactory = Sudoku.candidatesFactory;
 
@@ -53,7 +54,7 @@ describe("sudoku solver", () => {
 
   it("getUniqueMissing", () => {
     const cf = (r: number, c: number) => ({ rowIndex: r, columnIndex: c });
-    const fn: (vl: VirtualLine, e: SudokuElement, r: number, c: number) => UniqueMissing = (vl, e, r, c) => ({
+    const fn: (vl: VirtualLine, e: SudokuElement, r: number, c: number) => UniqueMissingResult = (vl, e, r, c) => ({
       virtualLine: vl,
       uniqueCandidate: e,
       cell: cf(r, c),

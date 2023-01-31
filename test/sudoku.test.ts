@@ -1,8 +1,9 @@
 import { expect, describe, it, vitest, beforeAll } from "vitest";
 import ArrUtil from "../src/utils/ArrUtil";
 import Sudoku from "../src/Sudoku/Sudoku";
-import { CellWithIndex, InputClues, VirtualLineType, CheckVirtualLineDuplicateResult } from "../src/Sudoku/type";
+import { VirtualLineType } from "../src/Sudoku/type";
 import TU from "./utils";
+import type { CellWithIndex, InputClues, CheckVirtualLineDuplicateResult } from "../src/Sudoku/type";
 
 const candidatesFactory = Sudoku.candidatesFactory;
 
@@ -676,8 +677,8 @@ describe("sudoku basic", () => {
     expect(s.getVirtualLinesIntersections(r5, c5)).toStrictEqual(s.getVirtualLinesIntersections(c5, r5));
 
     const r0b0 = [c(0, 0), c(0, 1), c(0, 2)];
-    const r0b5 = [];
-    const r5b0 = [];
+    const r0b5: CellWithIndex[] = [];
+    const r5b0: CellWithIndex[] = [];
     const r5b5 = [c(5, 6), c(5, 7), c(5, 8)];
     expect(s.getVirtualLinesIntersections(r0, b0)).toStrictEqual(r0b0);
     expect(s.getVirtualLinesIntersections(r0, b5)).toStrictEqual(r0b5);
@@ -689,9 +690,9 @@ describe("sudoku basic", () => {
     expect(s.getVirtualLinesIntersections(r5, b5)).toStrictEqual(s.getVirtualLinesIntersections(b5, r5));
 
     const c0b0 = [c(0, 0), c(1, 0), c(2, 0)];
-    const c0b5 = [];
-    const c5b0 = [];
-    const c5b5 = [];
+    const c0b5: CellWithIndex[] = [];
+    const c5b0: CellWithIndex[] = [];
+    const c5b5: CellWithIndex[] = [];
     expect(s.getVirtualLinesIntersections(c0, b0)).toStrictEqual(c0b0);
     expect(s.getVirtualLinesIntersections(c0, b5)).toStrictEqual(c0b5);
     expect(s.getVirtualLinesIntersections(c5, b0)).toStrictEqual(c5b0);

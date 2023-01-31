@@ -1,7 +1,7 @@
 import { expect, describe, it } from "vitest";
-import SudokuSolver, { NakedPairsTripletsQuadsResult } from "../../src/Sudoku/SudokuSolver";
-import { InputClues, InputValueData } from "../../src/Sudoku/type";
+import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TU from "../utils";
+import type { InputClues, InputValueData, NakedPairsTripletsQuadsResult } from "../../src/Sudoku/type";
 
 const testPuzzle0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],

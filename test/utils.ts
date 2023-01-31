@@ -1,14 +1,7 @@
 import Sudoku from "../src/Sudoku/Sudoku";
-import { Pincer } from "../src/Sudoku/SudokuSolver";
-import {
-  CellWithIndex,
-  InputClues,
-  InputValueData,
-  SudokuElement,
-  VirtualLine,
-  VirtualLineType,
-} from "../src/Sudoku/type";
+import { VirtualLineType } from "../src/Sudoku/type";
 import ArrUtil from "../src/utils/ArrUtil";
+import type { Pincer, CellWithIndex, InputClues, InputValueData, SudokuElement, VirtualLine } from "../src/Sudoku/type";
 
 export default class TU {
   static emptyPuzzle = (): InputClues => ArrUtil.create2DArray(9, 9, "0");
@@ -62,7 +55,7 @@ export default class TU {
 
   static candidatesLineFactory = (
     candidates: (SudokuElement[] | undefined)[],
-    option?:
+    option:
       | {
           type: VirtualLineType.ROW | VirtualLineType.COLUMN;
           lineIndex: number;
@@ -70,10 +63,8 @@ export default class TU {
       | {
           type: VirtualLineType.BOX;
           boxIndex: number;
-        }
+        } = { type: VirtualLineType.ROW, lineIndex: 0 }
   ): VirtualLine => {
-    option = option ?? { type: VirtualLineType.ROW, lineIndex: 0 };
-
     if (option.type === VirtualLineType.BOX) {
       const boxIndex = option.boxIndex;
       const rowIndex = Math.floor(boxIndex / 3) * 3;

@@ -1,7 +1,8 @@
 import { expect, describe, it } from "vitest";
-import SudokuSolver, { Pincer, YWingResult } from "../../src/Sudoku/SudokuSolver";
-import { InputClues, InputValueData, SudokuElement, VirtualLineType } from "../../src/Sudoku/type";
+import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TU from "../utils";
+import { VirtualLineType } from "../../src/Sudoku/type";
+import type { Pincer, YWingResult, InputClues, InputValueData, SudokuElement } from "../../src/Sudoku/type";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],

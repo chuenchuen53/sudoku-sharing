@@ -54,3 +54,37 @@ export interface CheckVirtualLineDuplicateResult {
 }
 
 export type ValidateDetail = Record<VirtualLineType, CheckVirtualLineDuplicateResult[]>;
+
+export interface UniqueMissingResult {
+  virtualLine: VirtualLine;
+  uniqueCandidate: SudokuElement;
+  cell: CellWithIndex;
+}
+
+export interface NakedPairsTripletsQuadsResult {
+  cells: CellWithIndex[];
+  elimination: InputValueData[];
+}
+
+export interface HiddenMultipleFromVirtualLinesResult {
+  combination: SudokuElement[];
+  multiple: CellWithIndex[];
+  elimination: InputValueData[];
+}
+
+export interface XWingSwordfishResult {
+  sudokuElement: SudokuElement;
+  multiple: CellWithIndex[];
+  elimination: InputValueData[];
+}
+
+export interface Pincer extends CellWithIndex {
+  same: SudokuElement;
+  diff: SudokuElement;
+}
+
+export interface YWingResult {
+  pivot: CellWithIndex;
+  pincers: Pincer[];
+  elimination: InputValueData[];
+}

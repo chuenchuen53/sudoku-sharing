@@ -1,7 +1,8 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import { InputClues, SudokuElement, VirtualLineType } from "../../src/Sudoku/type";
+import { VirtualLineType } from "../../src/Sudoku/type";
 import TU from "../utils";
+import type { InputClues, SudokuElement } from "../../src/Sudoku/type";
 
 interface AllResult {
   rowLockInBoxResult: [number, number, SudokuElement][][];
@@ -234,7 +235,7 @@ const testFactory = (sudoku: SudokuSolver, allResult: AllResult) => {
   sudoku.getBasicCandidates();
 
   it("row lock in box candidate", () => {
-    for (let index of allIndex) {
+    for (const index of allIndex) {
       const result = sudoku.rowColumnLockInBox(VirtualLineType.ROW, index);
       const expectedResult = TU.inputValueDataArrFactory(allResult.rowLockInBoxResult[index]);
       expect(result).toStrictEqual(expectedResult);
@@ -242,7 +243,7 @@ const testFactory = (sudoku: SudokuSolver, allResult: AllResult) => {
   });
 
   it("column lock in box candidate", () => {
-    for (let index of allIndex) {
+    for (const index of allIndex) {
       const result = sudoku.rowColumnLockInBox(VirtualLineType.COLUMN, index);
       const expectedResult = TU.inputValueDataArrFactory(allResult.columnLockInBoxResult[index]);
       expect(result).toStrictEqual(expectedResult);
@@ -250,7 +251,7 @@ const testFactory = (sudoku: SudokuSolver, allResult: AllResult) => {
   });
 
   it("box lock in row candidate", () => {
-    for (let index of allIndex) {
+    for (const index of allIndex) {
       const result = sudoku.boxLockInRowColumn(VirtualLineType.ROW, index);
       const expectedResult = TU.inputValueDataArrFactory(allResult.boxLockInRowResult[index]);
       expect(result).toStrictEqual(expectedResult);
@@ -258,7 +259,7 @@ const testFactory = (sudoku: SudokuSolver, allResult: AllResult) => {
   });
 
   it("box lock in column candidate", () => {
-    for (let index of allIndex) {
+    for (const index of allIndex) {
       const result = sudoku.boxLockInRowColumn(VirtualLineType.COLUMN, index);
       const expectedResult = TU.inputValueDataArrFactory(allResult.boxLockInColumnResult[index]);
       expect(result).toStrictEqual(expectedResult);
