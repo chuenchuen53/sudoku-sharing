@@ -9,17 +9,21 @@
     "coverage": "vitest run --coverage",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "time": "ts-node ./script/time/index.ts"
   },
   "dependencies": {
+    "apexcharts": "3.36.3",
     "element-plus": "2.2.19",
     "lodash": "4.17.21",
     "lodash.clonedeep": "4.5.0",
     "lodash.combinations": "18.11.1",
     "pinia": "2.0.21",
     "sass": "1.55.0",
+    "ts-node": "10.9.1",
     "vue": "3.2.38",
-    "vue-router": "4.1.5"
+    "vue-router": "4.1.5",
+    "vue3-apexcharts": "1.4.1"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "1.1.4",

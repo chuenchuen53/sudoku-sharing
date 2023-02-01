@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import SudokuPage from "../views/SudokuPage/SudokuPage.vue";
+import ChartPage from "../views/ChartPage/ChartPage.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +9,11 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: SudokuPage,
+    },
+    {
+      path: "/chart",
+      name: "chart",
+      component: ChartPage,
     },
     // {
     //   path: "/about",
