@@ -28,32 +28,40 @@ const Difficulty = {
   EASY: "easy",
   INTERMEDIATE: "intermediate",
   EXPERT: "expert",
+  EXPERT_SET_2: "expert-set2",
 } as const;
 
 const simple = readSampleFromJson(Difficulty.SIMPLE);
 const easy = readSampleFromJson(Difficulty.EASY);
 const intermediate = readSampleFromJson(Difficulty.INTERMEDIATE);
 const expert = readSampleFromJson(Difficulty.EXPERT);
+const expertSet2 = readSampleFromJson(Difficulty.EXPERT_SET_2);
 
-const humanLikedSolverResult = [
-  countTimeForSolvingAllSample(simple, humanLikedSolver),
-  countTimeForSolvingAllSample(easy, humanLikedSolver),
-  countTimeForSolvingAllSample(intermediate, humanLikedSolver),
-  countTimeForSolvingAllSample(expert, humanLikedSolver),
-];
+if (Math.random()) {
+  const humanLikedSolverResult = [
+    countTimeForSolvingAllSample(simple, humanLikedSolver),
+    countTimeForSolvingAllSample(easy, humanLikedSolver),
+    countTimeForSolvingAllSample(intermediate, humanLikedSolver),
+    countTimeForSolvingAllSample(expert, humanLikedSolver),
+    countTimeForSolvingAllSample(expertSet2, humanLikedSolver),
+  ];
 
-console.log("Human like Solver Result:");
-console.table(humanLikedSolverResult.map(({ allResult: _, ...rest }) => rest));
+  console.log("Human like Solver Result:");
+  console.table(humanLikedSolverResult.map(({ allResult: _, ...rest }) => rest));
+}
 
-const backtrackingResult = [
-  countTimeForSolvingAllSample(simple, backtrackingSolver),
-  countTimeForSolvingAllSample(easy, backtrackingSolver),
-  countTimeForSolvingAllSample(intermediate, backtrackingSolver),
-  countTimeForSolvingAllSample(expert, backtrackingSolver),
-];
+if (!Math.random()) {
+  const backtrackingResult = [
+    countTimeForSolvingAllSample(simple, backtrackingSolver),
+    countTimeForSolvingAllSample(easy, backtrackingSolver),
+    countTimeForSolvingAllSample(intermediate, backtrackingSolver),
+    countTimeForSolvingAllSample(expert, backtrackingSolver),
+    countTimeForSolvingAllSample(expertSet2, backtrackingSolver),
+  ];
 
-console.log("Backtracking Result:");
-console.table(backtrackingResult.map(({ allResult: _, ...rest }) => rest));
+  console.log("Backtracking Result:");
+  console.table(backtrackingResult.map(({ allResult: _, ...rest }) => rest));
+}
 
 function readSampleFromJson(difficulty: typeof Difficulty[keyof typeof Difficulty]): [string, string][] {
   const filePath = path.join(__dirname, "sample", `${difficulty}.json`);
