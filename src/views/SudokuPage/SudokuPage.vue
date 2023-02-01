@@ -66,9 +66,9 @@ import { VirtualLineType } from "@/Sudoku/type";
 import StatsTable from "@/components/StatsTable.vue";
 import SudokuSolver from "@/Sudoku/SudokuSolver";
 import Sudoku from "@/Sudoku/Sudoku";
-import * as tp from "@/samplePuzzle";
+import samplePuzzles from "@/samplePuzzle";
 
-const s = reactive(new SudokuSolver(tp.p0));
+const s = reactive(new SudokuSolver(samplePuzzles.p0));
 const highlight = ref<Highlight>({
   element: "0",
   cell: [],
