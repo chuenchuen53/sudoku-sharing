@@ -50,7 +50,7 @@ if (Math.random()) {
   console.table(humanLikedSolverResult.map(({ allResult: _, ...rest }) => rest));
 }
 
-if (!Math.random()) {
+if (Math.random()) {
   const backtrackingResult = [
     countTimeForSolvingAllSample(simple, backtrackingSolver),
     countTimeForSolvingAllSample(easy, backtrackingSolver),
