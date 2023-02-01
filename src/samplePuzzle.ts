@@ -1,7 +1,7 @@
 import type { InputClues } from "./Sudoku/type";
 
 // easy
-export const p0: InputClues = [
+const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
   ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
   ["0", "0", "8", "0", "0", "0", "4", "0", "9"],
@@ -14,7 +14,7 @@ export const p0: InputClues = [
 ];
 
 // medium
-export const p1: InputClues = [
+const p1: InputClues = [
   ["2", "0", "0", "0", "0", "0", "8", "6", "0"],
   ["0", "0", "0", "0", "4", "2", "0", "0", "0"],
   ["0", "1", "0", "0", "6", "0", "0", "4", "7"],
@@ -27,7 +27,7 @@ export const p1: InputClues = [
 ];
 
 // medium
-export const p2: InputClues = [
+const p2: InputClues = [
   ["0", "3", "0", "9", "0", "0", "0", "0", "0"],
   ["6", "0", "0", "2", "0", "0", "8", "0", "0"],
   ["8", "0", "0", "6", "1", "0", "5", "4", "9"],
@@ -40,7 +40,7 @@ export const p2: InputClues = [
 ];
 
 // hard
-export const p3: InputClues = [
+const p3: InputClues = [
   ["0", "0", "0", "0", "0", "1", "6", "0", "0"],
   ["0", "0", "5", "0", "0", "0", "0", "0", "3"],
   ["0", "0", "0", "0", "0", "0", "5", "9", "4"],
@@ -53,7 +53,7 @@ export const p3: InputClues = [
 ];
 
 // hard
-export const p4: InputClues = [
+const p4: InputClues = [
   ["0", "0", "0", "0", "0", "0", "0", "6", "0"],
   ["0", "0", "0", "3", "8", "0", "1", "9", "0"],
   ["0", "0", "7", "5", "0", "0", "3", "4", "2"],
@@ -66,7 +66,7 @@ export const p4: InputClues = [
 ];
 
 // hard
-export const p5: InputClues = [
+const p5: InputClues = [
   ["0", "0", "2", "0", "1", "0", "0", "0", "0"],
   ["1", "0", "0", "0", "8", "0", "0", "5", "4"],
   ["0", "6", "0", "0", "2", "0", "9", "1", "3"],
@@ -79,7 +79,7 @@ export const p5: InputClues = [
 ];
 
 // expert
-export const p6: InputClues = [
+const p6: InputClues = [
   ["0", "8", "0", "5", "0", "0", "0", "0", "0"],
   ["0", "0", "0", "0", "3", "0", "2", "0", "0"],
   ["0", "0", "9", "0", "2", "0", "7", "0", "0"],
@@ -92,7 +92,7 @@ export const p6: InputClues = [
 ];
 
 // expert
-export const p7: InputClues = [
+const p7: InputClues = [
   ["6", "0", "0", "1", "7", "0", "0", "0", "5"],
   ["0", "0", "0", "0", "4", "0", "0", "2", "0"],
   ["0", "0", "0", "0", "0", "0", "8", "9", "0"],
@@ -105,7 +105,7 @@ export const p7: InputClues = [
 ];
 
 // expert
-export const p8: InputClues = [
+const p8: InputClues = [
   ["0", "7", "0", "0", "0", "0", "6", "0", "8"],
   ["0", "5", "0", "0", "4", "0", "0", "0", "0"],
   ["3", "0", "0", "0", "0", "6", "0", "0", "0"],
@@ -118,7 +118,7 @@ export const p8: InputClues = [
 ];
 
 // expert
-export const p9: InputClues = [
+const p9: InputClues = [
   ["0", "1", "6", "0", "0", "0", "0", "0", "2"],
   ["0", "0", "0", "0", "0", "0", "6", "0", "0"],
   ["0", "5", "0", "0", "3", "0", "1", "0", "0"],
@@ -131,7 +131,7 @@ export const p9: InputClues = [
 ];
 
 // evil
-export const p10: InputClues = [
+const p10: InputClues = [
   ["2", "0", "0", "0", "0", "1", "0", "0", "0"],
   ["0", "3", "0", "0", "9", "4", "0", "6", "0"],
   ["0", "0", "5", "0", "0", "0", "3", "0", "0"],
@@ -144,7 +144,7 @@ export const p10: InputClues = [
 ];
 
 // evil
-export const p11: InputClues = [
+const p11: InputClues = [
   ["9", "0", "3", "0", "0", "0", "0", "5", "0"],
   ["8", "0", "0", "0", "6", "0", "3", "0", "9"],
   ["0", "0", "0", "9", "0", "0", "0", "4", "0"],
@@ -157,7 +157,7 @@ export const p11: InputClues = [
 ];
 
 // evil
-export const p12: InputClues = [
+const p12: InputClues = [
   ["0", "0", "0", "4", "0", "1", "0", "3", "0"],
   ["1", "0", "7", "0", "8", "0", "0", "0", "2"],
   ["0", "5", "0", "0", "0", "0", "0", "0", "0"],
@@ -170,7 +170,7 @@ export const p12: InputClues = [
 ];
 
 // evil
-export const p13: InputClues = [
+const p13: InputClues = [
   ["7", "0", "1", "5", "9", "0", "4", "0", "0"],
   ["0", "0", "0", "0", "0", "7", "0", "0", "0"],
   ["6", "0", "0", "0", "0", "0", "0", "0", "3"],
@@ -183,7 +183,7 @@ export const p13: InputClues = [
 ];
 
 // evil
-export const p14: InputClues = [
+const p14: InputClues = [
   ["0", "0", "0", "0", "0", "1", "0", "7", "2"],
   ["3", "2", "0", "0", "7", "0", "0", "0", "4"],
   ["6", "0", "0", "0", "0", "0", "0", "0", "0"],
@@ -196,7 +196,7 @@ export const p14: InputClues = [
 ];
 
 // evil
-export const p15: InputClues = [
+const p15: InputClues = [
   ["2", "0", "6", "0", "8", "0", "0", "0", "0"],
   ["0", "0", "0", "0", "0", "0", "0", "0", "3"],
   ["1", "0", "0", "0", "0", "7", "2", "4", "0"],
@@ -207,3 +207,24 @@ export const p15: InputClues = [
   ["0", "0", "1", "6", "0", "0", "5", "3", "0"],
   ["3", "0", "0", "0", "0", "0", "0", "0", "7"],
 ];
+
+const samplePuzzles = {
+  p0,
+  p1,
+  p2,
+  p3,
+  p4,
+  p5,
+  p6,
+  p7,
+  p8,
+  p9,
+  p10,
+  p11,
+  p12,
+  p13,
+  p14,
+  p15,
+};
+
+export default samplePuzzles;
