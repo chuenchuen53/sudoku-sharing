@@ -18,19 +18,17 @@
 import { ref } from "vue";
 import { ElButton } from "element-plus";
 import "element-plus/es/components/button/style/css";
-import type { CellWithIndex, SudokuElementWithZero } from "@/Sudoku/type";
+import { useSudokuSolverStore } from "@/stores/sudokuSolver";
 
-const props = defineProps<{
-  value: CellWithIndex[];
-  onChange: (count: number) => void;
-}>();
+const sudokuSolverStore = useSudokuSolverStore();
+const { setCellCandidatesCountHighlight } = sudokuSolverStore;
 
 const selected = ref<number>(0);
 const options = [2, 3, 4, 5];
 
 const setNewCount = (count: number) => {
   selected.value = count;
-  props.onChange(count);
+  setCellCandidatesCountHighlight(count);
 };
 </script>
 

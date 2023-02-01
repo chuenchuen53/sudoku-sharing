@@ -4,7 +4,7 @@
       <input ref="inputRef" @keyup="handleKeyboard" :value="inputStr" />
     </div>
     <div id="sudoku-grid">
-      <div class="sudoku-row" v-for="(row, rowIndex) in grid" :key="rowIndex">
+      <div class="sudoku-row" v-for="(row, rowIndex) in sudokuSolver.grid" :key="rowIndex">
         <div
           class="sudoku-cell"
           :class="{
@@ -50,27 +50,19 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, ref, defineProps } from "vue";
-import ArrayUtil from "../utils/ArrUtil";
-import type { CellWithIndex, Grid, InputValueData } from "@/Sudoku/type";
-import type { Highlight } from "@/views/SudokuPage/type";
-import type SudokuSolver from "@/Sudoku/SudokuSolver";
+import { reactive, computed, ref } from "vue";
+import { storeToRefs } from "pinia";
+import ArrayUtil from "../../utils/ArrUtil";
+import { useSudokuSolverStore } from "@/stores/sudokuSolver";
 
 interface SelectedCell {
   rowIndex: number;
   columnIndex: number;
 }
 
-const props = defineProps<{
-  grid: Grid;
-  highlight: Highlight;
-  removalOfCandidates: InputValueData[];
-  getAllRelatedCells: InstanceType<typeof SudokuSolver>["getAllRelatedCells"];
-  // eslint-disable-next-line no-unused-vars
-  setInputValue: (data: InputValueData) => void;
-  // eslint-disable-next-line no-unused-vars
-  removeInputValue: (data: CellWithIndex) => void;
-}>();
+const sudokuSolverStore = useSudokuSolverStore();
+const { sudokuSolver, highlight, removalOfCandidates } = storeToRefs(sudokuSolverStore);
+const { setInputValue, removeInputValue } = sudokuSolverStore;
 
 const inputStr = ref("");
 const selectedCell = reactive<SelectedCell>({
@@ -88,7 +80,7 @@ const handleCellClick = (rowIndex: number, columnIndex: number) => {
 
 const selectionRelated = computed(() => {
   const highlightArr = ArrayUtil.create2DArray<boolean>(9, 9, false);
-  props
+  sudokuSolver.value
     .getAllRelatedCells({
       rowIndex: selectedCell.rowIndex,
       columnIndex: selectedCell.columnIndex,
@@ -121,12 +113,12 @@ const handleKeyboard = (e: KeyboardEvent) => {
     case "8":
     case "9":
       inputStr.value = e.key;
-      props.setInputValue({ rowIndex: selectedCell.rowIndex, columnIndex: selectedCell.columnIndex, value: e.key });
+      setInputValue({ rowIndex: selectedCell.rowIndex, columnIndex: selectedCell.columnIndex, value: e.key });
       break;
     case "Backspace":
     case "Delete":
       inputStr.value = "";
-      props.removeInputValue({ rowIndex: selectedCell.rowIndex, columnIndex: selectedCell.columnIndex });
+      removeInputValue({ rowIndex: selectedCell.rowIndex, columnIndex: selectedCell.columnIndex });
       break;
   }
 };
