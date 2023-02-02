@@ -1,3 +1,4 @@
+import TU from "test/utils";
 import { expect, describe, it } from "vitest";
 import Sudoku from "../../src/Sudoku/Sudoku";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
@@ -170,5 +171,50 @@ describe("sudoku solver obvious strategies test", () => {
     const ns = new SudokuSolver(p1);
     arr.forEach(([r, c, candidates]) => ns.setCandidates(r, c, candidates));
     expect(ns.grid).toStrictEqual(s.grid);
+  });
+
+  it("candidateCellsFromVirtualLine", () => {
+    const s = new SudokuSolver(p0);
+
+    for (let i = 0; i < 9; i++) {
+      expect(SudokuSolver.candidateCellsFromVirtualLine(s.getRow(i))).toStrictEqual([]);
+      expect(SudokuSolver.candidateCellsFromVirtualLine(s.getColumn(i))).toStrictEqual([]);
+      expect(SudokuSolver.candidateCellsFromVirtualLine(s.getBoxFromBoxIndex(i))).toStrictEqual([]);
+    }
+
+    s.setCandidates(0, 0, candidatesFactory(true, ["1", "2", "3"]));
+
+    const c00 = TU.cellWithIndexFactory(0, 0, { candidates: ["1", "2", "3"] });
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getRow(0))).toStrictEqual([c00]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getRow(1))).toStrictEqual([]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getColumn(0))).toStrictEqual([c00]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getColumn(1))).toStrictEqual([]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getBoxFromBoxIndex(0))).toStrictEqual([c00]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getBoxFromBoxIndex(1))).toStrictEqual([]);
+
+    s.setCandidates(1, 2, candidatesFactory(true, ["4"]));
+    const c12 = TU.cellWithIndexFactory(1, 2, { candidates: ["4"] });
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getRow(1))).toStrictEqual([c12]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getColumn(2))).toStrictEqual([c12]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getBoxFromBoxIndex(0))).toStrictEqual([c00, c12]);
+
+    s.clearAllCandidates();
+    s.setBasicCandidates();
+
+    for (let i = 0; i < 9; i++) {
+      const rowCount = p0[i].filter((v) => v === "0").length;
+      const colCount = p0.map((v) => v[i]).filter((v) => v === "0").length;
+      expect(SudokuSolver.candidateCellsFromVirtualLine(s.getRow(i)).length).toBe(rowCount);
+      expect(SudokuSolver.candidateCellsFromVirtualLine(s.getColumn(i)).length).toBe(colCount);
+    }
+
+    for (let i = 0; i < 9; i++) {
+      const box = s.getBoxFromBoxIndex(i);
+      let count = 0;
+      for (let i = 0; i < 9; i++) {
+        if (p0[box[i].rowIndex][box[i].columnIndex] === "0") count++;
+      }
+      expect(SudokuSolver.candidateCellsFromVirtualLine(box).length).toBe(count);
+    }
   });
 });

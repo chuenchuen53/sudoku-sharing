@@ -2,7 +2,7 @@ import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TU from "../utils";
 import type {
-  NakedPairsTripletsQuadsResult,
+  NakedMultipleResult,
   HiddenMultipleFromVirtualLinesResult,
   InputClues,
   InputValueData,

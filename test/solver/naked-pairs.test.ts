@@ -1,7 +1,7 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TU from "../utils";
-import type { InputClues, InputValueData, NakedPairsTripletsQuadsResult } from "../../src/Sudoku/type";
+import type { InputClues, InputValueData, NakedMultipleResult } from "../../src/Sudoku/type";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -42,7 +42,7 @@ describe("sudoku solver", () => {
     ]);
 
     const result = SudokuSolver.getNakedPairsFromVirtualLines([line]);
-    const expectResult: NakedPairsTripletsQuadsResult[] = [
+    const expectResult: NakedMultipleResult[] = [
       {
         cells: [line[2], line[3]],
         elimination: TU.inputValueDataArrFactory([

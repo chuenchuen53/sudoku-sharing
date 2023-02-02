@@ -134,9 +134,9 @@ describe("sudoku solver unique missing test", () => {
     // check remove duplicated
     expect(s.getUniqueMissing()).toStrictEqual([urf(s.getRow(8), "7", 8, 8)]);
 
-    expect(s.setUniqueMissing()).toBe(true);
+    expect(s.setUniqueMissing()).toBe(1);
     expect(s.isValid).toBe(true);
     expect(s.solved).toBe(true);
-    expect(s.setUniqueMissing()).toBe(false);
+    expect(s.setUniqueMissing()).toBe(0);
   });
 });

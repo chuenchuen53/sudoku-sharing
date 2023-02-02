@@ -228,4 +228,16 @@ describe("sudoku solver hidden single test", () => {
     expectedResult.forEach((e) => expect(result).toContainEqual(e));
     expect(result).toStrictEqual(expectedResult);
   });
+
+  it("setHiddenSingles test 1", () => {
+    const s = new SudokuSolver(p0);
+    s.setBasicCandidates();
+    expect(s.setHiddenSingles()).toBe(14);
+  });
+
+  it("setHiddenSingles test 2", () => {
+    const s = new SudokuSolver(p1);
+    s.setBasicCandidates();
+    expect(s.setHiddenSingles()).toBe(11);
+  });
 });

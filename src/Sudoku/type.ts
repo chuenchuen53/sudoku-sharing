@@ -1,5 +1,3 @@
-export type SudokuIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
-
 export type SudokuElement = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
 export type Candidates = {
@@ -20,6 +18,8 @@ export interface CellWithIndex extends Cell {
   rowIndex: number;
   columnIndex: number;
 }
+
+export type CandidateCellWithIndex = Omit<CellWithIndex & { candidates: Candidates }, "clue" | "inputValue">;
 
 export type VirtualLine = CellWithIndex[];
 
@@ -77,7 +77,7 @@ export interface UniqueMissingResult {
   cell: CellWithIndex;
 }
 
-export interface NakedPairsTripletsQuadsResult {
+export interface NakedMultipleResult {
   cells: CellWithIndex[];
   elimination: InputValueData[];
 }

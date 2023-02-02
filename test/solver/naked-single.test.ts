@@ -65,4 +65,16 @@ describe("sudoku solver naked single test", () => {
       ])
     );
   });
+
+  it("setNakedSingles test 1", () => {
+    const s = new SudokuSolver(p0);
+    s.setBasicCandidates();
+    expect(s.setNakedSingles()).toBe(13);
+  });
+
+  it("setNakedSingles test 2", () => {
+    const s = new SudokuSolver(p1);
+    s.setBasicCandidates();
+    expect(s.setNakedSingles()).toBe(3);
+  });
 });
