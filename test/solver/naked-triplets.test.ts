@@ -29,7 +29,6 @@ const p4: InputClues = [
 
 describe("sudoku solver", () => {
   it("getMultipleNakedFromVirtualLines sizeOfCandidate=3", () => {
-    const s = new SudokuSolver(p3);
     const line = TU.virtualLineFactory([
       ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
       ["1", "2", "4"],

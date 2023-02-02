@@ -72,9 +72,13 @@ export default class CalcUtil {
     return result;
   }
 
-  // todo
-  static cartesianProduct<T>(...args: T[][]): T[][] {
-    // @ts-ignore
-    return args.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
+  static cartesianProduct<T>(arr1: T[], arr2: T[]): T[][] {
+    const result: T[][] = [];
+    for (const v1 of arr1) {
+      for (const v2 of arr2) {
+        result.push([v1, v2]);
+      }
+    }
+    return result;
   }
 }

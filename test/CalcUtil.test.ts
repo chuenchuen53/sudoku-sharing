@@ -272,21 +272,15 @@ describe("CalcUtil", () => {
   });
 
   it("CalcUtil.cartesianProduct test 1", () => {
-    const result = CalcUtil.cartesianProduct([1, 2], [10, 20], [100, 200, 300]);
+    const result = CalcUtil.cartesianProduct([1, 2], [10, 20, 30]);
 
     expect(result).toStrictEqual([
-      [1, 10, 100],
-      [1, 10, 200],
-      [1, 10, 300],
-      [1, 20, 100],
-      [1, 20, 200],
-      [1, 20, 300],
-      [2, 10, 100],
-      [2, 10, 200],
-      [2, 10, 300],
-      [2, 20, 100],
-      [2, 20, 200],
-      [2, 20, 300],
+      [1, 10],
+      [1, 20],
+      [1, 30],
+      [2, 10],
+      [2, 20],
+      [2, 30],
     ]);
   });
 

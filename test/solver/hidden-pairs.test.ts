@@ -1,12 +1,7 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TU from "../utils";
-import type {
-  NakedMultipleResult,
-  HiddenMultipleFromVirtualLinesResult,
-  InputClues,
-  InputValueData,
-} from "../../src/Sudoku/type";
+import type { HiddenMultipleFromVirtualLinesResult, InputClues, InputValueData } from "../../src/Sudoku/type";
 
 const p3: InputClues = [
   ["0", "0", "0", "0", "0", "1", "6", "0", "0"],

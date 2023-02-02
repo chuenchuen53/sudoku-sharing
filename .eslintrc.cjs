@@ -14,6 +14,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: "latest",
   },
+  ignorePatterns: ["components.d.ts"],
   rules: {
     "object-shorthand": 1,
     "import/no-duplicates": "error",

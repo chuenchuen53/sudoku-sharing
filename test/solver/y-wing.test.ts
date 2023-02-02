@@ -2,7 +2,14 @@ import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TU from "../utils";
 import { VirtualLineType } from "../../src/Sudoku/type";
-import type { Pincer, YWingResult, InputClues, InputValueData, SudokuElement } from "../../src/Sudoku/type";
+import type {
+  Pincer,
+  YWingResult,
+  InputClues,
+  InputValueData,
+  SudokuElement,
+  CandidateCellWithIndex,
+} from "../../src/Sudoku/type";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -45,7 +52,7 @@ describe("sudoku solver", () => {
   it("possiblePincersFromLine", () => {
     const fn = SudokuSolver.possiblePincersFromLine;
 
-    const pincer = cf(2, 5, { candidates: ["1", "3"] });
+    const pincer = cf(2, 5, { candidates: ["1", "3"] }) as CandidateCellWithIndex;
 
     const candidatesArr: SudokuElement[][] = [
       ["1", "4"],

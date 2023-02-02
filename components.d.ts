@@ -7,17 +7,8 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    copy: typeof import('./src/components/HighlightElementToggle copy.vue')['default']
     ElButtonGroup: typeof import('element-plus/es')['ElButtonGroup']
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
-    HighlightCellToggle: typeof import('./src/components/HighlightCellToggle.vue')['default']
-    HighlightElementToggle: typeof import('./src/components/HighlightElementToggle.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SideBar: typeof import('./src/components/SideBar.vue')['default']
-    StatsTable: typeof import('./src/components/StatsTable.vue')['default']
-    SudokuBoard: typeof import('./src/components/SudokuBoard.vue')['default']
-    SudokuGrid: typeof import('./src/components/SudokuGrid.vue')['default']
-    SudokuHint: typeof import('./src/components/SudokuHint.vue')['default']
   }
 }
