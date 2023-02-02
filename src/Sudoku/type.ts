@@ -37,19 +37,6 @@ export interface InputValueData {
   value: SudokuElement;
 }
 
-export interface EliminationStrategySetting {
-  lockedCandidates: number;
-  nakedPairs: number;
-  nakedTriplets: number;
-  nakedQuads: number;
-  hiddenPairs: number;
-  hiddenTriplets: number;
-  hiddenQuads: number;
-  xWing: number;
-  yWing: number;
-  // swordfish: number;
-}
-
 export interface InputCount {
   uniqueMissing: number;
   nakedSingle: number;

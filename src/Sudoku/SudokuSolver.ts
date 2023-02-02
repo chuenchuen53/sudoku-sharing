@@ -5,7 +5,6 @@ import type {
   UniqueMissingResult,
   RowColumn,
   SolveStats,
-  EliminationStrategySetting,
   Candidates,
   InputClues,
   SudokuElement,
@@ -21,27 +20,24 @@ import type {
   YWingResult,
 } from "./type";
 
-const defaultEliminationStrategySetting = (): EliminationStrategySetting => ({
-  lockedCandidates: 1,
-  nakedPairs: 2,
-  nakedTriplets: 3,
-  nakedQuads: 4,
-  hiddenPairs: 5,
-  hiddenTriplets: 6,
-  hiddenQuads: 7,
-  xWing: 8,
-  yWing: 9,
-  // swordfish: 10,
-});
-
 export default class SudokuSolver extends Sudoku {
   public stats: SolveStats;
-  public eliminationStrategySetting: EliminationStrategySetting;
+  private eliminationStrategies: (() => unknown)[];
 
   constructor(clues: InputClues) {
     super(clues);
     this.stats = SudokuSolver.statsTemplate();
-    this.eliminationStrategySetting = defaultEliminationStrategySetting();
+    this.eliminationStrategies = [
+      this.removeCandidatesDueToLockedCandidates.bind(this),
+      this.removeCandidatesDueToNakedPairs.bind(this),
+      this.removeCandidatesDueToHiddenPairs.bind(this),
+      this.removeCandidatesDueToXWing.bind(this),
+      this.removeCandidatesDueToYWing.bind(this),
+      this.removeCandidatesDueToNakedTriplets.bind(this),
+      this.removeCandidatesDueToNakedQuads.bind(this),
+      this.removeCandidatesDueToHiddenTriplets.bind(this),
+      this.removeCandidatesDueToHiddenQuads.bind(this),
+    ];
   }
 
   static numberOfCandidates(candidates: Candidates): number {
@@ -788,15 +784,9 @@ export default class SudokuSolver extends Sudoku {
     this.setBasicCandidates();
     if (this.trySolveByCandidates()) return this.trySolve();
 
-    if (this.removeCandidatesDueToLockedCandidates() && this.trySolveByCandidates()) return this.trySolve();
-    if (this.removeCandidatesDueToNakedPairs() && this.trySolveByCandidates()) return this.trySolve();
-    if (this.removeCandidatesDueToNakedTriplets() && this.trySolveByCandidates()) return this.trySolve();
-    if (this.removeCandidatesDueToNakedQuads() && this.trySolveByCandidates()) return this.trySolve();
-    if (this.removeCandidatesDueToHiddenPairs() && this.trySolveByCandidates()) return this.trySolve();
-    if (this.removeCandidatesDueToHiddenTriplets() && this.trySolveByCandidates()) return this.trySolve();
-    if (this.removeCandidatesDueToHiddenQuads() && this.trySolveByCandidates()) return this.trySolve();
-    if (this.removeCandidatesDueToXWing() && this.trySolveByCandidates()) return this.trySolve();
-    if (this.removeCandidatesDueToYWing() && this.trySolveByCandidates()) return this.trySolve();
+    for (let i = 0; i < this.eliminationStrategies.length; i++) {
+      if (this.eliminationStrategies[i]() && this.trySolveByCandidates()) return this.trySolve();
+    }
 
     return this.solved;
   }

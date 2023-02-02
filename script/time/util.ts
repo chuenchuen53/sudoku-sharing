@@ -3,7 +3,22 @@ import fs from "fs";
 import ArrUtil from "../../src/utils/ArrUtil";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import Backtracking from "../../src/Sudoku/Backtracking";
-import type { SudokuElement, SudokuElementWithZero } from "../../src/Sudoku/type";
+import type { SolveStats, SudokuElement, SudokuElementWithZero } from "../../src/Sudoku/type";
+
+interface Result {
+  timeSpent: number;
+  solved: boolean;
+  numberOfClues: number;
+  stats?: SolveStats;
+  takeBacks?: number;
+}
+
+interface Data {
+  strategy: string;
+  difficulty: string;
+  size: number;
+  result: Result[];
+}
 
 class TimeCounter {
   totalTime: bigint;
@@ -59,15 +74,14 @@ export default function generateResult(
     fs.mkdirSync(dirname, { recursive: true });
   }
 
-  fs.writeFileSync(
-    filePath,
-    JSON.stringify({
-      strategy,
-      difficulty,
-      size,
-      result,
-    })
-  );
+  const data: Data = {
+    strategy,
+    difficulty,
+    size,
+    result,
+  };
+
+  fs.writeFileSync(filePath, JSON.stringify(data));
 }
 
 function readSampleFromJson(difficulty: typeof Difficulty[keyof typeof Difficulty]): [string, string][] {
@@ -82,17 +96,19 @@ function countTimeForSolvingSample(
   puzzles: [string, string][],
   strategy: typeof Strategy[keyof typeof Strategy],
   size: number
-): { timeSpent: number; solved: boolean }[] {
+): Result[] {
   const timeCounter = new TimeCounter();
   const solved: boolean[] = [];
   const numberOfClues: number[] = [];
 
   if (strategy === Strategy.HUMAN) {
-    humanSolver(puzzles, timeCounter, solved, numberOfClues, size);
+    const stats: SolveStats[] = [];
+    humanSolver(puzzles, timeCounter, solved, numberOfClues, stats, size);
     return timeCounter.record.map((timeSpent, i) => ({
       timeSpent: Number(timeSpent) / 1000000,
       solved: solved[i],
       numberOfClues: numberOfClues[i],
+      stats: stats[i],
     }));
   } else {
     const takeBacks = [];
@@ -111,6 +127,7 @@ function humanSolver(
   timeCounter: TimeCounter,
   solved: boolean[],
   numberOfClues: number[],
+  stats: SolveStats[],
   size: number
 ) {
   for (let i = 0; i < Math.min(size, puzzles.length); i++) {
@@ -124,6 +141,7 @@ function humanSolver(
     const strGrid = s.grid.map((row) => row.map((cell) => cell.clue ?? cell.inputValue ?? "0"));
     const solve = sameSolution(strGrid, solution);
     solved.push(solve);
+    stats.push(s.stats);
   }
 }
 
