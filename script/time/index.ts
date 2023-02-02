@@ -1,6 +1,6 @@
 import generateResult from "./util";
 
-const SIZE = 1000;
+const SIZE = 10000;
 
 generateResult("human", "simple", SIZE);
 generateResult("human", "easy", SIZE);

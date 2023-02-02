@@ -41,6 +41,15 @@ export const useSudokuSolverStore = defineStore("sudokuSolver", () => {
 
   const removalOfCandidates = ref<InputValueData[]>([]);
 
+  const newSudoku = (clues: InputClues) => {
+    sudokuSolver.value = new SudokuSolver(clues);
+    highlight.element = "0";
+    highlight.cell = [];
+    highlight.candidate = [];
+    highlight.invalid = [];
+    removalOfCandidates.value = [];
+  };
+
   const clearAllCandidates = () => {
     sudokuSolver.value.clearAllCandidates();
   };
@@ -168,6 +177,7 @@ export const useSudokuSolverStore = defineStore("sudokuSolver", () => {
     sudokuSolver,
     highlight,
     removalOfCandidates,
+    newSudoku,
     setInputValue,
     removeInputValue,
     clearAllCandidates,

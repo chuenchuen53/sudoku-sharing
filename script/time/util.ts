@@ -82,6 +82,7 @@ export default function generateResult(
   };
 
   fs.writeFileSync(filePath, JSON.stringify(data));
+  console.log(`Result for ${strategy} ${difficulty} is saved to ${filePath}`);
 }
 
 function readSampleFromJson(difficulty: typeof Difficulty[keyof typeof Difficulty]): [string, string][] {
@@ -135,13 +136,19 @@ function humanSolver(
     const clue = puzzleStrToStringArr(clueStr);
     const solution = puzzleStrToStringArr(solutionStr);
 
-    numberOfClues.push(clue.reduce((acc, row) => acc + row.filter((cell) => cell !== "0").length, 0));
-    const s = new SudokuSolver(clue);
-    timeCounter.add(() => s.trySolve());
-    const strGrid = s.grid.map((row) => row.map((cell) => cell.clue ?? cell.inputValue ?? "0"));
-    const solve = sameSolution(strGrid, solution);
-    solved.push(solve);
-    stats.push(s.stats);
+    try {
+      numberOfClues.push(clue.reduce((acc, row) => acc + row.filter((cell) => cell !== "0").length, 0));
+      const s = new SudokuSolver(clue);
+      timeCounter.add(() => s.trySolve());
+      const strGrid = s.grid.map((row) => row.map((cell) => cell.clue ?? cell.inputValue ?? "0"));
+      const solve = sameSolution(strGrid, solution);
+      solved.push(solve);
+      stats.push(s.stats);
+    } catch (e) {
+      console.log(`Error at ${i}`);
+      console.log("puzzles[i]: ", puzzles[i]);
+      throw e;
+    }
   }
 }
 
@@ -158,15 +165,21 @@ function backtrackingSolver(
     const clue = puzzleStrToStringArr(clueStr);
     const solution = puzzleStrToStringArr(solutionStr);
 
-    numberOfClues.push(clue.reduce((acc, row) => acc + row.filter((cell) => cell !== "0").length, 0));
-    const backtracking = new Backtracking(clue);
-    timeCounter.add(() => backtracking.solveSudoku());
-    const strGrid = backtracking.grid.map((row) => row.map((cell) => cell.toString())) as SudokuElementWithZero[][];
+    try {
+      numberOfClues.push(clue.reduce((acc, row) => acc + row.filter((cell) => cell !== "0").length, 0));
+      const backtracking = new Backtracking(clue);
+      timeCounter.add(() => backtracking.solveSudoku());
+      const strGrid = backtracking.grid.map((row) => row.map((cell) => cell.toString())) as SudokuElementWithZero[][];
 
-    const solve = sameSolution(strGrid, solution);
-    solved.push(solve);
+      const solve = sameSolution(strGrid, solution);
+      solved.push(solve);
 
-    takeBacks.push(backtracking.takeBacks);
+      takeBacks.push(backtracking.takeBacks);
+    } catch (e) {
+      console.log(`Error at ${i}`);
+      console.log("puzzles[i]: ", puzzles[i]);
+      throw e;
+    }
   }
 }
 
