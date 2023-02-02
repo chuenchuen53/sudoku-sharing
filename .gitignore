@@ -29,3 +29,5 @@ coverage
 # project
 script/sample
 script/result
+script/**/*/sample
+script/**/*/result
