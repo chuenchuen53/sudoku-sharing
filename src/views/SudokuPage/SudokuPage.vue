@@ -3,7 +3,7 @@
     <div class="left-container">
       <div class="mb">
         <el-select :model-value="puzzle" @change="handleSelectPuzzle" class="m-2" placeholder="Select" size="large">
-          <el-option v-for="item in options" :key="item.key" :label="item.label" :value="item.value" />
+          <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value" />
         </el-select>
       </div>
       <SudokuGrid />
@@ -49,29 +49,52 @@ const puzzle = ref("p0");
 
 const options = [
   {
-    key: 0,
     value: "p0",
     label: "naked single",
   },
   {
-    key: 1,
     value: "p1",
     label: "hidden single",
   },
   {
-    key: 2,
-    value: "p2",
+    value: "p0",
     label: "locked candidate",
   },
   {
-    key: 3,
     value: "p0",
     label: "naked pairs",
   },
   {
-    key: 4,
     value: "p4",
-    label: "Option5",
+    label: "naked triplets",
+  },
+  {
+    value: "p3",
+    label: "naked quads",
+  },
+  {
+    value: "p4",
+    label: "hidden pairs",
+  },
+  {
+    value: "p2",
+    label: "hidden triplets",
+  },
+  {
+    value: "p5",
+    label: "hidden quads",
+  },
+  {
+    value: "p2",
+    label: "x-wing",
+  },
+  {
+    value: "p0",
+    label: "y-wing",
+  },
+  {
+    value: "p16",
+    label: "y-wing 2",
   },
 ];
 
@@ -83,6 +106,7 @@ const clueMap = {
   p4: samplePuzzles.p4,
   p5: samplePuzzles.p5,
   p6: samplePuzzles.p6,
+  p16: samplePuzzles.p16,
 };
 
 const handleSelectPuzzle = (value: string) => {
