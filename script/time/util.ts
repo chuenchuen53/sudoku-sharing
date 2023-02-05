@@ -3,11 +3,12 @@ import fs from "fs";
 import ArrUtil from "../../src/utils/ArrUtil";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import Backtracking from "../../src/Sudoku/Backtracking";
-import type { SolveStats, SudokuElement, SudokuElementWithZero } from "../../src/Sudoku/type";
+import type { SolveStats, SudokuElementWithZero } from "../../src/Sudoku/type";
 
 interface Result {
   timeSpent: number;
   solved: boolean;
+  clue: string;
   numberOfClues: number;
   stats?: SolveStats;
   takeBacks?: number;
@@ -21,11 +22,10 @@ interface Data {
 }
 
 class TimeCounter {
-  totalTime: bigint;
-  record: bigint[] = [];
+  record: bigint[];
 
   constructor() {
-    this.totalTime = BigInt(0);
+    this.record = [];
   }
 
   add(fn: () => unknown) {
@@ -33,46 +33,39 @@ class TimeCounter {
     fn();
     const end = process.hrtime.bigint();
     const time = end - start;
-    this.totalTime += time;
     this.record.push(time);
   }
 }
 
-const Strategy = {
+const Strategy = Object.freeze({
   HUMAN: "human",
   BACKTRACKING: "backtracking",
-};
+});
 
-const Difficulty = {
+const Difficulty = Object.freeze({
   SIMPLE: "simple",
   EASY: "easy",
   INTERMEDIATE: "intermediate",
   EXPERT: "expert",
-} as const;
-
-const simple = readSampleFromJson(Difficulty.SIMPLE);
-const easy = readSampleFromJson(Difficulty.EASY);
-const intermediate = readSampleFromJson(Difficulty.INTERMEDIATE);
-const expert = readSampleFromJson(Difficulty.EXPERT);
+});
 
 const sample = {
-  [Difficulty.SIMPLE]: simple,
-  [Difficulty.EASY]: easy,
-  [Difficulty.INTERMEDIATE]: intermediate,
-  [Difficulty.EXPERT]: expert,
+  [Difficulty.SIMPLE]: readSampleFromJson(Difficulty.SIMPLE),
+  [Difficulty.EASY]: readSampleFromJson(Difficulty.EASY),
+  [Difficulty.INTERMEDIATE]: readSampleFromJson(Difficulty.INTERMEDIATE),
+  [Difficulty.EXPERT]: readSampleFromJson(Difficulty.EXPERT),
 };
 
 export default function generateResult(
   strategy: typeof Strategy[keyof typeof Strategy],
   difficulty: typeof Difficulty[keyof typeof Difficulty],
-  size: number
+  size: number,
+  folder: string
 ) {
   const result = countTimeForSolvingSample(sample[difficulty], strategy, size);
-  const filePath = path.join(__dirname, "result", `${strategy}-${difficulty}.json`);
+  const filePath = path.join(__dirname, "result", folder, `${strategy}-${difficulty}.json`);
   const dirname = path.dirname(filePath);
-  if (!fs.existsSync(dirname)) {
-    fs.mkdirSync(dirname, { recursive: true });
-  }
+  if (!fs.existsSync(dirname)) fs.mkdirSync(dirname, { recursive: true });
 
   const data: Data = {
     strategy,
@@ -82,7 +75,7 @@ export default function generateResult(
   };
 
   fs.writeFileSync(filePath, JSON.stringify(data));
-  console.log(`Result for ${strategy} ${difficulty} is saved to ${filePath}`);
+  console.log(`[${new Date().toLocaleString()}] Result for ${strategy} ${difficulty} is saved to ${filePath}`);
 }
 
 function readSampleFromJson(difficulty: typeof Difficulty[keyof typeof Difficulty]): [string, string][] {
@@ -98,89 +91,85 @@ function countTimeForSolvingSample(
   strategy: typeof Strategy[keyof typeof Strategy],
   size: number
 ): Result[] {
-  const timeCounter = new TimeCounter();
-  const solved: boolean[] = [];
-  const numberOfClues: number[] = [];
-
   if (strategy === Strategy.HUMAN) {
-    const stats: SolveStats[] = [];
-    humanSolver(puzzles, timeCounter, solved, numberOfClues, stats, size);
-    return timeCounter.record.map((timeSpent, i) => ({
-      timeSpent: Number(timeSpent) / 1000000,
-      solved: solved[i],
-      numberOfClues: numberOfClues[i],
-      stats: stats[i],
-    }));
+    return humanSolver(puzzles, size);
   } else {
-    const takeBacks = [];
-    backtrackingSolver(puzzles, timeCounter, solved, numberOfClues, takeBacks, size);
-    return timeCounter.record.map((timeSpent, i) => ({
-      timeSpent: Number(timeSpent) / 1000000,
-      solved: solved[i],
-      numberOfClues: numberOfClues[i],
-      takeBacks: takeBacks[i],
-    }));
+    return backtrackingSolver(puzzles, size);
   }
 }
 
-function humanSolver(
-  puzzles: [string, string][],
-  timeCounter: TimeCounter,
-  solved: boolean[],
-  numberOfClues: number[],
-  stats: SolveStats[],
-  size: number
-) {
+function humanSolver(puzzles: [string, string][], size: number): Result[] {
+  const timeCounter = new TimeCounter();
+  const solvedArr: boolean[] = [];
+  const clueArr: string[] = [];
+  const numberOfCluesArr: number[] = [];
+  const statsArr: SolveStats[] = [];
+
   for (let i = 0; i < Math.min(size, puzzles.length); i++) {
     const [clueStr, solutionStr] = puzzles[i];
     const clue = puzzleStrToStringArr(clueStr);
     const solution = puzzleStrToStringArr(solutionStr);
 
     try {
-      numberOfClues.push(clue.reduce((acc, row) => acc + row.filter((cell) => cell !== "0").length, 0));
+      numberOfCluesArr.push(clue.reduce((acc, row) => acc + row.filter((cell) => cell !== "0").length, 0));
       const s = new SudokuSolver(clue);
       timeCounter.add(() => s.trySolve());
       const strGrid = s.grid.map((row) => row.map((cell) => cell.clue ?? cell.inputValue ?? "0"));
       const solve = sameSolution(strGrid, solution);
-      solved.push(solve);
-      stats.push(s.stats);
+      solvedArr.push(solve);
+      clueArr.push(clueStr);
+      statsArr.push(s.stats);
     } catch (e) {
       console.log(`Error at ${i}`);
       console.log("puzzles[i]: ", puzzles[i]);
       throw e;
     }
   }
+
+  return timeCounter.record.map((timeSpent, i) => ({
+    timeSpent: Number(timeSpent) / 1000000,
+    solved: solvedArr[i],
+    numberOfClues: numberOfCluesArr[i],
+    clue: clueArr[i],
+    stats: statsArr[i],
+  }));
 }
 
-function backtrackingSolver(
-  puzzles: [string, string][],
-  timeCounter: TimeCounter,
-  solved: boolean[],
-  numberOfClues: number[],
-  takeBacks: number[],
-  size: number
-) {
+function backtrackingSolver(puzzles: [string, string][], size: number): Result[] {
+  const timeCounter = new TimeCounter();
+  const solvedArr: boolean[] = [];
+  const numberOfCluesArr: number[] = [];
+  const clueArr: string[] = [];
+  const takeBacksArr: number[] = [];
+
   for (let i = 0; i < Math.min(size, puzzles.length); i++) {
     const [clueStr, solutionStr] = puzzles[i];
     const clue = puzzleStrToStringArr(clueStr);
     const solution = puzzleStrToStringArr(solutionStr);
 
     try {
-      numberOfClues.push(clue.reduce((acc, row) => acc + row.filter((cell) => cell !== "0").length, 0));
+      numberOfCluesArr.push(clue.reduce((acc, row) => acc + row.filter((cell) => cell !== "0").length, 0));
       const backtracking = new Backtracking(clue);
       timeCounter.add(() => backtracking.solveSudoku());
       const strGrid = backtracking.grid.map((row) => row.map((cell) => cell.toString())) as SudokuElementWithZero[][];
-
       const solve = sameSolution(strGrid, solution);
-      solved.push(solve);
-
-      takeBacks.push(backtracking.takeBacks);
+      solvedArr.push(solve);
+      clueArr.push(clueStr);
+      takeBacksArr.push(backtracking.takeBacks);
     } catch (e) {
       console.log(`Error at ${i}`);
       console.log("puzzles[i]: ", puzzles[i]);
       throw e;
     }
   }
+
+  return timeCounter.record.map((timeSpent, i) => ({
+    timeSpent: Number(timeSpent) / 1000000,
+    solved: solvedArr[i],
+    clue: clueArr[i],
+    numberOfClues: numberOfCluesArr[i],
+    takeBacks: takeBacksArr[i],
+  }));
 }
 
 function puzzleStrToStringArr(puzzleStr: string): SudokuElementWithZero[][] {
@@ -190,7 +179,23 @@ function puzzleStrToStringArr(puzzleStr: string): SudokuElementWithZero[][] {
     for (let j = 0; j < 9; j++) {
       const strIndex = i * 9 + j;
       const char = puzzleStr[strIndex];
-      if (char !== ".") arrTemplate[i][j] = char as SudokuElement;
+      switch (char) {
+        case ".":
+          break;
+        case "1":
+        case "2":
+        case "3":
+        case "4":
+        case "5":
+        case "6":
+        case "7":
+        case "8":
+        case "9":
+          arrTemplate[i][j] = char;
+          break;
+        default:
+          throw new Error(`Invalid char ${char} at ${strIndex} for ${puzzleStr}`);
+      }
     }
   }
 
