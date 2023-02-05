@@ -19,6 +19,9 @@ export default class Sudoku {
   public numberOfClues: number;
   public isValid: boolean;
   public validateDetail: ValidateDetail;
+  private rows: readonly VirtualLine[];
+  private columns: readonly VirtualLine[];
+  private boxes: readonly VirtualLine[];
 
   constructor(clues: InputClues) {
     this.grid = Sudoku.createGrid(clues);
@@ -26,6 +29,17 @@ export default class Sudoku {
       (acc, row) => acc + row.reduce((acc, cell) => (cell.clue ? acc + 1 : acc), 0),
       0
     );
+    const nineLenArr = new Array(9).fill(true);
+    this.rows = Object.freeze(this.grid.map((row) => row));
+    this.columns = Object.freeze(nineLenArr.map((_, i) => this.grid.map((row) => row[i])));
+    this.boxes = Object.freeze(
+      nineLenArr.map((_, i) => {
+        const firstRowIndex = Sudoku.boxFirstLineIndex(i, VirtualLineType.ROW);
+        const firstColumnIndex = Sudoku.boxFirstLineIndex(i, VirtualLineType.COLUMN);
+        return nineLenArr.map((_, j) => this.grid[firstRowIndex + Math.floor(j / 3)][firstColumnIndex + (j % 3)]);
+      })
+    );
+
     const { isValid, validateDetail } = this.validatePuzzle("clue");
     this.isValid = isValid;
     this.validateDetail = validateDetail;
@@ -151,7 +165,7 @@ export default class Sudoku {
 
   private static createGrid(clues: InputClues): Grid {
     if (clues.length !== 9 || clues.some((x) => x.length !== 9)) throw new Error("Invalid input clues");
-    const grid: Grid = ArrUtil.create2DArray<Cell>(9, 9, {});
+    const grid: Grid = ArrUtil.create2DArray<Cell>(9, 9, (rowIndex, columnIndex) => ({ rowIndex, columnIndex }));
     clues.forEach((row, i) =>
       row.forEach((clue, j) => {
         if (clue !== "0") grid[i][j].clue = clue;
@@ -162,35 +176,15 @@ export default class Sudoku {
   }
 
   getRow(rowIndex: number): VirtualLine {
-    return this.grid[rowIndex].map((x, columnIndex) => ({
-      ...x,
-      rowIndex,
-      columnIndex,
-    }));
+    return this.rows[rowIndex];
   }
 
   getColumn(columnIndex: number): VirtualLine {
-    return this.grid.map((row, rowIndex) => ({
-      ...row[columnIndex],
-      rowIndex,
-      columnIndex,
-    }));
+    return this.columns[columnIndex];
   }
 
   getBoxFromRowColumnIndex(rowIndex: number, columnIndex: number): VirtualLine {
-    const box: VirtualLine = [];
-    const firstRowIndex = rowIndex - (rowIndex % 3);
-    const firstColumnIndex = columnIndex - (columnIndex % 3);
-    for (let i = firstRowIndex; i < firstRowIndex + 3; i++) {
-      for (let j = firstColumnIndex; j < firstColumnIndex + 3; j++) {
-        box.push({
-          ...this.grid[i][j],
-          rowIndex: i,
-          columnIndex: j,
-        });
-      }
-    }
-    return box;
+    return this.boxes[Sudoku.getBoxIndex(rowIndex, columnIndex)];
   }
 
   getBoxFromBoxIndex(boxIndex: number) {
@@ -200,15 +194,15 @@ export default class Sudoku {
   }
 
   getAllRows(): VirtualLine[] {
-    return this.grid.map((_, rowIndex) => this.getRow(rowIndex));
+    return this.rows.slice();
   }
 
   getAllColumns(): VirtualLine[] {
-    return this.grid[0].map((_, columnIndex) => this.getColumn(columnIndex));
+    return this.columns.slice();
   }
 
   getAllBoxes(): VirtualLine[] {
-    return Array.from({ length: 9 }, (_, i) => this.getBoxFromBoxIndex(i));
+    return this.boxes.slice();
   }
 
   getAllVirtualLines(type: VirtualLineType): VirtualLine[] {
@@ -223,19 +217,30 @@ export default class Sudoku {
   }
 
   getAllRelatedBoxesInRowOrColumn(lineType: RowColumn, lineIndex: number): VirtualLine[] {
-    const boxes: VirtualLine[] = [];
-    for (let i = 0; i < 9; i += 3) {
-      lineType === VirtualLineType.ROW
-        ? boxes.push(this.getBoxFromRowColumnIndex(lineIndex, i))
-        : boxes.push(this.getBoxFromRowColumnIndex(i, lineIndex));
+    switch (lineType) {
+      case VirtualLineType.ROW:
+        return [
+          this.getBoxFromRowColumnIndex(lineIndex, 0),
+          this.getBoxFromRowColumnIndex(lineIndex, 3),
+          this.getBoxFromRowColumnIndex(lineIndex, 6),
+        ];
+      case VirtualLineType.COLUMN:
+        return [
+          this.getBoxFromRowColumnIndex(0, lineIndex),
+          this.getBoxFromRowColumnIndex(3, lineIndex),
+          this.getBoxFromRowColumnIndex(6, lineIndex),
+        ];
     }
-    return boxes;
   }
 
   getAllRelatedRowsOrColumnsInBox(lineType: RowColumn, boxIndex: number): VirtualLine[] {
     const firstIndex = Sudoku.boxFirstLineIndex(boxIndex, lineType);
-    const getLine = lineType === VirtualLineType.ROW ? this.getRow.bind(this) : this.getColumn.bind(this);
-    return [getLine(firstIndex), getLine(firstIndex + 1), getLine(firstIndex + 2)];
+    switch (lineType) {
+      case VirtualLineType.ROW:
+        return [this.getRow(firstIndex), this.getRow(firstIndex + 1), this.getRow(firstIndex + 2)];
+      case VirtualLineType.COLUMN:
+        return [this.getColumn(firstIndex), this.getColumn(firstIndex + 1), this.getColumn(firstIndex + 2)];
+    }
   }
 
   getAllRelatedCells(cell: CellWithIndex): CellWithIndex[] {
@@ -248,7 +253,14 @@ export default class Sudoku {
   }
 
   setCandidates(rowIndex: number, columnIndex: number, candidates: Candidates) {
-    this.grid[rowIndex][columnIndex].candidates = { ...candidates };
+    if (!this.grid[rowIndex][columnIndex].candidates) {
+      this.grid[rowIndex][columnIndex].candidates = { ...candidates };
+    } else {
+      for (const key in candidates) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.grid[rowIndex][columnIndex].candidates![key as SudokuElement] = candidates[key as SudokuElement];
+      }
+    }
   }
 
   setInputValue({ rowIndex, columnIndex, value }: InputValueData, update: boolean) {
@@ -295,8 +307,6 @@ export default class Sudoku {
       const { rowIndex, columnIndex, value } = inputValueData;
       const cell = this.grid[rowIndex][columnIndex];
 
-      if (cell.clue || cell.inputValue) return;
-
       if (cell.candidates) {
         if (!cell.candidates[value]) {
           cell.candidates[value] = true;
@@ -338,13 +348,9 @@ export default class Sudoku {
     isValid: boolean;
     validateDetail: ValidateDetail;
   } {
-    const allRows = this.getAllRows();
-    const allColumns = this.getAllColumns();
-    const allBoxes = this.getAllBoxes();
-
-    const rowDetail = allRows.map((x) => Sudoku.checkVirtualLineHaveDuplicateValue(x, type));
-    const columnDetail = allColumns.map((x) => Sudoku.checkVirtualLineHaveDuplicateValue(x, type));
-    const boxDetail = allBoxes.map((x) => Sudoku.checkVirtualLineHaveDuplicateValue(x, type));
+    const rowDetail = this.rows.map((x) => Sudoku.checkVirtualLineHaveDuplicateValue(x, type));
+    const columnDetail = this.columns.map((x) => Sudoku.checkVirtualLineHaveDuplicateValue(x, type));
+    const boxDetail = this.boxes.map((x) => Sudoku.checkVirtualLineHaveDuplicateValue(x, type));
     const validateDetail = {
       [VirtualLineType.ROW]: rowDetail,
       [VirtualLineType.COLUMN]: columnDetail,

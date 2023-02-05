@@ -1,23 +1,16 @@
 import cloneDeep from "lodash/cloneDeep";
 
-type NonArrayObject = object & { length?: never };
-
 export default class ArrUtil {
-  static create2DArray<T extends string | number | boolean | NonArrayObject>(
+  static create2DArray<T extends string | number | boolean | (object & { length?: never })>(
     rows: number,
     columns: number,
-    defaultValue: T
+    fn: (row: number, column: number) => T
   ): T[][] {
-    const array: T[][] = [];
-    const defaultObject = JSON.stringify(typeof defaultValue === "object" ? defaultValue : {});
+    const array: T[][] = new Array(rows);
     for (let i = 0; i < rows; i++) {
-      array[i] = [];
+      array[i] = new Array(columns);
       for (let j = 0; j < columns; j++) {
-        if (typeof defaultValue === "object") {
-          array[i][j] = JSON.parse(defaultObject);
-        } else {
-          array[i][j] = defaultValue;
-        }
+        array[i][j] = fn(i, j);
       }
     }
     return array;

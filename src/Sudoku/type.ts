@@ -5,6 +5,8 @@ export type Candidates = {
 };
 
 export interface Cell {
+  rowIndex: number;
+  columnIndex: number;
   clue?: SudokuElement;
   inputValue?: SudokuElement;
   candidates?: Candidates;

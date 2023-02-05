@@ -82,7 +82,7 @@ describe("sudoku basic", () => {
 
   it("createGrid 1", () => {
     const sudoku = new Sudoku(p1);
-    const gridExpected = [
+    const values = [
       [{ clue: "2" }, {}, {}, {}, {}, {}, { clue: "8" }, { clue: "6" }, {}],
       [{}, {}, {}, {}, { clue: "4" }, { clue: "2" }, {}, {}, {}],
       [{}, { clue: "1" }, {}, {}, { clue: "6" }, {}, {}, { clue: "4" }, { clue: "7" }],
@@ -93,12 +93,15 @@ describe("sudoku basic", () => {
       [{}, {}, {}, { clue: "6" }, { clue: "8" }, {}, {}, { clue: "1" }, { clue: "2" }],
       [{ clue: "5" }, {}, { clue: "8" }, {}, {}, {}, {}, {}, { clue: "4" }],
     ];
+    const gridExpected = values.map((row, rowIndex) =>
+      row.map((cell, columnIndex) => ({ ...cell, rowIndex, columnIndex }))
+    );
     expect(sudoku.grid).toStrictEqual(gridExpected);
   });
 
   it("createGrid 2", () => {
     const sudoku = new Sudoku(p2);
-    const gridExpected = [
+    const values = [
       [{}, { clue: "3" }, {}, { clue: "9" }, {}, {}, {}, {}, {}],
       [{ clue: "6" }, {}, {}, { clue: "2" }, {}, {}, { clue: "8" }, {}, {}],
       [{ clue: "8" }, {}, {}, { clue: "6" }, { clue: "1" }, {}, { clue: "5" }, { clue: "4" }, { clue: "9" }],
@@ -109,6 +112,9 @@ describe("sudoku basic", () => {
       [{ clue: "1" }, {}, {}, {}, {}, {}, {}, { clue: "6" }, {}],
       [{}, {}, { clue: "4" }, {}, { clue: "6" }, {}, { clue: "9" }, {}, { clue: "8" }],
     ];
+    const gridExpected = values.map((row, rowIndex) =>
+      row.map((cell, columnIndex) => ({ ...cell, rowIndex, columnIndex }))
+    );
     expect(sudoku.grid).toStrictEqual(gridExpected);
   });
 

@@ -6,7 +6,7 @@ export default class Backtracking {
 
   constructor(grid: number[][] | string[][]) {
     this.takeBacks = 0;
-    this.grid = ArrUtil.create2DArray(9, 9, 0);
+    this.grid = ArrUtil.create2DArray(9, 9, () => 0);
     grid.forEach((row, i) => {
       row.forEach((value, j) => {
         this.grid[i][j] = typeof value === "string" ? parseInt(value) : value;

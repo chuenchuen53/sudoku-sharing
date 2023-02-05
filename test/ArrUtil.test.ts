@@ -3,34 +3,34 @@ import ArrUtil from "../src/utils/ArrUtil";
 
 describe("ArrUtil", () => {
   it("ArrUtil.create2DArray", () => {
-    const arr1 = ArrUtil.create2DArray(3, 3, 0);
+    const arr1 = ArrUtil.create2DArray(3, 3, () => 0);
     expect(arr1).toStrictEqual([
       [0, 0, 0],
       [0, 0, 0],
       [0, 0, 0],
     ]);
 
-    const arr2 = ArrUtil.create2DArray(3, 3, "0");
+    const arr2 = ArrUtil.create2DArray(3, 3, () => "0");
     expect(arr2).toStrictEqual([
       ["0", "0", "0"],
       ["0", "0", "0"],
       ["0", "0", "0"],
     ]);
 
-    const arr3 = ArrUtil.create2DArray(3, 3, true);
+    const arr3 = ArrUtil.create2DArray(3, 3, () => true);
     expect(arr3).toStrictEqual([
       [true, true, true],
       [true, true, true],
       [true, true, true],
     ]);
 
-    const arr4 = ArrUtil.create2DArray(2, 2, { a: 1 });
+    const arr4 = ArrUtil.create2DArray(2, 2, () => ({ a: 1 }));
     expect(arr4).toStrictEqual([
       [{ a: 1 }, { a: 1 }],
       [{ a: 1 }, { a: 1 }],
     ]);
 
-    const arr5 = ArrUtil.create2DArray(3, 2, { a: 1, b: { c: 2 } });
+    const arr5 = ArrUtil.create2DArray(3, 2, () => ({ a: 1, b: { c: 2 } }));
     expect(arr5).toStrictEqual([
       [
         { a: 1, b: { c: 2 } },
@@ -48,7 +48,7 @@ describe("ArrUtil", () => {
   });
 
   it("ArrUtil.create2DArray", () => {
-    const arr = ArrUtil.create2DArray(2, 2, { a: 1 });
+    const arr = ArrUtil.create2DArray(2, 2, () => ({ a: 1 }));
     arr[0][0].a = 2;
     arr[0][1].a = 5;
     arr[1][0].a = 3;

@@ -133,8 +133,8 @@ export default class SudokuSolver extends Sudoku {
         if (!candidates) return;
         Sudoku.loopCandidates((sudokuElement) => candidates[sudokuElement] && candidatesCount[sudokuElement]++);
       });
-      (Object.entries(candidatesCount) as [SudokuElement, number][]).forEach(([sudokuElement, count]) => {
-        if (count !== 1) return;
+      Sudoku.loopCandidates((sudokuElement) => {
+        if (candidatesCount[sudokuElement] !== 1) return;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const cell = virtualLine.find((x) => x.candidates?.[sudokuElement])!;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
