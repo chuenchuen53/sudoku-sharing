@@ -4,7 +4,7 @@ import ArrUtil from "../src/utils/ArrUtil";
 import type { Pincer, CellWithIndex, InputClues, InputValueData, SudokuElement, VirtualLine } from "../src/Sudoku/type";
 
 export default class TU {
-  static emptyPuzzle = (): InputClues => ArrUtil.create2DArray(9, 9, "0");
+  static emptyPuzzle = (): InputClues => ArrUtil.create2DArray(9, 9, () => "0");
 
   static inputValueDataFactory = (r: number, c: number, v: SudokuElement): InputValueData => {
     return {

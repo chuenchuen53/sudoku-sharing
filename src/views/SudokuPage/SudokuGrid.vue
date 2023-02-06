@@ -79,7 +79,7 @@ const handleCellClick = (rowIndex: number, columnIndex: number) => {
 };
 
 const selectionRelated = computed(() => {
-  const highlightArr = ArrayUtil.create2DArray<boolean>(9, 9, false);
+  const highlightArr = ArrayUtil.create2DArray<boolean>(9, 9, () => false);
   sudokuSolver.value
     .getAllRelatedCells({
       rowIndex: selectedCell.rowIndex,

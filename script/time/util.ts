@@ -173,7 +173,7 @@ function backtrackingSolver(puzzles: [string, string][], size: number): Result[]
 }
 
 function puzzleStrToStringArr(puzzleStr: string): SudokuElementWithZero[][] {
-  const arrTemplate: SudokuElementWithZero[][] = ArrUtil.create2DArray(9, 9, "0");
+  const arrTemplate: SudokuElementWithZero[][] = ArrUtil.create2DArray(9, 9, () => "0");
 
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
