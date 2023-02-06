@@ -156,13 +156,6 @@ export default class Sudoku {
     return ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
   }
 
-  static loopCandidates(fn: (sudokuElement: SudokuElement) => void) {
-    const allElements = Sudoku.allElements();
-    for (let i = 0; i < allElements.length; i++) {
-      fn(allElements[i]);
-    }
-  }
-
   private static createGrid(clues: InputClues): Grid {
     if (clues.length !== 9 || clues.some((x) => x.length !== 9)) throw new Error("Invalid input clues");
     const grid: Grid = ArrUtil.create2DArray<Cell>(9, 9, (rowIndex, columnIndex) => ({ rowIndex, columnIndex }));

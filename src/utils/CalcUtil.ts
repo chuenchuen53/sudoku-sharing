@@ -3,10 +3,6 @@ export default class CalcUtil {
     return a ? !b : b;
   };
 
-  static combinations1<T>(arr: T[]): [T][] {
-    return arr.map((v) => [v]);
-  }
-
   static combinations2<T>(arr: T[]): [T, T][] {
     const result: [T, T][] = [];
 
@@ -49,10 +45,8 @@ export default class CalcUtil {
     return result;
   }
 
-  static combinations<T>(arr: T[], size: 1 | 2 | 3 | 4): [T][] | [T, T][] | [T, T, T][] | [T, T, T, T][] {
+  static combinations<T>(arr: T[], size: 2 | 3 | 4): [T][] | [T, T][] | [T, T, T][] | [T, T, T, T][] {
     switch (size) {
-      case 1:
-        return CalcUtil.combinations1(arr);
       case 2:
         return CalcUtil.combinations2(arr);
       case 3:
@@ -60,16 +54,6 @@ export default class CalcUtil {
       case 4:
         return CalcUtil.combinations4(arr);
     }
-  }
-
-  static combinationsWithSubset<T>(arr: T[], size: 1 | 2 | 3 | 4): T[][] {
-    const result: T[][] = [];
-
-    for (let i = 1; i <= size; i++) {
-      result.push(...CalcUtil.combinations(arr, i as 1 | 2 | 3 | 4));
-    }
-
-    return result;
   }
 
   static cartesianProduct<T>(arr1: T[], arr2: T[]): T[][] {
