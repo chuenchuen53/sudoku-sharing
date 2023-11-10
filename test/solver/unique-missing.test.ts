@@ -2,6 +2,7 @@ import { expect, describe, it } from "vitest";
 import TU from "test/utils";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import type { InputClues, SudokuElement, VirtualLine, UniqueMissingResult } from "../../src/Sudoku/type";
+import Sudoku from "@/Sudoku/Sudoku";
 
 const rcf = (r: number, c: number) => ({ rowIndex: r, columnIndex: c });
 const urf: (vl: VirtualLine, e: SudokuElement, r: number, c: number) => UniqueMissingResult = (vl, e, r, c) => ({
@@ -105,10 +106,10 @@ describe("sudoku solver unique missing test", () => {
       ["1", "0", "0", "3", "0", "0", "0", "0", "0"],
       ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
     ];
-    const s = new SudokuSolver(clue);
-    expect(fn(s.getAllRows())).toStrictEqual([urf(s.getRow(0), "1", 0, 2)]);
-    expect(fn(s.getAllColumns())).toStrictEqual([urf(s.getColumn(0), "3", 8, 0)]);
-    expect(fn(s.getAllBoxes())).toStrictEqual([urf(s.getBoxFromBoxIndex(3), "5", 4, 2)]);
+    const s = new SudokuSolver(new Sudoku(clue));
+    expect(fn(s.sudoku.getAllRows())).toStrictEqual([urf(s.sudoku.getRow(0), "1", 0, 2)]);
+    expect(fn(s.sudoku.getAllColumns())).toStrictEqual([urf(s.sudoku.getColumn(0), "3", 8, 0)]);
+    expect(fn(s.sudoku.getAllBoxes())).toStrictEqual([urf(s.sudoku.getBoxFromBoxIndex(3), "5", 4, 2)]);
   });
 
   it("getUniqueMissingFromVirtualLines test 3", () => {
@@ -126,17 +127,17 @@ describe("sudoku solver unique missing test", () => {
       ["3", "2", "4", "5", "1", "9", "6", "8", "0"],
     ];
 
-    const s = new SudokuSolver(clue);
-    expect(fn(s.getAllRows())).toStrictEqual([urf(s.getRow(8), "7", 8, 8)]);
-    expect(fn(s.getAllColumns())).toStrictEqual([urf(s.getColumn(8), "7", 8, 8)]);
-    expect(fn(s.getAllBoxes())).toStrictEqual([urf(s.getBoxFromBoxIndex(8), "7", 8, 8)]);
+    const s = new SudokuSolver(new Sudoku(clue));
+    expect(fn(s.sudoku.getAllRows())).toStrictEqual([urf(s.sudoku.getRow(8), "7", 8, 8)]);
+    expect(fn(s.sudoku.getAllColumns())).toStrictEqual([urf(s.sudoku.getColumn(8), "7", 8, 8)]);
+    expect(fn(s.sudoku.getAllBoxes())).toStrictEqual([urf(s.sudoku.getBoxFromBoxIndex(8), "7", 8, 8)]);
 
     // check remove duplicated
-    expect(s.getUniqueMissing()).toStrictEqual([urf(s.getRow(8), "7", 8, 8)]);
+    expect(s.getUniqueMissing()).toStrictEqual([urf(s.sudoku.getRow(8), "7", 8, 8)]);
 
     expect(s.setUniqueMissing()).toBe(1);
-    expect(s.isValid).toBe(true);
-    expect(s.solved).toBe(true);
+    expect(s.sudoku.isValid).toBe(true);
+    expect(s.sudoku.solved).toBe(true);
     expect(s.setUniqueMissing()).toBe(0);
   });
 });

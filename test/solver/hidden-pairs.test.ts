@@ -2,6 +2,7 @@ import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TU from "../utils";
 import type { HiddenMultipleFromVirtualLinesResult, InputClues, InputValueData } from "../../src/Sudoku/type";
+import Sudoku from "@/Sudoku/Sudoku";
 
 const p3: InputClues = [
   ["0", "0", "0", "0", "0", "1", "6", "0", "0"],
@@ -61,7 +62,7 @@ describe("sudoku solver", () => {
   });
 
   it("getRemovalDueToNakedPairs test 1", () => {
-    const s = new SudokuSolver(p3);
+    const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenPairs();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
@@ -85,7 +86,7 @@ describe("sudoku solver", () => {
   });
 
   it("getRemovalDueToNakedPairs test 2", () => {
-    const s = new SudokuSolver(p4);
+    const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenPairs();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
@@ -104,13 +105,13 @@ describe("sudoku solver", () => {
   });
 
   it("removeCandidatesDueToHiddenPairs test 1", () => {
-    const s = new SudokuSolver(p3);
+    const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
     expect(s.removeCandidatesDueToHiddenPairs()).toBe(11);
   });
 
   it("removeCandidatesDueToHiddenPairs test 2", () => {
-    const s = new SudokuSolver(p4);
+    const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
     expect(s.removeCandidatesDueToHiddenPairs()).toBe(10);
   });

@@ -3,6 +3,7 @@ import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import { VirtualLineType } from "../../src/Sudoku/type";
 import TU from "../utils";
 import type { InputClues, InputValueData, SudokuElement, XWingSwordfishResult } from "../../src/Sudoku/type";
+import Sudoku from "@/Sudoku/Sudoku";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -270,7 +271,7 @@ describe("sudoku solver", () => {
   });
 
   it("getRemovalDueToXWing test 1", () => {
-    const s = new SudokuSolver(p0);
+    const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     const result = s.getRemovalDueToXWing();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
@@ -284,7 +285,7 @@ describe("sudoku solver", () => {
   });
 
   it("getRemovalDueToXWing test 2", () => {
-    const s = new SudokuSolver(p2);
+    const s = new SudokuSolver(new Sudoku(p2));
     s.setBasicCandidates();
     const result = s.getRemovalDueToXWing();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
@@ -300,13 +301,13 @@ describe("sudoku solver", () => {
   });
 
   it("removeCandidatesDueToXWing test 1", () => {
-    const s = new SudokuSolver(p0);
+    const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     expect(s.removeCandidatesDueToXWing()).toBe(5);
   });
 
   it("removeCandidatesDueToXWing test 2", () => {
-    const s = new SudokuSolver(p2);
+    const s = new SudokuSolver(new Sudoku(p2));
     s.setBasicCandidates();
     expect(s.removeCandidatesDueToXWing()).toBe(5);
   });

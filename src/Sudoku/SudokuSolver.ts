@@ -6,11 +6,9 @@ import type {
   RowColumn,
   SolveStats,
   Candidates,
-  InputClues,
   SudokuElement,
   VirtualLine,
   InputValueData,
-  Cell,
   Cell,
   CandidateCell,
   HiddenMultipleFromVirtualLinesResult,
@@ -20,12 +18,13 @@ import type {
   YWingResult,
 } from "./type";
 
-export default class SudokuSolver extends Sudoku {
+export default class SudokuSolver {
   public stats: SolveStats;
+  public sudoku: Sudoku;
   private eliminationStrategies: (() => unknown)[];
 
-  constructor(clues: InputClues) {
-    super(clues);
+  constructor(sudoku: Sudoku) {
+    this.sudoku = sudoku;
     this.stats = SudokuSolver.statsTemplate();
     this.eliminationStrategies = [
       this.removeCandidatesDueToLockedCandidates.bind(this),
@@ -350,13 +349,13 @@ export default class SudokuSolver extends Sudoku {
   }
 
   setBasicCandidates(): void {
-    const missingInRowArr = this.getAllRows().map((x) => Sudoku.missingValuesInVirtualLine(x));
-    const missingInColumnArr = this.getAllColumns().map((x) => Sudoku.missingValuesInVirtualLine(x));
-    const missingInBoxArr = this.getAllBoxes().map((x) => Sudoku.missingValuesInVirtualLine(x));
+    const missingInRowArr = this.sudoku.getAllRows().map((x) => Sudoku.missingValuesInVirtualLine(x));
+    const missingInColumnArr = this.sudoku.getAllColumns().map((x) => Sudoku.missingValuesInVirtualLine(x));
+    const missingInBoxArr = this.sudoku.getAllBoxes().map((x) => Sudoku.missingValuesInVirtualLine(x));
 
-    for (let i = 0; i < this.grid.length; i++) {
-      for (let j = 0; j < this.grid[i].length; j++) {
-        if (this.grid[i][j].clue || this.grid[i][j].inputValue) continue;
+    for (let i = 0; i < this.sudoku.grid.length; i++) {
+      for (let j = 0; j < this.sudoku.grid[i].length; j++) {
+        if (this.sudoku.grid[i][j].clue || this.sudoku.grid[i][j].inputValue) continue;
 
         const missingInRow = missingInRowArr[i];
         const missingInColumn = missingInColumnArr[j];
@@ -367,18 +366,18 @@ export default class SudokuSolver extends Sudoku {
             candidatesTemplate[sudokuElement] = true;
           }
         });
-        this.setCandidates(i, j, candidatesTemplate);
+        this.sudoku.setCandidates(i, j, candidatesTemplate);
       }
     }
   }
 
   getUniqueMissing(): UniqueMissingResult[] {
-    const rowResult = SudokuSolver.getUniqueMissingFromVirtualLines(this.getAllRows());
-    const columnResult = SudokuSolver.getUniqueMissingFromVirtualLines(this.getAllColumns());
-    const boxResult = SudokuSolver.getUniqueMissingFromVirtualLines(this.getAllBoxes());
+    const rowResult = SudokuSolver.getUniqueMissingFromVirtualLines(this.sudoku.getAllRows());
+    const columnResult = SudokuSolver.getUniqueMissingFromVirtualLines(this.sudoku.getAllColumns());
+    const boxResult = SudokuSolver.getUniqueMissingFromVirtualLines(this.sudoku.getAllBoxes());
 
     const combined = [...rowResult, ...columnResult, ...boxResult];
-    return combined.filter((x, ix) => combined.findIndex((y) => SudokuSolver.isSamePos(x.cell, y.cell)) === ix);
+    return combined.filter((x, ix) => combined.findIndex((y) => Sudoku.isSamePos(x.cell, y.cell)) === ix);
   }
 
   setUniqueMissing(): number {
@@ -389,7 +388,7 @@ export default class SudokuSolver extends Sudoku {
       value: x.uniqueCandidate,
     }));
     if (result.length === 0) return 0;
-    this.setInputValues(inputValues);
+    this.sudoku.setInputValues(inputValues);
     this.addStatsInputCount$UniqueMissing(inputValues.length);
     return inputValues.length;
   }
@@ -407,31 +406,31 @@ export default class SudokuSolver extends Sudoku {
   setNakedSingles(): number {
     const nakedSingles = this.getNakedSingles();
     if (nakedSingles.length === 0) return 0;
-    this.setInputValues(nakedSingles);
+    this.sudoku.setInputValues(nakedSingles);
     this.addStatsInputCount$NakedSingle(nakedSingles.length);
     return nakedSingles.length;
   }
 
   getHiddenSingles(): InputValueData[] {
-    const rowResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllRows());
-    const columnResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllColumns());
-    const boxResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.getAllBoxes());
+    const rowResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.sudoku.getAllRows());
+    const columnResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.sudoku.getAllColumns());
+    const boxResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.sudoku.getAllBoxes());
     return Sudoku.removeDuplicatedInputValueData([...rowResult, ...columnResult, ...boxResult]);
   }
 
   setHiddenSingles(): number {
     const hiddenSingles = this.getHiddenSingles();
     if (hiddenSingles.length === 0) return 0;
-    this.setInputValues(hiddenSingles);
+    this.sudoku.setInputValues(hiddenSingles);
     this.addStatsInputCount$HiddenSingle(hiddenSingles.length);
     return hiddenSingles.length;
   }
 
   rowColumnLockInBox(type: RowColumn, index: number): InputValueData[] {
     const result: InputValueData[] = [];
-    const virtualLine = type === VirtualLineType.ROW ? this.getRow(index) : this.getColumn(index);
+    const virtualLine = type === VirtualLineType.ROW ? this.sudoku.getRow(index) : this.sudoku.getColumn(index);
     const missing = Sudoku.missingValuesInVirtualLine(virtualLine);
-    const relatedBoxes = this.getAllRelatedBoxesInRowOrColumn(type, index);
+    const relatedBoxes = this.sudoku.getAllRelatedBoxesInRowOrColumn(type, index);
 
     SudokuSolver.loopCandidates((sudokuElement) => {
       if (!missing[sudokuElement]) return;
@@ -454,9 +453,9 @@ export default class SudokuSolver extends Sudoku {
 
   boxLockInRowColumn(type: RowColumn, boxIndex: number): InputValueData[] {
     const result: InputValueData[] = [];
-    const missing = Sudoku.missingValuesInVirtualLine(this.getBoxFromBoxIndex(boxIndex));
-    const relatedLines = this.getAllRelatedRowsOrColumnsInBox(type, boxIndex);
-    const box = this.getBoxFromBoxIndex(boxIndex);
+    const missing = Sudoku.missingValuesInVirtualLine(this.sudoku.getBoxFromBoxIndex(boxIndex));
+    const relatedLines = this.sudoku.getAllRelatedRowsOrColumnsInBox(type, boxIndex);
+    const box = this.sudoku.getBoxFromBoxIndex(boxIndex);
 
     SudokuSolver.loopCandidates((sudokuElement) => {
       if (!missing[sudokuElement]) return;
@@ -502,15 +501,15 @@ export default class SudokuSolver extends Sudoku {
 
   removeCandidatesDueToLockedCandidates(): number {
     const removals = this.getRemovalDueToLockedCandidates();
-    const count = this.removeElementInCandidates(removals);
+    const count = this.sudoku.removeElementInCandidates(removals);
     this.addStatsEliminationCount$LockedCandidates(count);
     return count;
   }
 
   getRemovalDueToNakedPairs(): InputValueData[] {
-    const rowResult = SudokuSolver.getNakedPairsFromVirtualLines(this.getAllRows());
-    const columnResult = SudokuSolver.getNakedPairsFromVirtualLines(this.getAllColumns());
-    const boxResult = SudokuSolver.getNakedPairsFromVirtualLines(this.getAllBoxes());
+    const rowResult = SudokuSolver.getNakedPairsFromVirtualLines(this.sudoku.getAllRows());
+    const columnResult = SudokuSolver.getNakedPairsFromVirtualLines(this.sudoku.getAllColumns());
+    const boxResult = SudokuSolver.getNakedPairsFromVirtualLines(this.sudoku.getAllBoxes());
     const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
 
     return Sudoku.removeDuplicatedInputValueData(elimination);
@@ -518,16 +517,16 @@ export default class SudokuSolver extends Sudoku {
 
   removeCandidatesDueToNakedPairs(): number {
     const removals = this.getRemovalDueToNakedPairs();
-    const count = this.removeElementInCandidates(removals);
+    const count = this.sudoku.removeElementInCandidates(removals);
     this.addStatsEliminationCount$NakedPairs(count);
     return count;
   }
 
   getRemovalDueToNakedTriplets(): InputValueData[] {
     const size = 3;
-    const rowResult = SudokuSolver.getMultipleNakedFromVirtualLines(this.getAllRows(), size);
-    const columnResult = SudokuSolver.getMultipleNakedFromVirtualLines(this.getAllColumns(), size);
-    const boxResult = SudokuSolver.getMultipleNakedFromVirtualLines(this.getAllBoxes(), size);
+    const rowResult = SudokuSolver.getMultipleNakedFromVirtualLines(this.sudoku.getAllRows(), size);
+    const columnResult = SudokuSolver.getMultipleNakedFromVirtualLines(this.sudoku.getAllColumns(), size);
+    const boxResult = SudokuSolver.getMultipleNakedFromVirtualLines(this.sudoku.getAllBoxes(), size);
     const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
 
     return Sudoku.removeDuplicatedInputValueData(elimination);
@@ -535,16 +534,16 @@ export default class SudokuSolver extends Sudoku {
 
   removeCandidatesDueToNakedTriplets(): number {
     const removals = this.getRemovalDueToNakedTriplets();
-    const count = this.removeElementInCandidates(removals);
+    const count = this.sudoku.removeElementInCandidates(removals);
     this.addStatsEliminationCount$NakedTriplets(count);
     return count;
   }
 
   getRemovalDueToNakedQuads(): InputValueData[] {
     const size = 4;
-    const rowResult = SudokuSolver.getMultipleNakedFromVirtualLines(this.getAllRows(), size);
-    const columnResult = SudokuSolver.getMultipleNakedFromVirtualLines(this.getAllColumns(), size);
-    const boxResult = SudokuSolver.getMultipleNakedFromVirtualLines(this.getAllBoxes(), size);
+    const rowResult = SudokuSolver.getMultipleNakedFromVirtualLines(this.sudoku.getAllRows(), size);
+    const columnResult = SudokuSolver.getMultipleNakedFromVirtualLines(this.sudoku.getAllColumns(), size);
+    const boxResult = SudokuSolver.getMultipleNakedFromVirtualLines(this.sudoku.getAllBoxes(), size);
     const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
 
     return Sudoku.removeDuplicatedInputValueData(elimination);
@@ -552,16 +551,16 @@ export default class SudokuSolver extends Sudoku {
 
   removeCandidatesDueToNakedQuads(): number {
     const removals = this.getRemovalDueToNakedQuads();
-    const count = this.removeElementInCandidates(removals);
+    const count = this.sudoku.removeElementInCandidates(removals);
     this.addStatsEliminationCount$NakedQuads(count);
     return count;
   }
 
   getRemovalDueToHiddenPairs(): InputValueData[] {
     const size = 2;
-    const rowResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.getAllRows(), size);
-    const columnResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.getAllColumns(), size);
-    const boxResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.getAllBoxes(), size);
+    const rowResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.sudoku.getAllRows(), size);
+    const columnResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.sudoku.getAllColumns(), size);
+    const boxResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.sudoku.getAllBoxes(), size);
     const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
 
     return Sudoku.removeDuplicatedInputValueData(elimination);
@@ -569,16 +568,16 @@ export default class SudokuSolver extends Sudoku {
 
   removeCandidatesDueToHiddenPairs(): number {
     const removals = this.getRemovalDueToHiddenPairs();
-    const count = this.removeElementInCandidates(removals);
+    const count = this.sudoku.removeElementInCandidates(removals);
     this.addStatsEliminationCount$HiddenPairs(count);
     return count;
   }
 
   getRemovalDueToHiddenTriplets(): InputValueData[] {
     const size = 3;
-    const rowResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.getAllRows(), size);
-    const columnResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.getAllColumns(), size);
-    const boxResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.getAllBoxes(), size);
+    const rowResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.sudoku.getAllRows(), size);
+    const columnResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.sudoku.getAllColumns(), size);
+    const boxResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.sudoku.getAllBoxes(), size);
     const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
 
     return Sudoku.removeDuplicatedInputValueData(elimination);
@@ -586,16 +585,16 @@ export default class SudokuSolver extends Sudoku {
 
   removeCandidatesDueToHiddenTriplets(): number {
     const removals = this.getRemovalDueToHiddenTriplets();
-    const count = this.removeElementInCandidates(removals);
+    const count = this.sudoku.removeElementInCandidates(removals);
     this.addStatsEliminationCount$HiddenTriplets(count);
     return count;
   }
 
   getRemovalDueToHiddenQuads(): InputValueData[] {
     const size = 4;
-    const rowResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.getAllRows(), size);
-    const columnResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.getAllColumns(), size);
-    const boxResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.getAllBoxes(), size);
+    const rowResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.sudoku.getAllRows(), size);
+    const columnResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.sudoku.getAllColumns(), size);
+    const boxResult = SudokuSolver.getHiddenMultipleFromVirtualLines(this.sudoku.getAllBoxes(), size);
     const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
 
     return Sudoku.removeDuplicatedInputValueData(elimination);
@@ -603,14 +602,14 @@ export default class SudokuSolver extends Sudoku {
 
   removeCandidatesDueToHiddenQuads(): number {
     const removals = this.getRemovalDueToHiddenQuads();
-    const count = this.removeElementInCandidates(removals);
+    const count = this.sudoku.removeElementInCandidates(removals);
     this.addStatsEliminationCount$HiddenQuads(count);
     return count;
   }
 
   getRemovalDueToXWing(): InputValueData[] {
-    const allRows = this.getAllRows();
-    const allColumns = this.getAllColumns();
+    const allRows = this.sudoku.getAllRows();
+    const allColumns = this.sudoku.getAllColumns();
 
     const rowResult = SudokuSolver.getXWingFromVirtualLines(VirtualLineType.ROW, allRows, allColumns);
     const columnResult = SudokuSolver.getXWingFromVirtualLines(VirtualLineType.COLUMN, allColumns, allRows);
@@ -621,27 +620,34 @@ export default class SudokuSolver extends Sudoku {
 
   removeCandidatesDueToXWing(): number {
     const removals = this.getRemovalDueToXWing();
-    const count = this.removeElementInCandidates(removals);
+    const count = this.sudoku.removeElementInCandidates(removals);
     this.addStatsEliminationCount$XWing(count);
     return count;
   }
 
   getYWing(): YWingResult[] {
     const result: YWingResult[] = [];
-    const cellsWithTwoCandidates = this.getAllRows().map((row) =>
-      row.map((cell) =>
-        cell.candidates && SudokuSolver.numberOfCandidates(cell.candidates) === 2 ? (cell as CandidateCell) : undefined
-      )
-    );
+    const cellsWithTwoCandidates = this.sudoku
+      .getAllRows()
+      .map((row) =>
+        row.map((cell) =>
+          cell.candidates && SudokuSolver.numberOfCandidates(cell.candidates) === 2
+            ? (cell as CandidateCell)
+            : undefined
+        )
+      );
 
     for (let i = 0; i < cellsWithTwoCandidates.length; i++) {
       for (let j = 0; j < cellsWithTwoCandidates[i].length; j++) {
         const pivot = cellsWithTwoCandidates[i][j];
         if (!pivot) continue;
 
-        const possibleRowPincers = SudokuSolver.possiblePincersFromLine(this.getRow(i), pivot);
-        const possibleColumnPincers = SudokuSolver.possiblePincersFromLine(this.getColumn(j), pivot);
-        const possibleBoxPincers = SudokuSolver.possiblePincersFromLine(this.getBoxFromRowColumnIndex(i, j), pivot);
+        const possibleRowPincers = SudokuSolver.possiblePincersFromLine(this.sudoku.getRow(i), pivot);
+        const possibleColumnPincers = SudokuSolver.possiblePincersFromLine(this.sudoku.getColumn(j), pivot);
+        const possibleBoxPincers = SudokuSolver.possiblePincersFromLine(
+          this.sudoku.getBoxFromRowColumnIndex(i, j),
+          pivot
+        );
 
         const fn = SudokuSolver.cartesianProductWithYWingPattern;
         const rowColumnProduct = fn(possibleRowPincers, possibleColumnPincers);
@@ -653,8 +659,8 @@ export default class SudokuSolver extends Sudoku {
           const pincers = x;
           const elimination: InputValueData[] = [];
 
-          const p1Related = this.getAllRelatedCells(pincers[0]);
-          const p2Related = this.getAllRelatedCells(pincers[1]);
+          const p1Related = this.sudoku.getAllRelatedCells(pincers[0]);
+          const p2Related = this.sudoku.getAllRelatedCells(pincers[1]);
           const intersection = Sudoku.virtualLinesIntersections(p1Related, p2Related).filter(
             (x) => !Sudoku.isSamePos(x, pivot)
           );
@@ -678,7 +684,7 @@ export default class SudokuSolver extends Sudoku {
 
   removeCandidatesDueToYWing(): number {
     const removals = this.getRemovalDueToYWing();
-    const count = this.removeElementInCandidates(removals);
+    const count = this.sudoku.removeElementInCandidates(removals);
     this.addStatsEliminationCount$YWing(count);
     return count;
   }
@@ -756,12 +762,12 @@ export default class SudokuSolver extends Sudoku {
       if (this.eliminationStrategies[i]() && this.trySolveByCandidates()) return this.trySolve();
     }
 
-    return this.solved;
+    return this.sudoku.solved;
   }
 
   private loopGrid(fn: (rowIndex: number, columnIndex: number, cell: Cell, row?: Cell[]) => void): void {
-    for (let rowIndex = 0; rowIndex < this.grid.length; rowIndex++) {
-      const row = this.grid[rowIndex];
+    for (let rowIndex = 0; rowIndex < this.sudoku.grid.length; rowIndex++) {
+      const row = this.sudoku.grid[rowIndex];
       for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
         const cell = row[columnIndex];
         fn(rowIndex, columnIndex, cell, row);
@@ -769,14 +775,3 @@ export default class SudokuSolver extends Sudoku {
     }
   }
 }
-
-// // todo the swordfish may not need all rows/cols to have exactly 3 cells
-// getSwordfish(): InputValueData[] {
-//   if (!this.isValid) return [];
-
-//   const rowResult = this.getXWingSwordfishHelper(this.getAllRows(), "row", "swordfish");
-//   const columnResult = this.getXWingSwordfishHelper(this.getAllColumns(), "column", "swordfish");
-//   const elimination = [...rowResult, ...columnResult].flatMap((x) => x.elimination);
-
-//   return elimination;
-// }

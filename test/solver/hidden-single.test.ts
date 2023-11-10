@@ -3,6 +3,7 @@ import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TU from "../utils";
 import { VirtualLineType } from "../../src/Sudoku/type";
 import type { InputClues } from "../../src/Sudoku/type";
+import Sudoku from "@/Sudoku/Sudoku";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -65,9 +66,9 @@ describe("sudoku solver hidden single test", () => {
   });
 
   it("getHiddenSingleFromVirtualLines", () => {
-    const s = new SudokuSolver(p0);
+    const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    const lines = s.getAllRows();
+    const lines = s.sudoku.getAllRows();
     const result = SudokuSolver.getHiddenSingleFromVirtualLines(lines);
     const expectedResult = [
       TU.inputValueDataFactory(0, 2, "1"),
@@ -151,7 +152,7 @@ describe("sudoku solver hidden single test", () => {
   });
 
   it("getHiddenSingles test 1", () => {
-    const s = new SudokuSolver(p0);
+    const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     const result = s.getHiddenSingles();
 
@@ -193,7 +194,7 @@ describe("sudoku solver hidden single test", () => {
   });
 
   it("getHiddenSingles test 1", () => {
-    const s = new SudokuSolver(p1);
+    const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
     const result = s.getHiddenSingles();
 
@@ -230,13 +231,13 @@ describe("sudoku solver hidden single test", () => {
   });
 
   it("setHiddenSingles test 1", () => {
-    const s = new SudokuSolver(p0);
+    const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     expect(s.setHiddenSingles()).toBe(14);
   });
 
   it("setHiddenSingles test 2", () => {
-    const s = new SudokuSolver(p1);
+    const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
     expect(s.setHiddenSingles()).toBe(11);
   });

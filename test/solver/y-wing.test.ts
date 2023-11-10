@@ -10,6 +10,7 @@ import type {
   SudokuElement,
   CandidateCell,
 } from "../../src/Sudoku/type";
+import Sudoku from "@/Sudoku/Sudoku";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -167,7 +168,7 @@ describe("sudoku solver", () => {
   });
 
   it("getYWing test 1", () => {
-    const s = new SudokuSolver(p0);
+    const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     const result = s.getYWing();
     const expectResult: YWingResult[] = [
@@ -196,7 +197,7 @@ describe("sudoku solver", () => {
   });
 
   it("getRemovalDueToYWing test 1", () => {
-    const s = new SudokuSolver(p0);
+    const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     const result = s.getRemovalDueToYWing();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
@@ -208,7 +209,7 @@ describe("sudoku solver", () => {
   });
 
   it("removeCandidatesDueToYWing test 1", () => {
-    const s = new SudokuSolver(p0);
+    const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     expect(s.removeCandidatesDueToYWing()).toBe(3);
   });

@@ -2,6 +2,7 @@ import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TU from "../utils";
 import type { InputClues, InputValueData, HiddenMultipleFromVirtualLinesResult } from "../../src/Sudoku/type";
+import Sudoku from "@/Sudoku/Sudoku";
 
 const p2: InputClues = [
   ["0", "3", "0", "9", "0", "0", "0", "0", "0"],
@@ -76,7 +77,7 @@ describe("sudoku solver", () => {
   });
 
   it("getRemovalDueToNakedPairs test 1", () => {
-    const s = new SudokuSolver(p2);
+    const s = new SudokuSolver(new Sudoku(p2));
     s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenTriplets();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
@@ -114,7 +115,7 @@ describe("sudoku solver", () => {
   });
 
   it("getRemovalDueToNakedPairs test 2", () => {
-    const s = new SudokuSolver(p3);
+    const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenTriplets();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
@@ -133,7 +134,7 @@ describe("sudoku solver", () => {
   });
 
   it("getRemovalDueToNakedPairs test 3", () => {
-    const s = new SudokuSolver(p4);
+    const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenTriplets();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
@@ -155,19 +156,19 @@ describe("sudoku solver", () => {
   });
 
   it("removeCandidatesDueToHiddenTriplets test 1", () => {
-    const s = new SudokuSolver(p2);
+    const s = new SudokuSolver(new Sudoku(p2));
     s.setBasicCandidates();
     expect(s.removeCandidatesDueToHiddenTriplets()).toBe(24);
   });
 
   it("removeCandidatesDueToHiddenTriplets test 2", () => {
-    const s = new SudokuSolver(p3);
+    const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
     expect(s.removeCandidatesDueToHiddenTriplets()).toBe(10);
   });
 
   it("removeCandidatesDueToHiddenTriplets test 3", () => {
-    const s = new SudokuSolver(p4);
+    const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
     expect(s.removeCandidatesDueToHiddenTriplets()).toBe(13);
   });

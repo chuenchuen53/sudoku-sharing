@@ -3,6 +3,7 @@ import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import { VirtualLineType } from "../../src/Sudoku/type";
 import TU from "../utils";
 import type { InputClues, SudokuElement } from "../../src/Sudoku/type";
+import Sudoku from "@/Sudoku/Sudoku";
 
 interface AllResult {
   rowLockInBoxResult: [number, number, SudokuElement][][];
@@ -302,5 +303,5 @@ const testFactory = (sudoku: SudokuSolver, allResult: AllResult) => {
   });
 };
 
-describe("sudoku solver lock candidate test suit 1", () => testFactory(new SudokuSolver(p0), p0Result));
-describe("sudoku solver lock candidate test suit 2", () => testFactory(new SudokuSolver(p1), p1Result));
+describe("sudoku solver lock candidate test suit 1", () => testFactory(new SudokuSolver(new Sudoku(p0)), p0Result));
+describe("sudoku solver lock candidate test suit 2", () => testFactory(new SudokuSolver(new Sudoku(p1)), p1Result));

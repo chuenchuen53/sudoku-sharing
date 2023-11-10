@@ -2,6 +2,7 @@ import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TU from "../utils";
 import type { InputClues, InputValueData, NakedMultipleResult } from "../../src/Sudoku/type";
+import Sudoku from "@/Sudoku/Sudoku";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -66,7 +67,7 @@ describe("sudoku solver", () => {
   });
 
   it("getRemovalDueToNakedPairs test 1", () => {
-    const s = new SudokuSolver(p0);
+    const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     const result = s.getRemovalDueToNakedPairs();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
@@ -79,7 +80,7 @@ describe("sudoku solver", () => {
   });
 
   it("getRemovalDueToNakedPairs test 2", () => {
-    const s = new SudokuSolver(p1);
+    const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
     const result = s.getRemovalDueToNakedPairs();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
@@ -94,13 +95,13 @@ describe("sudoku solver", () => {
   });
 
   it("removeCandidatesDueToNakedPairs test 1", () => {
-    const s = new SudokuSolver(p0);
+    const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     expect(s.removeCandidatesDueToNakedPairs()).toStrictEqual(4);
   });
 
   it("removeCandidatesDueToNakedPairs test 2", () => {
-    const s = new SudokuSolver(p1);
+    const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
     expect(s.removeCandidatesDueToNakedPairs()).toStrictEqual(5);
   });

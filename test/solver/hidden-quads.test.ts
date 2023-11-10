@@ -2,6 +2,7 @@ import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TU from "../utils";
 import type { InputClues, InputValueData, HiddenMultipleFromVirtualLinesResult } from "../../src/Sudoku/type";
+import Sudoku from "@/Sudoku/Sudoku";
 
 const p5: InputClues = [
   ["0", "0", "2", "0", "1", "0", "0", "0", "0"],
@@ -53,7 +54,7 @@ describe("sudoku solver", () => {
   });
 
   it("getRemovalDueToNakedPairs test 1", () => {
-    const s = new SudokuSolver(p5);
+    const s = new SudokuSolver(new Sudoku(p5));
     s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenQuads();
     const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
@@ -83,7 +84,7 @@ describe("sudoku solver", () => {
   });
 
   it("removeCandidatesDueToHiddenQuads test 1", () => {
-    const s = new SudokuSolver(p5);
+    const s = new SudokuSolver(new Sudoku(p5));
     s.setBasicCandidates();
     expect(s.removeCandidatesDueToHiddenQuads()).toBe(16);
   });

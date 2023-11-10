@@ -2,6 +2,7 @@ import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TU from "../utils";
 import type { InputClues } from "../../src/Sudoku/type";
+import Sudoku from "@/Sudoku/Sudoku";
 
 // easy
 const p0: InputClues = [
@@ -31,7 +32,7 @@ const p1: InputClues = [
 
 describe("sudoku solver naked single test", () => {
   it("getNakedSingles test 1", () => {
-    const s = new SudokuSolver(p0);
+    const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     const nakedSingles = s.getNakedSingles();
     expect(nakedSingles).toStrictEqual(
@@ -54,7 +55,7 @@ describe("sudoku solver naked single test", () => {
   });
 
   it("getNakedSingles test 2", () => {
-    const s = new SudokuSolver(p1);
+    const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
     const nakedSingles = s.getNakedSingles();
     expect(nakedSingles).toStrictEqual(
@@ -67,13 +68,13 @@ describe("sudoku solver naked single test", () => {
   });
 
   it("setNakedSingles test 1", () => {
-    const s = new SudokuSolver(p0);
+    const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     expect(s.setNakedSingles()).toBe(13);
   });
 
   it("setNakedSingles test 2", () => {
-    const s = new SudokuSolver(p1);
+    const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
     expect(s.setNakedSingles()).toBe(3);
   });
