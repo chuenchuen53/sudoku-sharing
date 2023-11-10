@@ -184,7 +184,7 @@ describe("sudoku solver obvious strategies test", () => {
 
     s.setCandidates(0, 0, candidatesFactory(true, ["1", "2", "3"]));
 
-    const c00 = TU.cellWithIndexFactory(0, 0, { candidates: ["1", "2", "3"] });
+    const c00 = TU.CellFactory(0, 0, { candidates: ["1", "2", "3"] });
     expect(SudokuSolver.candidateCellsFromVirtualLine(s.getRow(0))).toStrictEqual([c00]);
     expect(SudokuSolver.candidateCellsFromVirtualLine(s.getRow(1))).toStrictEqual([]);
     expect(SudokuSolver.candidateCellsFromVirtualLine(s.getColumn(0))).toStrictEqual([c00]);
@@ -193,7 +193,7 @@ describe("sudoku solver obvious strategies test", () => {
     expect(SudokuSolver.candidateCellsFromVirtualLine(s.getBoxFromBoxIndex(1))).toStrictEqual([]);
 
     s.setCandidates(1, 2, candidatesFactory(true, ["4"]));
-    const c12 = TU.cellWithIndexFactory(1, 2, { candidates: ["4"] });
+    const c12 = TU.CellFactory(1, 2, { candidates: ["4"] });
     expect(SudokuSolver.candidateCellsFromVirtualLine(s.getRow(1))).toStrictEqual([c12]);
     expect(SudokuSolver.candidateCellsFromVirtualLine(s.getColumn(2))).toStrictEqual([c12]);
     expect(SudokuSolver.candidateCellsFromVirtualLine(s.getBoxFromBoxIndex(0))).toStrictEqual([c00, c12]);

@@ -8,7 +8,7 @@ import type {
   InputClues,
   InputValueData,
   SudokuElement,
-  CandidateCellWithIndex,
+  CandidateCell,
 } from "../../src/Sudoku/type";
 
 const p0: InputClues = [
@@ -23,7 +23,7 @@ const p0: InputClues = [
   ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
 ];
 
-const cf = TU.cellWithIndexFactory;
+const cf = TU.CellFactory;
 const pf = TU.pincerFactory;
 
 describe("sudoku solver", () => {
@@ -52,7 +52,7 @@ describe("sudoku solver", () => {
   it("possiblePincersFromLine", () => {
     const fn = SudokuSolver.possiblePincersFromLine;
 
-    const pincer = cf(2, 5, { candidates: ["1", "3"] }) as CandidateCellWithIndex;
+    const pincer = cf(2, 5, { candidates: ["1", "3"] }) as CandidateCell;
 
     const candidatesArr: SudokuElement[][] = [
       ["1", "4"],

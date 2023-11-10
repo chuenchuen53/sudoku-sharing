@@ -1,8 +1,8 @@
-import type { SudokuElementWithZero, CellWithIndex, InputValueData } from "@/Sudoku/type";
+import type { SudokuElementWithZero, Cell, InputValueData } from "@/Sudoku/type";
 
 export interface Highlight {
   element: SudokuElementWithZero;
-  cell: CellWithIndex[];
+  cell: Cell[];
   candidate: InputValueData[];
-  invalid: CellWithIndex[];
+  invalid: Cell[];
 }

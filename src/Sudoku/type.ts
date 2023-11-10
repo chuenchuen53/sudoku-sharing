@@ -16,14 +16,9 @@ export type Row = Cell[];
 
 export type Grid = Row[];
 
-export interface CellWithIndex extends Cell {
-  rowIndex: number;
-  columnIndex: number;
-}
+export type VirtualLine = Cell[];
 
-export type CandidateCellWithIndex = Omit<CellWithIndex & { candidates: Candidates }, "clue" | "inputValue">;
-
-export type VirtualLine = CellWithIndex[];
+export type CandidateCell = Omit<Cell & { candidates: Candidates }, "clue" | "inputValue">;
 
 export enum VirtualLineType {
   ROW = "ROW",
@@ -68,7 +63,7 @@ export type InputClues = SudokuElementWithZero[][];
 
 export interface CheckVirtualLineDuplicateResult {
   haveDuplicate: boolean;
-  duplicatedCells: CellWithIndex[];
+  duplicatedCells: Cell[];
 }
 
 export type ValidateDetail = Record<VirtualLineType, CheckVirtualLineDuplicateResult[]>;
@@ -76,33 +71,33 @@ export type ValidateDetail = Record<VirtualLineType, CheckVirtualLineDuplicateRe
 export interface UniqueMissingResult {
   virtualLine: VirtualLine;
   uniqueCandidate: SudokuElement;
-  cell: CellWithIndex;
+  cell: Cell;
 }
 
 export interface NakedMultipleResult {
-  cells: CellWithIndex[];
+  cells: Cell[];
   elimination: InputValueData[];
 }
 
 export interface HiddenMultipleFromVirtualLinesResult {
   combination: SudokuElement[];
-  multiple: CellWithIndex[];
+  multiple: Cell[];
   elimination: InputValueData[];
 }
 
 export interface XWingSwordfishResult {
   sudokuElement: SudokuElement;
-  multiple: CellWithIndex[];
+  multiple: Cell[];
   elimination: InputValueData[];
 }
 
-export interface Pincer extends CellWithIndex {
+export interface Pincer extends Cell {
   same: SudokuElement;
   diff: SudokuElement;
 }
 
 export interface YWingResult {
-  pivot: CellWithIndex;
+  pivot: Cell;
   pincers: Pincer[];
   elimination: InputValueData[];
 }

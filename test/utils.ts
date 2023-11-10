@@ -1,7 +1,7 @@
 import Sudoku from "../src/Sudoku/Sudoku";
 import { VirtualLineType } from "../src/Sudoku/type";
 import ArrUtil from "../src/utils/ArrUtil";
-import type { Pincer, CellWithIndex, InputClues, InputValueData, SudokuElement, VirtualLine } from "../src/Sudoku/type";
+import type { Pincer, Cell, InputClues, InputValueData, SudokuElement, VirtualLine } from "../src/Sudoku/type";
 
 export default class TU {
   static emptyPuzzle = (): InputClues => ArrUtil.create2DArray(9, 9, () => "0");
@@ -24,7 +24,7 @@ export default class TU {
     );
   };
 
-  static cellWithIndexFactory = (
+  static CellFactory = (
     rowIndex: number,
     columnIndex: number,
     option: {
@@ -32,8 +32,8 @@ export default class TU {
       inputValue?: SudokuElement;
       candidates?: SudokuElement[];
     }
-  ): CellWithIndex => {
-    const c: CellWithIndex = {
+  ): Cell => {
+    const c: Cell = {
       rowIndex,
       columnIndex,
     };
@@ -45,7 +45,7 @@ export default class TU {
     return c;
   };
 
-  static pincerFactory(cell: CellWithIndex, same: SudokuElement, diff: SudokuElement): Pincer {
+  static pincerFactory(cell: Cell, same: SudokuElement, diff: SudokuElement): Pincer {
     return {
       ...cell,
       same,
@@ -79,7 +79,7 @@ export default class TU {
     }
 
     return cellInfo.map((info, index) => {
-      const obj: CellWithIndex = getRowColumnIndex(index);
+      const obj: Cell = getRowColumnIndex(index);
 
       if (!info) return obj;
 

@@ -11,8 +11,8 @@ import type {
   VirtualLine,
   InputValueData,
   Cell,
-  CellWithIndex,
-  CandidateCellWithIndex,
+  Cell,
+  CandidateCell,
   HiddenMultipleFromVirtualLinesResult,
   NakedMultipleResult,
   Pincer,
@@ -59,8 +59,8 @@ export default class SudokuSolver extends Sudoku {
     return result;
   }
 
-  static candidateCellsFromVirtualLine(virtualLine: VirtualLine): CandidateCellWithIndex[] {
-    return virtualLine.filter((cell) => cell.candidates) as CandidateCellWithIndex[];
+  static candidateCellsFromVirtualLine(virtualLine: VirtualLine): CandidateCell[] {
+    return virtualLine.filter((cell) => cell.candidates) as CandidateCell[];
   }
 
   static getUniqueCandidate(candidates: Candidates): SudokuElement | null {
@@ -106,7 +106,7 @@ export default class SudokuSolver extends Sudoku {
 
   static getUniqueMissingFromVirtualLines(virtualLines: VirtualLine[]): UniqueMissingResult[] {
     const result: UniqueMissingResult[] = [];
-    const missingArr = virtualLines.map((x) => Sudoku.missingInVirtualLine(x));
+    const missingArr = virtualLines.map((x) => Sudoku.missingValuesInVirtualLine(x));
 
     for (let i = 0; i < virtualLines.length; i++) {
       const virtualLine = virtualLines[i];
@@ -189,7 +189,7 @@ export default class SudokuSolver extends Sudoku {
 
     for (let i = 0; i < virtualLines.length; i++) {
       const virtualLine = virtualLines[i];
-      const missingArr = SudokuSolver.getCandidatesArr(Sudoku.missingInVirtualLine(virtualLine));
+      const missingArr = SudokuSolver.getCandidatesArr(Sudoku.missingValuesInVirtualLine(virtualLine));
       if (missingArr.length < sizeOfCandidate) continue;
       const emptyCells = SudokuSolver.candidateCellsFromVirtualLine(virtualLine);
       const combinations =
@@ -222,7 +222,7 @@ export default class SudokuSolver extends Sudoku {
 
     for (let i = 0; i < virtualLines.length; i++) {
       const virtualLine = virtualLines[i];
-      const missingInVirtualLine = Sudoku.missingInVirtualLine(virtualLine);
+      const missingInVirtualLine = Sudoku.missingValuesInVirtualLine(virtualLine);
       const missingArr = SudokuSolver.getCandidatesArr(missingInVirtualLine);
       if (missingArr.length < sizeOfCandidate) continue;
       const emptyCells = SudokuSolver.candidateCellsFromVirtualLine(virtualLine);
@@ -265,14 +265,14 @@ export default class SudokuSolver extends Sudoku {
 
     for (const sudokuElement of Sudoku.allElements()) {
       const gridWithElementInCandidate = virtualLines.map((line) =>
-        line.map((cell) => (cell.candidates?.[sudokuElement] ? (cell as CandidateCellWithIndex) : undefined))
+        line.map((cell) => (cell.candidates?.[sudokuElement] ? (cell as CandidateCell) : undefined))
       );
 
       const lineWithTwoCellsContained = gridWithElementInCandidate.reduce((acc, line) => {
-        const cells = line.filter((x): x is CandidateCellWithIndex => Boolean(x));
+        const cells = line.filter((x): x is CandidateCell => Boolean(x));
         if (cells.length === 2) acc.push({ cells });
         return acc;
-      }, [] as { cells: CellWithIndex[] }[]);
+      }, [] as { cells: Cell[] }[]);
 
       if (lineWithTwoCellsContained.length < 2) continue;
 
@@ -315,7 +315,7 @@ export default class SudokuSolver extends Sudoku {
     return result;
   }
 
-  static cellWithTwoCandidatesAndOnlyOneIsAorB(cell: CellWithIndex, a: SudokuElement, b: SudokuElement): null | Pincer {
+  static cellWithTwoCandidatesAndOnlyOneIsAorB(cell: Cell, a: SudokuElement, b: SudokuElement): null | Pincer {
     if (
       !cell.candidates ||
       !CalcUtil.xor(cell.candidates[a], cell.candidates[b]) ||
@@ -329,7 +329,7 @@ export default class SudokuSolver extends Sudoku {
     return { ...cell, same, diff };
   }
 
-  static possiblePincersFromLine(line: VirtualLine, pivot: CandidateCellWithIndex): Pincer[] {
+  static possiblePincersFromLine(line: VirtualLine, pivot: CandidateCell): Pincer[] {
     if (!line.some((x) => Sudoku.isSamePos(x, pivot))) return [];
     const [a, b] = SudokuSolver.getCandidatesArr(pivot.candidates);
     return line.reduce((acc, cur) => {
@@ -350,9 +350,9 @@ export default class SudokuSolver extends Sudoku {
   }
 
   setBasicCandidates(): void {
-    const missingInRowArr = this.getAllRows().map((x) => Sudoku.missingInVirtualLine(x));
-    const missingInColumnArr = this.getAllColumns().map((x) => Sudoku.missingInVirtualLine(x));
-    const missingInBoxArr = this.getAllBoxes().map((x) => Sudoku.missingInVirtualLine(x));
+    const missingInRowArr = this.getAllRows().map((x) => Sudoku.missingValuesInVirtualLine(x));
+    const missingInColumnArr = this.getAllColumns().map((x) => Sudoku.missingValuesInVirtualLine(x));
+    const missingInBoxArr = this.getAllBoxes().map((x) => Sudoku.missingValuesInVirtualLine(x));
 
     for (let i = 0; i < this.grid.length; i++) {
       for (let j = 0; j < this.grid[i].length; j++) {
@@ -430,7 +430,7 @@ export default class SudokuSolver extends Sudoku {
   rowColumnLockInBox(type: RowColumn, index: number): InputValueData[] {
     const result: InputValueData[] = [];
     const virtualLine = type === VirtualLineType.ROW ? this.getRow(index) : this.getColumn(index);
-    const missing = Sudoku.missingInVirtualLine(virtualLine);
+    const missing = Sudoku.missingValuesInVirtualLine(virtualLine);
     const relatedBoxes = this.getAllRelatedBoxesInRowOrColumn(type, index);
 
     SudokuSolver.loopCandidates((sudokuElement) => {
@@ -454,7 +454,7 @@ export default class SudokuSolver extends Sudoku {
 
   boxLockInRowColumn(type: RowColumn, boxIndex: number): InputValueData[] {
     const result: InputValueData[] = [];
-    const missing = Sudoku.missingInVirtualLine(this.getBoxFromBoxIndex(boxIndex));
+    const missing = Sudoku.missingValuesInVirtualLine(this.getBoxFromBoxIndex(boxIndex));
     const relatedLines = this.getAllRelatedRowsOrColumnsInBox(type, boxIndex);
     const box = this.getBoxFromBoxIndex(boxIndex);
 
@@ -630,9 +630,7 @@ export default class SudokuSolver extends Sudoku {
     const result: YWingResult[] = [];
     const cellsWithTwoCandidates = this.getAllRows().map((row) =>
       row.map((cell) =>
-        cell.candidates && SudokuSolver.numberOfCandidates(cell.candidates) === 2
-          ? (cell as CandidateCellWithIndex)
-          : undefined
+        cell.candidates && SudokuSolver.numberOfCandidates(cell.candidates) === 2 ? (cell as CandidateCell) : undefined
       )
     );
 

@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import {
   type InputClues,
   type SudokuElementWithZero,
-  type CellWithIndex,
+  type Cell,
   type InputValueData,
   VirtualLineType,
 } from "@/Sudoku/type";
@@ -12,9 +12,9 @@ import Sudoku from "@/Sudoku/Sudoku";
 
 export interface Highlight {
   element: SudokuElementWithZero;
-  cell: CellWithIndex[];
+  cell: Cell[];
   candidate: InputValueData[];
-  invalid: CellWithIndex[];
+  invalid: Cell[];
 }
 
 const dummyClues: InputClues = [
@@ -60,7 +60,7 @@ export const useSudokuSolverStore = defineStore("sudokuSolver", () => {
     updateInvalidHighlight();
   };
 
-  const removeInputValue = (data: CellWithIndex) => {
+  const removeInputValue = (data: Cell) => {
     if (sudokuSolver.value.grid[data.rowIndex][data.columnIndex].clue) return;
     sudokuSolver.value.removeInputValue(data, true);
     updateInvalidHighlight();
