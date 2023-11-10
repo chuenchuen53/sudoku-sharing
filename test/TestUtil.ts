@@ -3,7 +3,7 @@ import { VirtualLineType } from "../src/Sudoku/type";
 import ArrUtil from "../src/utils/ArrUtil";
 import type { Pincer, Cell, InputClues, InputValueData, SudokuElement, VirtualLine } from "../src/Sudoku/type";
 
-export default class TU {
+export default class TestUtil {
   static emptyPuzzle = (): InputClues => ArrUtil.create2DArray(9, 9, () => "0");
 
   static inputValueDataFactory = (r: number, c: number, v: SudokuElement): InputValueData => {
@@ -15,7 +15,7 @@ export default class TU {
   };
 
   static inputValueDataArrFactory = (arr: [number, number, SudokuElement][]): InputValueData[] => {
-    return arr.map(([r, c, v]) => TU.inputValueDataFactory(r, c, v));
+    return arr.map(([r, c, v]) => TestUtil.inputValueDataFactory(r, c, v));
   };
 
   static removeDuplicate2DArray = (arr: [number, number, SudokuElement][]): [number, number, SudokuElement][] => {

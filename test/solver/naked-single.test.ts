@@ -1,6 +1,6 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import TU from "../utils";
+import TestUtil from "../TestUtil";
 import type { InputClues } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
 
@@ -36,7 +36,7 @@ describe("sudoku solver naked single test", () => {
     s.setBasicCandidates();
     const nakedSingles = s.getNakedSingles();
     expect(nakedSingles).toStrictEqual(
-      TU.inputValueDataArrFactory([
+      TestUtil.inputValueDataArrFactory([
         [0, 7, "3"],
         [2, 1, "5"],
         [3, 5, "8"],
@@ -59,7 +59,7 @@ describe("sudoku solver naked single test", () => {
     s.setBasicCandidates();
     const nakedSingles = s.getNakedSingles();
     expect(nakedSingles).toStrictEqual(
-      TU.inputValueDataArrFactory([
+      TestUtil.inputValueDataArrFactory([
         [2, 0, "9"],
         [3, 6, "7"],
         [5, 1, "9"],

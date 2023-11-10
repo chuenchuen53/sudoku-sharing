@@ -1,6 +1,6 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import TU from "../utils";
+import TestUtil from "../TestUtil";
 import type { InputClues, InputValueData, NakedMultipleResult } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
 
@@ -30,7 +30,7 @@ const p4: InputClues = [
 
 describe("sudoku solver", () => {
   it("getMultipleNakedFromVirtualLines sizeOfCandidate=4", () => {
-    const line = TU.virtualLineFactory([
+    const line = TestUtil.virtualLineFactory([
       ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
       ["1", "2", "4"],
       ["1", "2", "3"],
@@ -46,7 +46,7 @@ describe("sudoku solver", () => {
     const expectResult: NakedMultipleResult[] = [
       {
         cells: [line[1], line[2], line[3], line[4]],
-        elimination: TU.inputValueDataArrFactory([
+        elimination: TestUtil.inputValueDataArrFactory([
           [0, 0, "1"],
           [0, 0, "2"],
           [0, 0, "3"],
@@ -67,7 +67,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
     const result = s.getRemovalDueToNakedQuads();
-    const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
+    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [4, 7, "3"], // due to row 4 - 3567
       [4, 7, "5"], // due to row 4 - 3567
       [4, 7, "7"], // due to row 4 - 3567
@@ -88,7 +88,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
     const result = s.getRemovalDueToNakedQuads();
-    const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
+    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [1, 8, "5"], // due to row 1 - 2456
       [4, 4, "2"], // due to row 4 - 2579
       [4, 4, "5"], // due to row 4 - 2579

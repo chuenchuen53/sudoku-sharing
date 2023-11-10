@@ -1,6 +1,6 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import TU from "../utils";
+import TestUtil from "../TestUtil";
 import type { HiddenMultipleFromVirtualLinesResult, InputClues, InputValueData } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
 
@@ -30,7 +30,7 @@ const p4: InputClues = [
 
 describe("sudoku solver", () => {
   it("getHiddenMultipleFromVirtualLines sizeOfCandidate=2", () => {
-    const line = TU.virtualLineFactory([
+    const line = TestUtil.virtualLineFactory([
       ["1", "2", "8", "9"],
       undefined,
       ["1", "2", "3", "4", "9"],
@@ -47,7 +47,7 @@ describe("sudoku solver", () => {
       {
         combination: ["5", "6"],
         multiple: [line[6], line[8]],
-        elimination: TU.inputValueDataArrFactory([
+        elimination: TestUtil.inputValueDataArrFactory([
           [0, 6, "1"],
           [0, 6, "2"],
           [0, 6, "3"],
@@ -65,7 +65,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenPairs();
-    const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
+    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [0, 7, "7"], // due to [1, 2] in column 7
       [0, 7, "8"], // due to [1, 2] in column 7
       [1, 7, "7"], // due to [1, 2] in column 7
@@ -89,7 +89,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenPairs();
-    const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
+    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [4, 4, "2"], // due to [3, 4] in row 4
       [4, 4, "5"], // due to [3, 4] in row 4
       [4, 4, "7"], // due to [3, 4] in row 4

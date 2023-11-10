@@ -1,7 +1,7 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import { VirtualLineType } from "../../src/Sudoku/type";
-import TU from "../utils";
+import TestUtil from "../TestUtil";
 import type { InputClues, InputValueData, SudokuElement, XWingSwordfishResult } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
 
@@ -67,7 +67,7 @@ const undefinedCandidates: undefined[] = [
 
 describe("sudoku solver", () => {
   it("x wing test 1", () => {
-    const row0 = TU.virtualLineFactory(
+    const row0 = TestUtil.virtualLineFactory(
       [
         ["1", "2", "4", "5", "7", "8", "9"],
         ["3", "4", "5"],
@@ -84,14 +84,14 @@ describe("sudoku solver", () => {
         lineIndex: 0,
       }
     );
-    const row1 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 1 });
-    const row2 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 2 });
-    const row3 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 3 });
-    const row4 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 4 });
-    const row5 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 5 });
-    const row6 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 6 });
-    const row7 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 7 });
-    const row8 = TU.virtualLineFactory(
+    const row1 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 1 });
+    const row2 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 2 });
+    const row3 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 3 });
+    const row4 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 4 });
+    const row5 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 5 });
+    const row6 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 6 });
+    const row7 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 7 });
+    const row8 = TestUtil.virtualLineFactory(
       [
         ["1", "2", "4", "5", "7", "8", "9"],
         ["1", "2", "3"],
@@ -106,15 +106,15 @@ describe("sudoku solver", () => {
       { type: VirtualLineType.ROW, lineIndex: 8 }
     );
 
-    const column0 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 0 });
-    const column1 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 1 });
-    const column2 = TU.virtualLineFactory(sampleCandidates, { type: VirtualLineType.COLUMN, lineIndex: 2 });
-    const column3 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 3 });
-    const column4 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 4 });
-    const column5 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 5 });
-    const column6 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 6 });
-    const column7 = TU.virtualLineFactory(sampleCandidates, { type: VirtualLineType.COLUMN, lineIndex: 7 });
-    const column8 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 8 });
+    const column0 = TestUtil.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 0 });
+    const column1 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 1 });
+    const column2 = TestUtil.virtualLineFactory(sampleCandidates, { type: VirtualLineType.COLUMN, lineIndex: 2 });
+    const column3 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 3 });
+    const column4 = TestUtil.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 4 });
+    const column5 = TestUtil.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 5 });
+    const column6 = TestUtil.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 6 });
+    const column7 = TestUtil.virtualLineFactory(sampleCandidates, { type: VirtualLineType.COLUMN, lineIndex: 7 });
+    const column8 = TestUtil.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 8 });
 
     const allRows = [row0, row1, row2, row3, row4, row5, row6, row7, row8];
     const allColumns = [column0, column1, column2, column3, column4, column5, column6, column7, column8];
@@ -124,7 +124,7 @@ describe("sudoku solver", () => {
       {
         sudokuElement: "3",
         multiple: [row0[1], row0[7], row8[1], row8[7]],
-        elimination: TU.inputValueDataArrFactory([
+        elimination: TestUtil.inputValueDataArrFactory([
           // [0, 1, "3"], // in multiple
           [1, 1, "3"],
           [2, 1, "3"],
@@ -145,7 +145,7 @@ describe("sudoku solver", () => {
       {
         sudokuElement: "6",
         multiple: [row0[2], row0[3], row8[2], row8[3]],
-        elimination: TU.inputValueDataArrFactory([
+        elimination: TestUtil.inputValueDataArrFactory([
           // [0, 2, "6"], // in multiple
           [2, 2, "6"],
           [4, 2, "6"],
@@ -169,7 +169,7 @@ describe("sudoku solver", () => {
   });
 
   it("x wing test 2", () => {
-    const column0 = TU.virtualLineFactory(
+    const column0 = TestUtil.virtualLineFactory(
       [
         ["1", "2", "4", "5", "7", "8", "9"],
         ["3", "4", "5"],
@@ -186,14 +186,14 @@ describe("sudoku solver", () => {
         lineIndex: 0,
       }
     );
-    const column1 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 1 });
-    const column2 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 2 });
-    const column3 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 3 });
-    const column4 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 4 });
-    const column5 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 5 });
-    const column6 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 6 });
-    const column7 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 7 });
-    const column8 = TU.virtualLineFactory(
+    const column1 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 1 });
+    const column2 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 2 });
+    const column3 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 3 });
+    const column4 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 4 });
+    const column5 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 5 });
+    const column6 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 6 });
+    const column7 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 7 });
+    const column8 = TestUtil.virtualLineFactory(
       [
         ["1", "2", "4", "5", "7", "8", "9"],
         ["1", "2", "3"],
@@ -208,15 +208,15 @@ describe("sudoku solver", () => {
       { type: VirtualLineType.COLUMN, lineIndex: 8 }
     );
 
-    const row0 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 0 });
-    const row1 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 1 });
-    const row2 = TU.virtualLineFactory(sampleCandidates, { type: VirtualLineType.ROW, lineIndex: 2 });
-    const row3 = TU.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 3 });
-    const row4 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 4 });
-    const row5 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 5 });
-    const row6 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 6 });
-    const row7 = TU.virtualLineFactory(sampleCandidates, { type: VirtualLineType.ROW, lineIndex: 7 });
-    const row8 = TU.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 8 });
+    const row0 = TestUtil.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 0 });
+    const row1 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 1 });
+    const row2 = TestUtil.virtualLineFactory(sampleCandidates, { type: VirtualLineType.ROW, lineIndex: 2 });
+    const row3 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 3 });
+    const row4 = TestUtil.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 4 });
+    const row5 = TestUtil.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 5 });
+    const row6 = TestUtil.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 6 });
+    const row7 = TestUtil.virtualLineFactory(sampleCandidates, { type: VirtualLineType.ROW, lineIndex: 7 });
+    const row8 = TestUtil.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 8 });
 
     const allRows = [row0, row1, row2, row3, row4, row5, row6, row7, row8];
     const allColumns = [column0, column1, column2, column3, column4, column5, column6, column7, column8];
@@ -226,7 +226,7 @@ describe("sudoku solver", () => {
       {
         sudokuElement: "3",
         multiple: [column0[1], column0[7], column8[1], column8[7]],
-        elimination: TU.inputValueDataArrFactory([
+        elimination: TestUtil.inputValueDataArrFactory([
           // [1, 0, "3"], // in multiple
           [1, 1, "3"],
           [1, 2, "3"],
@@ -247,7 +247,7 @@ describe("sudoku solver", () => {
       {
         sudokuElement: "6",
         multiple: [column0[2], column0[3], column8[2], column8[3]],
-        elimination: TU.inputValueDataArrFactory([
+        elimination: TestUtil.inputValueDataArrFactory([
           // [2, 0, "6"], // in multiple
           [2, 2, "6"],
           [2, 4, "6"],
@@ -274,7 +274,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     const result = s.getRemovalDueToXWing();
-    const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
+    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [1, 3, "2"], // due to element "2" in [1, 6], [7, 6], [1, 8], [7, 8]
       [1, 4, "2"], // due to element "2" in [1, 6], [7, 6], [1, 8], [7, 8]
       [1, 5, "2"], // due to element "2" in [1, 6], [7, 6], [1, 8], [7, 8]
@@ -288,7 +288,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p2));
     s.setBasicCandidates();
     const result = s.getRemovalDueToXWing();
-    const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
+    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [0, 7, "1"], // due to element "1" in [6, 5], [6, 7], [8, 5], [8, 7]
       [1, 7, "1"], // due to element "1" in [6, 5], [6, 7], [8, 5], [8, 7]
       // [0, 7, "1"], // due to element "1" in [0, 2], [1, 2], [0, 8], [1, 8] (duplicate)

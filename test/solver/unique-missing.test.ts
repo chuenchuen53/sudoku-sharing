@@ -1,5 +1,5 @@
 import { expect, describe, it } from "vitest";
-import TU from "test/utils";
+import TestUtil from "test/TestUtil";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import type { InputClues, SudokuElement, VirtualLine, UniqueMissingResult } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
@@ -13,7 +13,7 @@ const urf: (vl: VirtualLine, e: SudokuElement, r: number, c: number) => UniqueMi
 
 describe("sudoku solver unique missing test", () => {
   it("getUniqueMissingFromVirtualLines test 1", () => {
-    const line0 = TU.virtualLineFactory([
+    const line0 = TestUtil.virtualLineFactory([
       { clue: "1" },
       { clue: "2" },
       { clue: "3" },
@@ -24,7 +24,7 @@ describe("sudoku solver unique missing test", () => {
       { clue: "8" },
       { clue: "9" },
     ]);
-    const line1 = TU.virtualLineFactory([
+    const line1 = TestUtil.virtualLineFactory([
       { clue: "1" },
       undefined,
       { clue: "3" },
@@ -35,7 +35,7 @@ describe("sudoku solver unique missing test", () => {
       { clue: "8" },
       { clue: "9" },
     ]);
-    const line2 = TU.virtualLineFactory([
+    const line2 = TestUtil.virtualLineFactory([
       { clue: "1" },
       undefined,
       { clue: "3" },
@@ -46,7 +46,7 @@ describe("sudoku solver unique missing test", () => {
       { inputValue: "8" },
       { clue: "9" },
     ]);
-    const line3 = TU.virtualLineFactory([
+    const line3 = TestUtil.virtualLineFactory([
       { clue: "1" },
       ["2"],
       { clue: "3" },
@@ -57,7 +57,7 @@ describe("sudoku solver unique missing test", () => {
       { inputValue: "8" },
       { clue: "9" },
     ]);
-    const line4 = TU.virtualLineFactory([
+    const line4 = TestUtil.virtualLineFactory([
       { clue: "1" },
       undefined,
       { clue: "1" },

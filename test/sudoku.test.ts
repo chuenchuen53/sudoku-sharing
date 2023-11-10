@@ -2,7 +2,7 @@ import { expect, describe, it, vitest, beforeAll } from "vitest";
 import ArrUtil from "../src/utils/ArrUtil";
 import Sudoku from "../src/Sudoku/Sudoku";
 import { VirtualLineType } from "../src/Sudoku/type";
-import TU from "./utils";
+import TestUtil from "./TestUtil";
 import type { Cell, InputClues, CheckVirtualLineDuplicateResult } from "../src/Sudoku/type";
 
 const candidatesFactory = Sudoku.candidatesFactory;
@@ -205,26 +205,26 @@ describe("sudoku basic", () => {
 
   it("setInputValue", () => {
     const s1 = new Sudoku(p1);
-    s1.setInputValue(TU.inputValueDataFactory(2, 0, "9"), false);
+    s1.setInputValue(TestUtil.inputValueDataFactory(2, 0, "9"), false);
     expect(s1.grid[2][0].inputValue).toBe("9");
   });
 
   it("setInputValue", () => {
     const s1 = new Sudoku(p1);
-    s1.setInputValue(TU.inputValueDataFactory(2, 0, "9"), true);
+    s1.setInputValue(TestUtil.inputValueDataFactory(2, 0, "9"), true);
     expect(s1.grid[2][0].inputValue).toBe("9");
   });
 
   it("setInputValue", () => {
     const s1 = new Sudoku(p1);
-    s1.setInputValue(TU.inputValueDataFactory(2, 0, "1"), false);
+    s1.setInputValue(TestUtil.inputValueDataFactory(2, 0, "1"), false);
     expect(s1.grid[2][0].inputValue).toBe("1");
     expect(s1.isValid).toBe(true);
   });
 
   it("setInputValue", () => {
     const s1 = new Sudoku(p1);
-    s1.setInputValue(TU.inputValueDataFactory(2, 0, "1"), true);
+    s1.setInputValue(TestUtil.inputValueDataFactory(2, 0, "1"), true);
 
     const expectedDetail = [
       {
@@ -249,7 +249,7 @@ describe("sudoku basic", () => {
 
   it("setInputValues", () => {
     const s = new Sudoku(p1);
-    s.setInputValues([TU.inputValueDataFactory(2, 0, "9"), TU.inputValueDataFactory(2, 2, "3")]);
+    s.setInputValues([TestUtil.inputValueDataFactory(2, 0, "9"), TestUtil.inputValueDataFactory(2, 2, "3")]);
     expect(s.grid[2][0].inputValue).toBe("9");
     expect(s.grid[2][2].inputValue).toBe("3");
     expect(s.isValid).toBe(true);
@@ -271,7 +271,7 @@ describe("sudoku basic", () => {
       },
     ];
 
-    s.setInputValues([TU.inputValueDataFactory(2, 0, "1"), TU.inputValueDataFactory(2, 2, "3")]);
+    s.setInputValues([TestUtil.inputValueDataFactory(2, 0, "1"), TestUtil.inputValueDataFactory(2, 2, "3")]);
     expect(s.grid[2][0].inputValue).toBe("1");
     expect(s.grid[2][2].inputValue).toBe("3");
     expect(s.isValid).toBe(false);
@@ -1004,7 +1004,7 @@ describe("sudoku basic", () => {
   it("addElementInCandidates", () => {
     const s0 = new Sudoku(p0);
 
-    const input = TU.inputValueDataArrFactory([
+    const input = TestUtil.inputValueDataArrFactory([
       [0, 0, "1"],
       [0, 0, "2"],
       [0, 0, "3"],
@@ -1018,13 +1018,13 @@ describe("sudoku basic", () => {
   it("removeElementInCandidates", () => {
     const s0 = new Sudoku(p0);
 
-    const input = TU.inputValueDataArrFactory([
+    const input = TestUtil.inputValueDataArrFactory([
       [0, 0, "1"],
       [0, 0, "2"],
       [0, 0, "3"],
     ]);
 
-    const remove = TU.inputValueDataArrFactory([
+    const remove = TestUtil.inputValueDataArrFactory([
       [0, 0, "1"],
       [0, 0, "3"],
       [0, 0, "4"],

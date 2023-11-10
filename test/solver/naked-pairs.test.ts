@@ -1,6 +1,6 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import TU from "../utils";
+import TestUtil from "../TestUtil";
 import type { InputClues, InputValueData, NakedMultipleResult } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
 
@@ -30,7 +30,7 @@ const p1: InputClues = [
 
 describe("sudoku solver", () => {
   it("getNakedPairsFromVirtualLines", () => {
-    const line = TU.virtualLineFactory([
+    const line = TestUtil.virtualLineFactory([
       ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
       ["1", "2", "4"],
       ["1", "2"],
@@ -46,7 +46,7 @@ describe("sudoku solver", () => {
     const expectResult: NakedMultipleResult[] = [
       {
         cells: [line[2], line[3]],
-        elimination: TU.inputValueDataArrFactory([
+        elimination: TestUtil.inputValueDataArrFactory([
           [0, 0, "1"],
           [0, 0, "2"],
           [0, 1, "1"],
@@ -55,7 +55,7 @@ describe("sudoku solver", () => {
       },
       {
         cells: [line[4], line[6]],
-        elimination: TU.inputValueDataArrFactory([
+        elimination: TestUtil.inputValueDataArrFactory([
           [0, 0, "3"],
           [0, 0, "5"],
           [0, 8, "5"],
@@ -70,7 +70,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     const result = s.getRemovalDueToNakedPairs();
-    const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
+    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [4, 8, "5"],
       [4, 8, "7"],
       [7, 8, "5"],
@@ -83,7 +83,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
     const result = s.getRemovalDueToNakedPairs();
-    const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
+    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [6, 8, "5"],
       [1, 6, "3"],
       [1, 7, "3"],

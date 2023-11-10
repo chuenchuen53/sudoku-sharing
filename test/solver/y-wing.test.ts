@@ -1,6 +1,6 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import TU from "../utils";
+import TestUtil from "../TestUtil";
 import { VirtualLineType } from "../../src/Sudoku/type";
 import type {
   Pincer,
@@ -24,8 +24,8 @@ const p0: InputClues = [
   ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
 ];
 
-const cf = TU.CellFactory;
-const pf = TU.pincerFactory;
+const cf = TestUtil.CellFactory;
+const pf = TestUtil.pincerFactory;
 
 describe("sudoku solver", () => {
   it("cellWithTwoCandidatesAndOnlyOneIsAorB", () => {
@@ -37,16 +37,16 @@ describe("sudoku solver", () => {
     expect(fn(cf(0, 0, { candidates: ["3", "4", "5"] }), "1", "2")).toBe(null);
     expect(fn(cf(0, 0, { candidates: ["1", "2"] }), "1", "2")).toBe(null);
     expect(fn(cf(0, 0, { candidates: ["1", "3"] }), "1", "2")).toStrictEqual(
-      TU.pincerFactory(cf(0, 0, { candidates: ["1", "3"] }), "1", "3")
+      TestUtil.pincerFactory(cf(0, 0, { candidates: ["1", "3"] }), "1", "3")
     );
     expect(fn(cf(0, 0, { candidates: ["2", "3"] }), "1", "2")).toStrictEqual(
-      TU.pincerFactory(cf(0, 0, { candidates: ["2", "3"] }), "2", "3")
+      TestUtil.pincerFactory(cf(0, 0, { candidates: ["2", "3"] }), "2", "3")
     );
     expect(fn(cf(0, 0, { candidates: ["5", "7"] }), "4", "5")).toStrictEqual(
-      TU.pincerFactory(cf(0, 0, { candidates: ["5", "7"] }), "5", "7")
+      TestUtil.pincerFactory(cf(0, 0, { candidates: ["5", "7"] }), "5", "7")
     );
     expect(fn(cf(0, 0, { candidates: ["4", "7"] }), "4", "5")).toStrictEqual(
-      TU.pincerFactory(cf(0, 0, { candidates: ["4", "7"] }), "4", "7")
+      TestUtil.pincerFactory(cf(0, 0, { candidates: ["4", "7"] }), "4", "7")
     );
   });
 
@@ -67,31 +67,31 @@ describe("sudoku solver", () => {
       ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
     ];
 
-    const row0 = TU.virtualLineFactory(candidatesArr, { type: VirtualLineType.ROW, lineIndex: 0 });
+    const row0 = TestUtil.virtualLineFactory(candidatesArr, { type: VirtualLineType.ROW, lineIndex: 0 });
     expect(fn(row0, pincer)).toStrictEqual([]);
 
-    const row2 = TU.virtualLineFactory(candidatesArr, { type: VirtualLineType.ROW, lineIndex: 2 });
+    const row2 = TestUtil.virtualLineFactory(candidatesArr, { type: VirtualLineType.ROW, lineIndex: 2 });
     expect(fn(row2, pincer)).toStrictEqual([
-      TU.pincerFactory(cf(2, 0, { candidates: candidatesArr[0] }), "1", "4"),
-      TU.pincerFactory(cf(2, 4, { candidates: candidatesArr[4] }), "3", "4"),
+      TestUtil.pincerFactory(cf(2, 0, { candidates: candidatesArr[0] }), "1", "4"),
+      TestUtil.pincerFactory(cf(2, 4, { candidates: candidatesArr[4] }), "3", "4"),
     ]);
 
-    const column0 = TU.virtualLineFactory(candidatesArr, { type: VirtualLineType.COLUMN, lineIndex: 0 });
+    const column0 = TestUtil.virtualLineFactory(candidatesArr, { type: VirtualLineType.COLUMN, lineIndex: 0 });
     expect(fn(column0, pincer)).toStrictEqual([]);
 
-    const column5 = TU.virtualLineFactory(candidatesArr, { type: VirtualLineType.COLUMN, lineIndex: 5 });
+    const column5 = TestUtil.virtualLineFactory(candidatesArr, { type: VirtualLineType.COLUMN, lineIndex: 5 });
     expect(fn(column5, pincer)).toStrictEqual([
-      TU.pincerFactory(cf(0, 5, { candidates: candidatesArr[0] }), "1", "4"),
-      TU.pincerFactory(cf(4, 5, { candidates: candidatesArr[4] }), "3", "4"),
+      TestUtil.pincerFactory(cf(0, 5, { candidates: candidatesArr[0] }), "1", "4"),
+      TestUtil.pincerFactory(cf(4, 5, { candidates: candidatesArr[4] }), "3", "4"),
     ]);
 
-    const box0 = TU.virtualLineFactory(candidatesArr, { type: VirtualLineType.BOX, boxIndex: 0 });
+    const box0 = TestUtil.virtualLineFactory(candidatesArr, { type: VirtualLineType.BOX, boxIndex: 0 });
     expect(fn(box0, pincer)).toStrictEqual([]);
 
-    const box1 = TU.virtualLineFactory(candidatesArr, { type: VirtualLineType.BOX, boxIndex: 1 });
+    const box1 = TestUtil.virtualLineFactory(candidatesArr, { type: VirtualLineType.BOX, boxIndex: 1 });
     expect(fn(box1, pincer)).toStrictEqual([
-      TU.pincerFactory(cf(0, 3, { candidates: candidatesArr[0] }), "1", "4"),
-      TU.pincerFactory(cf(1, 4, { candidates: candidatesArr[4] }), "3", "4"),
+      TestUtil.pincerFactory(cf(0, 3, { candidates: candidatesArr[0] }), "1", "4"),
+      TestUtil.pincerFactory(cf(1, 4, { candidates: candidatesArr[4] }), "3", "4"),
     ]);
   });
 
@@ -99,25 +99,25 @@ describe("sudoku solver", () => {
     const fn = SudokuSolver.isYWingPattern;
 
     // assume pivot 1, 2
-    const p0 = TU.pincerFactory(cf(0, 0, { candidates: ["1", "2"] }), "1", "2");
-    const p1 = TU.pincerFactory(cf(0, 0, { candidates: ["1", "3"] }), "1", "3");
+    const p0 = TestUtil.pincerFactory(cf(0, 0, { candidates: ["1", "2"] }), "1", "2");
+    const p1 = TestUtil.pincerFactory(cf(0, 0, { candidates: ["1", "3"] }), "1", "3");
     expect(fn(p0, p1)).toBe(false); // same position
 
-    const p2 = TU.pincerFactory(cf(2, 3, { candidates: ["1", "3"] }), "1", "3");
-    const p3 = TU.pincerFactory(cf(5, 7, { candidates: ["1", "4"] }), "1", "4");
+    const p2 = TestUtil.pincerFactory(cf(2, 3, { candidates: ["1", "3"] }), "1", "3");
+    const p3 = TestUtil.pincerFactory(cf(5, 7, { candidates: ["1", "4"] }), "1", "4");
     expect(fn(p2, p3)).toBe(false); // same same
 
-    const p4 = TU.pincerFactory(cf(2, 3, { candidates: ["1", "3"] }), "1", "3");
-    const p5 = TU.pincerFactory(cf(5, 7, { candidates: ["2", "4"] }), "2", "4");
+    const p4 = TestUtil.pincerFactory(cf(2, 3, { candidates: ["1", "3"] }), "1", "3");
+    const p5 = TestUtil.pincerFactory(cf(5, 7, { candidates: ["2", "4"] }), "2", "4");
     expect(fn(p4, p5)).toBe(false); // diff diff
 
-    const p6 = TU.pincerFactory(cf(2, 3, { candidates: ["1", "3"] }), "1", "3");
-    const p7 = TU.pincerFactory(cf(5, 7, { candidates: ["2", "3"] }), "2", "3");
+    const p6 = TestUtil.pincerFactory(cf(2, 3, { candidates: ["1", "3"] }), "1", "3");
+    const p7 = TestUtil.pincerFactory(cf(5, 7, { candidates: ["2", "3"] }), "2", "3");
     expect(fn(p6, p7)).toBe(true);
     expect(fn(p7, p6)).toBe(true);
 
-    const p8 = TU.pincerFactory(cf(2, 3, { candidates: ["2", "7"] }), "2", "7");
-    const p9 = TU.pincerFactory(cf(5, 7, { candidates: ["1", "7"] }), "1", "7");
+    const p8 = TestUtil.pincerFactory(cf(2, 3, { candidates: ["2", "7"] }), "2", "7");
+    const p9 = TestUtil.pincerFactory(cf(5, 7, { candidates: ["1", "7"] }), "1", "7");
     expect(fn(p8, p9)).toBe(true);
     expect(fn(p9, p8)).toBe(true);
   });
@@ -127,21 +127,21 @@ describe("sudoku solver", () => {
 
     // assume pivot 1, 2 at [2, 2]
     const rowPincers: Pincer[] = [
-      TU.pincerFactory(cf(2, 0, { candidates: ["1", "7"] }), "1", "7"),
-      TU.pincerFactory(cf(2, 4, { candidates: ["2", "4"] }), "2", "4"),
-      TU.pincerFactory(cf(2, 8, { candidates: ["2", "8"] }), "2", "8"),
+      TestUtil.pincerFactory(cf(2, 0, { candidates: ["1", "7"] }), "1", "7"),
+      TestUtil.pincerFactory(cf(2, 4, { candidates: ["2", "4"] }), "2", "4"),
+      TestUtil.pincerFactory(cf(2, 8, { candidates: ["2", "8"] }), "2", "8"),
     ];
     const columnPincers: Pincer[] = [
-      TU.pincerFactory(cf(0, 2, { candidates: ["2", "7"] }), "2", "7"),
-      TU.pincerFactory(cf(4, 2, { candidates: ["1", "4"] }), "1", "4"),
-      TU.pincerFactory(cf(8, 2, { candidates: ["2", "8"] }), "2", "8"),
+      TestUtil.pincerFactory(cf(0, 2, { candidates: ["2", "7"] }), "2", "7"),
+      TestUtil.pincerFactory(cf(4, 2, { candidates: ["1", "4"] }), "1", "4"),
+      TestUtil.pincerFactory(cf(8, 2, { candidates: ["2", "8"] }), "2", "8"),
     ];
     const boxPincers: Pincer[] = [
-      TU.pincerFactory(cf(0, 0, { candidates: ["2", "7"] }), "2", "7"),
-      TU.pincerFactory(cf(0, 1, { candidates: ["1", "4"] }), "1", "4"),
-      TU.pincerFactory(cf(0, 2, { candidates: ["2", "7"] }), "2", "7"),
-      TU.pincerFactory(cf(1, 0, { candidates: ["2", "4"] }), "2", "4"),
-      TU.pincerFactory(cf(2, 0, { candidates: ["1", "7"] }), "1", "7"),
+      TestUtil.pincerFactory(cf(0, 0, { candidates: ["2", "7"] }), "2", "7"),
+      TestUtil.pincerFactory(cf(0, 1, { candidates: ["1", "4"] }), "1", "4"),
+      TestUtil.pincerFactory(cf(0, 2, { candidates: ["2", "7"] }), "2", "7"),
+      TestUtil.pincerFactory(cf(1, 0, { candidates: ["2", "4"] }), "2", "4"),
+      TestUtil.pincerFactory(cf(2, 0, { candidates: ["1", "7"] }), "1", "7"),
     ];
 
     const rowColumnResult = fn(rowPincers, columnPincers);
@@ -178,7 +178,7 @@ describe("sudoku solver", () => {
           pf(cf(7, 6, { candidates: ["2", "7"] }), "2", "7"),
           pf(cf(3, 4, { candidates: ["7", "8"] }), "8", "7"),
         ],
-        elimination: TU.inputValueDataArrFactory([[3, 6, "7"]]),
+        elimination: TestUtil.inputValueDataArrFactory([[3, 6, "7"]]),
       },
       {
         pivot: cf(8, 3, { candidates: ["5", "8"] }),
@@ -186,7 +186,7 @@ describe("sudoku solver", () => {
           pf(cf(2, 3, { candidates: ["2", "5"] }), "5", "2"),
           pf(cf(7, 4, { candidates: ["2", "8"] }), "8", "2"),
         ],
-        elimination: TU.inputValueDataArrFactory([
+        elimination: TestUtil.inputValueDataArrFactory([
           [2, 4, "2"],
           [1, 4, "2"],
         ]),
@@ -200,7 +200,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     const result = s.getRemovalDueToYWing();
-    const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
+    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [3, 6, "7"],
       [2, 4, "2"],
       [1, 4, "2"],

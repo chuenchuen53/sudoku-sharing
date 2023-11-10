@@ -1,6 +1,6 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import TU from "../utils";
+import TestUtil from "../TestUtil";
 import type { InputClues, InputValueData, HiddenMultipleFromVirtualLinesResult } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
 
@@ -42,7 +42,7 @@ const p4: InputClues = [
 
 describe("sudoku solver", () => {
   it("getHiddenMultipleFromVirtualLines sizeOfCandidate=3", () => {
-    const line = TU.virtualLineFactory([
+    const line = TestUtil.virtualLineFactory([
       ["1", "2", "8", "9"],
       undefined,
       ["1", "2", "3", "4", "9"],
@@ -59,7 +59,7 @@ describe("sudoku solver", () => {
       {
         combination: ["5", "6", "7"],
         multiple: [line[3], line[6], line[8]],
-        elimination: TU.inputValueDataArrFactory([
+        elimination: TestUtil.inputValueDataArrFactory([
           [0, 3, "3"],
           [0, 3, "4"],
           [0, 3, "8"],
@@ -80,7 +80,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p2));
     s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenTriplets();
-    const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
+    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [1, 1, "5"], // due to [1, 4, 9] in column 1
       [1, 1, "7"], // due to [1, 4, 9] in column 1
       [3, 1, "5"], // due to [1, 4, 9] in column 1
@@ -118,7 +118,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenTriplets();
-    const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
+    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [0, 3, "2"], // due to [5, 6, 8] in box 1
       [0, 3, "3"], // due to [5, 6, 8] in box 1
       [0, 3, "7"], // due to [5, 6, 8] in box 1
@@ -137,7 +137,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenTriplets();
-    const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
+    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [4, 3, "2"], // due to [3, 4, 9] in row 4
       [4, 3, "7"], // due to [3, 4, 9] in row 4
       [4, 4, "2"], // due to [3, 4, 9] in row 4

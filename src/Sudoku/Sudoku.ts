@@ -94,7 +94,7 @@ export default class Sudoku {
     return missing;
   }
 
-  static removeDuplicatedInputValueData(data: InputValueData[]) {
+  static removeDuplicatedInputValueData(data: InputValueData[]): InputValueData[] {
     return data.filter(
       (cur, index, self) =>
         index ===
@@ -179,7 +179,7 @@ export default class Sudoku {
     return this.boxes[Sudoku.getBoxIndex(rowIndex, columnIndex)];
   }
 
-  getBoxFromBoxIndex(boxIndex: number) {
+  getBoxFromBoxIndex(boxIndex: number): VirtualLine {
     const rowIndex = Sudoku.boxFirstLineIndex(boxIndex, VirtualLineType.ROW);
     const columnIndex = Sudoku.boxFirstLineIndex(boxIndex, VirtualLineType.COLUMN);
     return this.getBoxFromRowColumnIndex(rowIndex, columnIndex);
@@ -244,7 +244,7 @@ export default class Sudoku {
     );
   }
 
-  setCandidates(rowIndex: number, columnIndex: number, candidates: Candidates) {
+  setCandidates(rowIndex: number, columnIndex: number, candidates: Candidates): void {
     const cell = this.grid[rowIndex][columnIndex];
     if (!cell.candidates) {
       this.grid[rowIndex][columnIndex].candidates = { ...candidates };
@@ -271,7 +271,7 @@ export default class Sudoku {
     return true;
   }
 
-  setInputValues(data: InputValueData[]) {
+  setInputValues(data: InputValueData[]): void {
     const haveChanged: boolean[] = data.map((x) => this.setInputValue(x, false));
     if (haveChanged.filter((x) => x).length) {
       const { isValid, validateDetail } = this.validatePuzzle("inputValue");
@@ -280,7 +280,7 @@ export default class Sudoku {
     }
   }
 
-  removeInputValue({ rowIndex, columnIndex }: { rowIndex: number; columnIndex: number }, update: boolean) {
+  removeInputValue({ rowIndex, columnIndex }: { rowIndex: number; columnIndex: number }, update: boolean): void {
     if (this.grid[rowIndex][columnIndex].inputValue) {
       delete this.grid[rowIndex][columnIndex].inputValue;
     }
@@ -326,7 +326,7 @@ export default class Sudoku {
     return count;
   }
 
-  clearAllCandidates() {
+  clearAllCandidates(): void {
     for (let i = 0; i < this.grid.length; i++) {
       for (let j = 0; j < this.grid[i].length; j++) {
         if (this.grid[i][j].candidates) delete this.grid[i][j].candidates;

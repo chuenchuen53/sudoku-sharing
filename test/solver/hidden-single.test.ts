@@ -1,6 +1,6 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import TU from "../utils";
+import TestUtil from "../TestUtil";
 import { VirtualLineType } from "../../src/Sudoku/type";
 import type { InputClues } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
@@ -31,7 +31,7 @@ const p1: InputClues = [
 
 describe("sudoku solver hidden single test", () => {
   it("getHiddenSingleFromVirtualLines test1", () => {
-    const line = TU.virtualLineFactory([
+    const line = TestUtil.virtualLineFactory([
       undefined,
       undefined,
       ["5"],
@@ -43,7 +43,7 @@ describe("sudoku solver hidden single test", () => {
       ["5", "6", "7"],
     ]);
     expect(SudokuSolver.getHiddenSingleFromVirtualLines([line])).toStrictEqual(
-      TU.inputValueDataArrFactory([
+      TestUtil.inputValueDataArrFactory([
         [0, 4, "4"],
         [0, 8, "6"],
       ])
@@ -51,7 +51,7 @@ describe("sudoku solver hidden single test", () => {
   });
 
   it("getHiddenSingleFromVirtualLines", () => {
-    const line = TU.virtualLineFactory([
+    const line = TestUtil.virtualLineFactory([
       ["2", "3"],
       undefined,
       ["2", "3", "6"],
@@ -62,7 +62,9 @@ describe("sudoku solver hidden single test", () => {
       undefined,
       ["3"],
     ]);
-    expect(SudokuSolver.getHiddenSingleFromVirtualLines([line])).toStrictEqual([TU.inputValueDataFactory(0, 2, "6")]);
+    expect(SudokuSolver.getHiddenSingleFromVirtualLines([line])).toStrictEqual([
+      TestUtil.inputValueDataFactory(0, 2, "6"),
+    ]);
   });
 
   it("getHiddenSingleFromVirtualLines", () => {
@@ -71,24 +73,24 @@ describe("sudoku solver hidden single test", () => {
     const lines = s.sudoku.getAllRows();
     const result = SudokuSolver.getHiddenSingleFromVirtualLines(lines);
     const expectedResult = [
-      TU.inputValueDataFactory(0, 2, "1"),
-      TU.inputValueDataFactory(0, 0, "2"),
-      TU.inputValueDataFactory(1, 1, "4"),
-      TU.inputValueDataFactory(2, 7, "7"),
-      TU.inputValueDataFactory(3, 6, "3"),
-      TU.inputValueDataFactory(3, 8, "5"),
-      TU.inputValueDataFactory(4, 4, "4"),
-      TU.inputValueDataFactory(4, 8, "6"),
-      TU.inputValueDataFactory(7, 8, "4"),
-      TU.inputValueDataFactory(7, 2, "9"),
-      TU.inputValueDataFactory(8, 4, "1"),
+      TestUtil.inputValueDataFactory(0, 2, "1"),
+      TestUtil.inputValueDataFactory(0, 0, "2"),
+      TestUtil.inputValueDataFactory(1, 1, "4"),
+      TestUtil.inputValueDataFactory(2, 7, "7"),
+      TestUtil.inputValueDataFactory(3, 6, "3"),
+      TestUtil.inputValueDataFactory(3, 8, "5"),
+      TestUtil.inputValueDataFactory(4, 4, "4"),
+      TestUtil.inputValueDataFactory(4, 8, "6"),
+      TestUtil.inputValueDataFactory(7, 8, "4"),
+      TestUtil.inputValueDataFactory(7, 2, "9"),
+      TestUtil.inputValueDataFactory(8, 4, "1"),
     ];
     expectedResult.forEach((e) => expect(result).toContainEqual(e));
     expect(result).toStrictEqual(expectedResult);
   });
 
   it("getHiddenSingleFromVirtualLines", () => {
-    const row0 = TU.virtualLineFactory(
+    const row0 = TestUtil.virtualLineFactory(
       [
         ["2", "3", "8", "9"],
         ["3", "4", "7"],
@@ -105,7 +107,7 @@ describe("sudoku solver hidden single test", () => {
         lineIndex: 0,
       }
     );
-    const row1 = TU.virtualLineFactory(
+    const row1 = TestUtil.virtualLineFactory(
       [
         ["2", "3", "8", "9"],
         ["3", "4", "7"],
@@ -122,7 +124,7 @@ describe("sudoku solver hidden single test", () => {
         lineIndex: 1,
       }
     );
-    const row2 = TU.virtualLineFactory(
+    const row2 = TestUtil.virtualLineFactory(
       [
         ["2", "3", "8", "9"],
         ["3", "4", "7"],
@@ -143,7 +145,7 @@ describe("sudoku solver hidden single test", () => {
     const rows = [row0, row1, row2];
 
     expect(SudokuSolver.getHiddenSingleFromVirtualLines(rows)).toStrictEqual(
-      TU.inputValueDataArrFactory([
+      TestUtil.inputValueDataArrFactory([
         [0, 3, "5"],
         [1, 3, "5"],
         [2, 3, "5"],
@@ -156,7 +158,7 @@ describe("sudoku solver hidden single test", () => {
     s.setBasicCandidates();
     const result = s.getHiddenSingles();
 
-    const expectedResult = TU.inputValueDataArrFactory([
+    const expectedResult = TestUtil.inputValueDataArrFactory([
       // row
       [0, 2, "1"],
       [0, 0, "2"],
@@ -198,7 +200,7 @@ describe("sudoku solver hidden single test", () => {
     s.setBasicCandidates();
     const result = s.getHiddenSingles();
 
-    const expectedResult = TU.inputValueDataArrFactory([
+    const expectedResult = TestUtil.inputValueDataArrFactory([
       // row
       [0, 2, "4"],
       [2, 6, "2"],

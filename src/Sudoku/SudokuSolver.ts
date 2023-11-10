@@ -39,7 +39,7 @@ export default class SudokuSolver {
     ];
   }
 
-  static loopCandidates(fn: (sudokuElement: SudokuElement) => void) {
+  static loopCandidates(fn: (sudokuElement: SudokuElement) => void): void {
     const allElements = Sudoku.allElements();
     for (let i = 0; i < allElements.length; i++) {
       fn(allElements[i]);

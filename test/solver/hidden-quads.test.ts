@@ -1,6 +1,6 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import TU from "../utils";
+import TestUtil from "../TestUtil";
 import type { InputClues, InputValueData, HiddenMultipleFromVirtualLinesResult } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
 
@@ -18,7 +18,7 @@ const p5: InputClues = [
 
 describe("sudoku solver", () => {
   it("getHiddenMultipleFromVirtualLines sizeOfCandidate=4", () => {
-    const line = TU.virtualLineFactory([
+    const line = TestUtil.virtualLineFactory([
       ["1", "2", "9"],
       undefined,
       ["1", "2", "3", "4", "9"],
@@ -35,7 +35,7 @@ describe("sudoku solver", () => {
       {
         combination: ["5", "6", "7", "8"],
         multiple: [line[3], line[5], line[6], line[8]],
-        elimination: TU.inputValueDataArrFactory([
+        elimination: TestUtil.inputValueDataArrFactory([
           [0, 3, "3"],
           [0, 3, "4"],
           [0, 3, "9"],
@@ -57,7 +57,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p5));
     s.setBasicCandidates();
     const result = s.getRemovalDueToHiddenQuads();
-    const expectResult: InputValueData[] = TU.inputValueDataArrFactory([
+    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [0, 0, "7"], // due to [3, 4, 5, 9] in row 0
       [0, 0, "8"], // due to [3, 4, 5, 9] in row 0
       [0, 1, "8"], // due to [3, 4, 5, 9] in row 0
