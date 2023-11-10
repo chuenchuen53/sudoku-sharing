@@ -2,7 +2,7 @@ interface OneLayerBooleanObj {
   [x: string]: boolean;
 }
 
-export default class OjbUtils {
+export default class ObjUtil {
   static boolObjEquality(obj1: OneLayerBooleanObj, obj2: OneLayerBooleanObj): boolean {
     const keys1 = Object.keys(obj1);
     const keys2 = Object.keys(obj2);

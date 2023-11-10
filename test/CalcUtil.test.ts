@@ -2,6 +2,13 @@ import { expect, describe, it } from "vitest";
 import CalcUtil from "../src/utils/CalcUtil";
 
 describe("CalcUtil", () => {
+  it("CalcUtil.xor test 1", () => {
+    expect(CalcUtil.xor(true, true)).toBe(false);
+    expect(CalcUtil.xor(true, false)).toBe(true);
+    expect(CalcUtil.xor(false, true)).toBe(true);
+    expect(CalcUtil.xor(false, false)).toBe(false);
+  });
+
   it("CalcUtil.combination2 test 1", () => {
     const arr = ["a", "b", "c", "d", "e"];
     const comb = CalcUtil.combinations2(arr);
@@ -203,12 +210,5 @@ describe("CalcUtil", () => {
         { id: 5, name: "e" },
       ],
     ]);
-  });
-
-  it("CalcUtil.xor test 1", () => {
-    expect(CalcUtil.xor(true, true)).toBe(false);
-    expect(CalcUtil.xor(true, false)).toBe(true);
-    expect(CalcUtil.xor(false, true)).toBe(true);
-    expect(CalcUtil.xor(false, false)).toBe(false);
   });
 });
