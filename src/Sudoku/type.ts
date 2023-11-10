@@ -4,9 +4,12 @@ export type Candidates = {
   [key in SudokuElement]: boolean;
 };
 
-export interface Cell {
+export interface Position {
   rowIndex: number;
   columnIndex: number;
+}
+
+export interface Cell extends Position {
   clue?: SudokuElement;
   inputValue?: SudokuElement;
   candidates?: Candidates;

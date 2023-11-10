@@ -11,6 +11,7 @@ import type {
   RowColumn,
   CheckVirtualLineDuplicateResult,
   ValidateDetail,
+  Position,
 } from "./type";
 
 export default class Sudoku {
@@ -24,10 +25,7 @@ export default class Sudoku {
 
   constructor(clues: InputClues) {
     this.grid = Sudoku.createGrid(clues);
-    this.numberOfClues = this.grid.reduce(
-      (acc, row) => acc + row.reduce((acc, cell) => (cell.clue ? acc + 1 : acc), 0),
-      0
-    );
+    this.numberOfClues = this.grid.reduce((acc, row) => acc + row.reduce((acc, cell) => (cell.clue ? acc + 1 : acc), 0), 0);
     const nineLenArr = new Array(9).fill(true);
     this.rows = Object.freeze(this.grid.map((row) => row));
     this.columns = Object.freeze(nineLenArr.map((_, i) => this.grid.map((row) => row[i])));
@@ -64,18 +62,15 @@ export default class Sudoku {
     return Math.floor(rowIndex / 3) * 3 + Math.floor(columnIndex / 3);
   }
 
-  static getRowColumnIndexFromBoxIndexAndCellIndex(
-    boxIndex: number,
-    cellIndex: number
-  ): { rowIndex: number; columnIndex: number } {
+  static getRowColumnIndexFromBoxIndexAndCellIndex(boxIndex: number, cellIndex: number): { rowIndex: number; columnIndex: number } {
     return {
       rowIndex: Math.floor(boxIndex / 3) * 3 + Math.floor(cellIndex / 3),
       columnIndex: (boxIndex % 3) * 3 + (cellIndex % 3),
     };
   }
 
-  static isSamePos(c1: Cell, c2: Cell): boolean {
-    return c1.rowIndex === c2.rowIndex && c1.columnIndex === c2.columnIndex;
+  static isSamePos(p1: Position, p2: Position): boolean {
+    return p1.rowIndex === p2.rowIndex && p1.columnIndex === p2.columnIndex;
   }
 
   static virtualLinesIntersections(line1: VirtualLine, line2: VirtualLine): Cell[] {
@@ -96,9 +91,7 @@ export default class Sudoku {
 
   static removeDuplicatedInputValueData(data: InputValueData[]): InputValueData[] {
     return data.filter(
-      (cur, index, self) =>
-        index ===
-        self.findIndex((x) => x.rowIndex === cur.rowIndex && x.columnIndex === cur.columnIndex && x.value === cur.value)
+      (cur, index, self) => index === self.findIndex((x) => x.rowIndex === cur.rowIndex && x.columnIndex === cur.columnIndex && x.value === cur.value)
     );
   }
 
@@ -144,9 +137,7 @@ export default class Sudoku {
   ): CheckVirtualLineDuplicateResult {
     const duplicatedCells: Cell[] = [];
     const values = key === "clue" ? virtualLine.map((x) => x.clue) : virtualLine.map((x) => x.clue ?? x.inputValue);
-    values.forEach(
-      (x, ix, arr) => x && arr.some((y, iy) => ix !== iy && x === y && duplicatedCells.push(virtualLine[ix]))
-    );
+    values.forEach((x, ix, arr) => x && arr.some((y, iy) => ix !== iy && x === y && duplicatedCells.push(virtualLine[ix])));
     const haveDuplicate = duplicatedCells.length > 0;
     return { haveDuplicate, duplicatedCells };
   }
@@ -346,10 +337,7 @@ export default class Sudoku {
       [VirtualLineType.COLUMN]: columnDetail,
       [VirtualLineType.BOX]: boxDetail,
     };
-    const isValid =
-      !rowDetail.some((x) => x.haveDuplicate) &&
-      !columnDetail.some((x) => x.haveDuplicate) &&
-      !boxDetail.some((x) => x.haveDuplicate);
+    const isValid = !rowDetail.some((x) => x.haveDuplicate) && !columnDetail.some((x) => x.haveDuplicate) && !boxDetail.some((x) => x.haveDuplicate);
 
     return { isValid, validateDetail };
   }
