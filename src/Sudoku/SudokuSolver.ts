@@ -1,6 +1,7 @@
 import CalcUtil from "../utils/CalcUtil";
 import EliminationStrategy from "./EliminationStrategy/EliminationStrategy";
 import LockedCandidates from "./EliminationStrategy/LockedCandidates";
+import NakedPairs from "./EliminationStrategy/NakedPairs";
 import FillHiddenSingle from "./FillHiddenSingle";
 import FillNakedSingle from "./FillNakedSingle";
 import type FillStrategy from "./FillStrategy";
@@ -29,6 +30,7 @@ export default class SudokuSolver {
   public fillNakedSingle = new FillNakedSingle();
   public fillHiddenSingle = new FillHiddenSingle();
   public lockedCandidates = new LockedCandidates();
+  public nakedPairs = new NakedPairs();
   private eliminationStrategies: (() => unknown)[];
 
   constructor(sudoku: Sudoku) {
@@ -82,36 +84,6 @@ export default class SudokuSolver {
       if (x[sudokuElement] !== y[sudokuElement]) return false;
     }
     return true;
-  }
-
-  static getNakedPairsFromVirtualLines(virtualLines: VirtualLine[]): NakedMultipleResult[] {
-    const result: NakedMultipleResult[] = [];
-
-    for (let i = 0; i < virtualLines.length; i++) {
-      const virtualLine = virtualLines[i];
-      const cellWith2Candidates = SudokuSolver.candidateCellsFromVirtualLine(virtualLine).filter(
-        (x) => SudokuSolver.numberOfCandidates(x.candidates) === 2
-      );
-      if (cellWith2Candidates.length < 2) continue;
-
-      const comb = CalcUtil.combinations2(cellWith2Candidates);
-      const nakedPairs = comb.filter(([x, y]) => SudokuSolver.sameCandidates(x.candidates, y.candidates));
-
-      nakedPairs.forEach(([x, y]) => {
-        const cells = [x, y];
-        const elimination: InputValueData[] = [];
-        const [c1, c2] = SudokuSolver.getCandidatesArr(x.candidates);
-        const restCells = virtualLine.filter((z) => !Sudoku.isSamePos(x, z) && !Sudoku.isSamePos(y, z));
-        restCells.forEach(({ rowIndex, columnIndex, candidates }) => {
-          if (candidates?.[c1]) elimination.push({ rowIndex, columnIndex, value: c1 });
-          if (candidates?.[c2]) elimination.push({ rowIndex, columnIndex, value: c2 });
-        });
-
-        result.push({ cells, elimination });
-      });
-    }
-
-    return result;
   }
 
   static getMultipleNakedFromVirtualLines(virtualLines: VirtualLine[], sizeOfCandidate: 3 | 4): NakedMultipleResult[] {
@@ -343,17 +315,9 @@ export default class SudokuSolver {
     return count;
   }
 
-  getRemovalDueToNakedPairs(): InputValueData[] {
-    const rowResult = SudokuSolver.getNakedPairsFromVirtualLines(this.sudoku.getAllRows());
-    const columnResult = SudokuSolver.getNakedPairsFromVirtualLines(this.sudoku.getAllColumns());
-    const boxResult = SudokuSolver.getNakedPairsFromVirtualLines(this.sudoku.getAllBoxes());
-    const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
-
-    return Sudoku.removeDuplicatedInputValueData(elimination);
-  }
-
   removeCandidatesDueToNakedPairs(): number {
-    const removals = this.getRemovalDueToNakedPairs();
+    const eliminationData = this.nakedPairs.canEliminate(this.sudoku);
+    const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
     const count = this.sudoku.removeElementInCandidates(removals);
     this.addStatsEliminationCount$NakedPairs(count);
     return count;

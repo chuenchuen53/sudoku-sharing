@@ -1,8 +1,11 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
-import type { InputClues, InputValueData, NakedMultipleResult } from "../../src/Sudoku/type";
+import { VirtualLineType, type InputClues, type InputValueData } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
+import NakedPairs from "@/Sudoku/EliminationStrategy/NakedPairs";
+import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
+import { SudokuLine } from "@/Sudoku/SudokuLine";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -42,24 +45,41 @@ describe("sudoku solver", () => {
       ["5", "6", "7"],
     ]);
 
-    const result = SudokuSolver.getNakedPairsFromVirtualLines([line]);
-    const expectResult: NakedMultipleResult[] = [
+    const result = NakedPairs.nakedPairsFromVirtualLines([line], VirtualLineType.ROW);
+    const expectResult: typeof result = [
       {
-        cells: [line[2], line[3]],
-        elimination: TestUtil.inputValueDataArrFactory([
-          [0, 0, "1"],
-          [0, 0, "2"],
-          [0, 1, "1"],
-          [0, 1, "2"],
+        eliminations: TestUtil.eliminationArrFactory([
+          [0, 0, ["1", "2"]],
+          [0, 1, ["1", "2"]],
         ]),
+        relatedLines: [SudokuLine.ROW_0],
+        highlights: [
+          {
+            position: { rowIndex: 0, columnIndex: 2 },
+            candidates: Sudoku.candidatesFactory(true, ["1", "2"]),
+          },
+          {
+            position: { rowIndex: 0, columnIndex: 3 },
+            candidates: Sudoku.candidatesFactory(true, ["1", "2"]),
+          },
+        ],
       },
       {
-        cells: [line[4], line[6]],
-        elimination: TestUtil.inputValueDataArrFactory([
-          [0, 0, "3"],
-          [0, 0, "5"],
-          [0, 8, "5"],
+        eliminations: TestUtil.eliminationArrFactory([
+          [0, 0, ["3", "5"]],
+          [0, 8, ["5"]],
         ]),
+        relatedLines: [SudokuLine.ROW_0],
+        highlights: [
+          {
+            position: { rowIndex: 0, columnIndex: 4 },
+            candidates: Sudoku.candidatesFactory(true, ["3", "5"]),
+          },
+          {
+            position: { rowIndex: 0, columnIndex: 6 },
+            candidates: Sudoku.candidatesFactory(true, ["3", "5"]),
+          },
+        ],
       },
     ];
 
@@ -69,20 +89,20 @@ describe("sudoku solver", () => {
   it("getRemovalDueToNakedPairs test 1", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    const result = s.getRemovalDueToNakedPairs();
+    const removals = EliminationStrategy.removalsFromEliminationData(s.nakedPairs.canEliminate(s.sudoku));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [4, 8, "5"],
       [4, 8, "7"],
       [7, 8, "5"],
       [7, 8, "7"],
     ]);
-    expect(result).toStrictEqual(expectResult);
+    expect(removals).toStrictEqual(expectResult);
   });
 
   it("getRemovalDueToNakedPairs test 2", () => {
     const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
-    const result = s.getRemovalDueToNakedPairs();
+    const removals = EliminationStrategy.removalsFromEliminationData(s.nakedPairs.canEliminate(s.sudoku));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [6, 8, "5"],
       [1, 6, "3"],
@@ -91,7 +111,7 @@ describe("sudoku solver", () => {
       [2, 6, "3"],
     ]);
 
-    expect(result).toStrictEqual(expectResult);
+    expect(removals).toStrictEqual(expectResult);
   });
 
   it("removeCandidatesDueToNakedPairs test 1", () => {

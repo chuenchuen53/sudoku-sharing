@@ -1,8 +1,9 @@
 import Sudoku from "../src/Sudoku/Sudoku";
 import { VirtualLineType } from "../src/Sudoku/type";
 import ArrUtil from "../src/utils/ArrUtil";
-import type { Pincer, Cell, InputClues, InputValueData, SudokuElement, VirtualLine } from "../src/Sudoku/type";
+import type { Pincer, Cell, InputClues, InputValueData, SudokuElement, VirtualLine, EliminationCount } from "../src/Sudoku/type";
 import type { FillInputValueData, RelatedLine } from "@/Sudoku/FillStrategy";
+import type { Elimination } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 export default class TestUtil {
   static emptyPuzzle = (): InputClues => ArrUtil.create2DArray(9, 9, () => "0");
@@ -39,6 +40,18 @@ export default class TestUtil {
 
   static fillInputValueDataArrFactory = (arr: [number, number, SudokuElement, VirtualLineType, number][]): FillInputValueData[] => {
     return arr.map(([r, c, v, virtualLineType, lineIndex]) => TestUtil.fillInputValueDataFactory(r, c, v, virtualLineType, lineIndex));
+  };
+
+  static eliminationFactory = (r: number, c: number, elements: SudokuElement[]): Elimination => {
+    return {
+      rowIndex: r,
+      columnIndex: c,
+      elements,
+    };
+  };
+
+  static eliminationArrFactory = (arr: [number, number, SudokuElement[]][]): Elimination[] => {
+    return arr.map(([r, c, elements]) => TestUtil.eliminationFactory(r, c, elements));
   };
 
   static removeDuplicate2DArray = (arr: [number, number, SudokuElement][]): [number, number, SudokuElement][] => {
