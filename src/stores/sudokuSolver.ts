@@ -1,12 +1,6 @@
 import { ref, reactive } from "vue";
 import { defineStore } from "pinia";
-import {
-  type InputClues,
-  type SudokuElementWithZero,
-  type Cell,
-  type InputValueData,
-  VirtualLineType,
-} from "@/Sudoku/type";
+import { type InputClues, type SudokuElementWithZero, type Cell, type InputValueData, VirtualLineType } from "@/Sudoku/type";
 import SudokuSolver from "@/Sudoku/SudokuSolver";
 import Sudoku from "@/Sudoku/Sudoku";
 
@@ -18,19 +12,19 @@ export interface Highlight {
 }
 
 const dummyClues: InputClues = [
-  ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
-  ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
-  ["0", "0", "8", "0", "0", "0", "4", "0", "9"],
-  ["9", "6", "2", "1", "0", "0", "0", "4", "0"],
-  ["8", "1", "0", "0", "0", "3", "0", "2", "0"],
-  ["0", "3", "7", "6", "5", "0", "8", "0", "1"],
-  ["5", "8", "0", "7", "0", "4", "9", "1", "3"],
-  ["1", "0", "0", "3", "0", "0", "0", "0", "0"],
-  ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
+  ["2", "0", "0", "0", "0", "0", "8", "6", "0"],
+  ["0", "0", "0", "0", "4", "2", "0", "0", "0"],
+  ["0", "1", "0", "0", "6", "0", "0", "4", "7"],
+  ["3", "4", "5", "0", "2", "0", "0", "0", "1"],
+  ["7", "2", "0", "0", "0", "0", "4", "0", "9"],
+  ["8", "0", "0", "0", "0", "0", "5", "0", "6"],
+  ["0", "0", "2", "0", "3", "0", "0", "0", "0"],
+  ["0", "0", "0", "6", "8", "0", "0", "1", "2"],
+  ["5", "0", "8", "0", "0", "0", "0", "0", "4"],
 ];
 
 export const useSudokuSolverStore = defineStore("sudokuSolver", () => {
-  const sudokuSolver = ref<SudokuSolver>(new SudokuSolver(dummyClues));
+  const sudokuSolver = ref<SudokuSolver>(new SudokuSolver(new Sudoku(dummyClues)));
 
   const highlight = reactive<Highlight>({
     element: "0",
@@ -42,7 +36,7 @@ export const useSudokuSolverStore = defineStore("sudokuSolver", () => {
   const removalOfCandidates = ref<InputValueData[]>([]);
 
   const newSudoku = (clues: InputClues) => {
-    sudokuSolver.value = new SudokuSolver(clues);
+    sudokuSolver.value = new SudokuSolver(new Sudoku(clues));
     highlight.element = "0";
     highlight.cell = [];
     highlight.candidate = [];
@@ -51,35 +45,35 @@ export const useSudokuSolverStore = defineStore("sudokuSolver", () => {
   };
 
   const clearAllCandidates = () => {
-    sudokuSolver.value.clearAllCandidates();
+    sudokuSolver.value.sudoku.clearAllCandidates();
   };
 
   const setInputValue = (data: InputValueData) => {
-    if (sudokuSolver.value.grid[data.rowIndex][data.columnIndex].clue) return;
-    sudokuSolver.value.setInputValue(data, true);
+    if (sudokuSolver.value.sudoku.grid[data.rowIndex][data.columnIndex].clue) return;
+    sudokuSolver.value.sudoku.setInputValue(data, true);
     updateInvalidHighlight();
   };
 
   const removeInputValue = (data: Cell) => {
-    if (sudokuSolver.value.grid[data.rowIndex][data.columnIndex].clue) return;
-    sudokuSolver.value.removeInputValue(data, true);
+    if (sudokuSolver.value.sudoku.grid[data.rowIndex][data.columnIndex].clue) return;
+    sudokuSolver.value.sudoku.removeInputValue(data, true);
     updateInvalidHighlight();
   };
 
   const getBasicCandidates = () => sudokuSolver.value.setBasicCandidates();
 
   const getUniqueMissing = () => {
-    const result = sudokuSolver.value.getUniqueMissing();
-    const cells = result.map((x) => x.cell);
+    const result = sudokuSolver.value.fillUniqueMissing.canFill(sudokuSolver.value.sudoku as Sudoku);
+    const cells = result.map((x) => sudokuSolver.value.sudoku.grid[x.rowIndex][x.columnIndex]);
     highlight.cell = cells;
   };
 
   const getNakedSingles = () => {
-    highlight.candidate = sudokuSolver.value.getNakedSingles();
+    highlight.candidate = sudokuSolver.value.fillHiddenSingle.canFill(sudokuSolver.value.sudoku as Sudoku);
   };
 
   const getHiddenSingles = () => {
-    highlight.candidate = sudokuSolver.value.getHiddenSingles();
+    highlight.candidate = sudokuSolver.value.fillHiddenSingle.canFill(sudokuSolver.value.sudoku as Sudoku);
   };
 
   const getRemovalDueToLockedCandidates = () => {
@@ -144,7 +138,7 @@ export const useSudokuSolverStore = defineStore("sudokuSolver", () => {
     if (count === 0) {
       highlight.cell = [];
     } else {
-      const allCells = sudokuSolver.value.getAllRows().flat(1);
+      const allCells = sudokuSolver.value.sudoku.getAllRows().flat(1);
       const cells = allCells.filter((x) => x.candidates && Sudoku.candidatesCount(x.candidates) < count);
       highlight.cell = cells;
     }
@@ -158,9 +152,9 @@ export const useSudokuSolverStore = defineStore("sudokuSolver", () => {
 
   const updateInvalidHighlight = () => {
     const arr = [
-      ...sudokuSolver.value.validateDetail[VirtualLineType.ROW],
-      ...sudokuSolver.value.validateDetail[VirtualLineType.COLUMN],
-      ...sudokuSolver.value.validateDetail[VirtualLineType.BOX],
+      ...sudokuSolver.value.sudoku.validateDetail[VirtualLineType.ROW],
+      ...sudokuSolver.value.sudoku.validateDetail[VirtualLineType.COLUMN],
+      ...sudokuSolver.value.sudoku.validateDetail[VirtualLineType.BOX],
     ];
     const result = arr
       .map((x) => x.duplicatedCells)

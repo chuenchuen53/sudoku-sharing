@@ -4,7 +4,7 @@
       <input ref="inputRef" @keyup="handleKeyboard" :value="inputStr" />
     </div>
     <div id="sudoku-grid">
-      <div class="sudoku-row" v-for="(row, rowIndex) in sudokuSolver.grid" :key="rowIndex">
+      <div class="sudoku-row" v-for="(row, rowIndex) in sudokuSolver.sudoku.grid" :key="rowIndex">
         <div
           class="sudoku-cell"
           :class="{
@@ -32,12 +32,8 @@
               :class="{
                 hidden: !value,
                 elementHighlight: highlight.element === key,
-                candidateHighlight: highlight.candidate.some(
-                  (x) => x.rowIndex === rowIndex && x.columnIndex === columnIndex && x.value === key
-                ),
-                strikeThrough: removalOfCandidates.some(
-                  (x) => x.rowIndex === rowIndex && x.columnIndex === columnIndex && x.value === key
-                ),
+                candidateHighlight: highlight.candidate.some((x) => x.rowIndex === rowIndex && x.columnIndex === columnIndex && x.value === key),
+                strikeThrough: removalOfCandidates.some((x) => x.rowIndex === rowIndex && x.columnIndex === columnIndex && x.value === key),
               }"
             >
               {{ key }}
@@ -80,7 +76,7 @@ const handleCellClick = (rowIndex: number, columnIndex: number) => {
 
 const selectionRelated = computed(() => {
   const highlightArr = ArrayUtil.create2DArray<boolean>(9, 9, () => false);
-  sudokuSolver.value
+  sudokuSolver.value.sudoku
     .getAllRelatedCells({
       rowIndex: selectedCell.rowIndex,
       columnIndex: selectedCell.columnIndex,
