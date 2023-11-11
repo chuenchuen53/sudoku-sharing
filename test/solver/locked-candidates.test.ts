@@ -4,6 +4,8 @@ import { VirtualLineType } from "../../src/Sudoku/type";
 import TestUtil from "../TestUtil";
 import type { InputClues, SudokuElement } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
+import LockedCandidates from "@/Sudoku/EliminationStrategy/LockedCandidates";
+import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 interface AllResult {
   rowLockInBoxResult: [number, number, SudokuElement][][];
@@ -232,12 +234,12 @@ const p1Result: AllResult = {
   ],
 };
 
-const testFactory = (sudoku: SudokuSolver, allResult: AllResult) => {
-  sudoku.setBasicCandidates();
+const testFactory = (solver: SudokuSolver, allResult: AllResult) => {
+  solver.setBasicCandidates();
 
   it("row lock in box candidate", () => {
     for (const index of allIndex) {
-      const result = sudoku.rowColumnLockInBox(VirtualLineType.ROW, index);
+      const result = EliminationStrategy.removalsFromEliminationData(LockedCandidates.rowColumnLockInBox(solver.sudoku, VirtualLineType.ROW, index));
       const expectedResult = TestUtil.inputValueDataArrFactory(allResult.rowLockInBoxResult[index]);
       expect(result).toStrictEqual(expectedResult);
     }
@@ -245,7 +247,9 @@ const testFactory = (sudoku: SudokuSolver, allResult: AllResult) => {
 
   it("column lock in box candidate", () => {
     for (const index of allIndex) {
-      const result = sudoku.rowColumnLockInBox(VirtualLineType.COLUMN, index);
+      const result = EliminationStrategy.removalsFromEliminationData(
+        LockedCandidates.rowColumnLockInBox(solver.sudoku, VirtualLineType.COLUMN, index)
+      );
       const expectedResult = TestUtil.inputValueDataArrFactory(allResult.columnLockInBoxResult[index]);
       expect(result).toStrictEqual(expectedResult);
     }
@@ -253,7 +257,7 @@ const testFactory = (sudoku: SudokuSolver, allResult: AllResult) => {
 
   it("box lock in row candidate", () => {
     for (const index of allIndex) {
-      const result = sudoku.boxLockInRowColumn(VirtualLineType.ROW, index);
+      const result = EliminationStrategy.removalsFromEliminationData(LockedCandidates.boxLockInRowColumn(solver.sudoku, VirtualLineType.ROW, index));
       const expectedResult = TestUtil.inputValueDataArrFactory(allResult.boxLockInRowResult[index]);
       expect(result).toStrictEqual(expectedResult);
     }
@@ -261,14 +265,16 @@ const testFactory = (sudoku: SudokuSolver, allResult: AllResult) => {
 
   it("box lock in column candidate", () => {
     for (const index of allIndex) {
-      const result = sudoku.boxLockInRowColumn(VirtualLineType.COLUMN, index);
+      const result = EliminationStrategy.removalsFromEliminationData(
+        LockedCandidates.boxLockInRowColumn(solver.sudoku, VirtualLineType.COLUMN, index)
+      );
       const expectedResult = TestUtil.inputValueDataArrFactory(allResult.boxLockInColumnResult[index]);
       expect(result).toStrictEqual(expectedResult);
     }
   });
 
   it("lock candidate overall", () => {
-    const result = sudoku.getRemovalDueToLockedCandidates();
+    const result = EliminationStrategy.removalsFromEliminationData(solver.lockedCandidates.canEliminate(solver.sudoku));
 
     const rowLockInBoxResultFlat = allResult.rowLockInBoxResult.flat() as [number, number, SudokuElement][];
     const columnLockInBoxResultFlat = allResult.columnLockInBoxResult.flat() as [number, number, SudokuElement][];
@@ -299,7 +305,7 @@ const testFactory = (sudoku: SudokuSolver, allResult: AllResult) => {
       ...boxLockInColumnResultFlat,
     ]);
 
-    expect(sudoku.removeCandidatesDueToLockedCandidates()).toBe(arr.length);
+    expect(solver.removeCandidatesDueToLockedCandidates()).toBe(arr.length);
   });
 };
 

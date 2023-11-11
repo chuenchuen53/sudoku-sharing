@@ -31,6 +31,40 @@ export enum SudokuLine {
 }
 
 export class SudokuLineUtil {
+  private static readonly ROWS: SudokuLine[] = [
+    SudokuLine.ROW_0,
+    SudokuLine.ROW_1,
+    SudokuLine.ROW_2,
+    SudokuLine.ROW_3,
+    SudokuLine.ROW_4,
+    SudokuLine.ROW_5,
+    SudokuLine.ROW_6,
+    SudokuLine.ROW_7,
+    SudokuLine.ROW_8,
+  ];
+  private static readonly COLUMNS: SudokuLine[] = [
+    SudokuLine.COLUMN_0,
+    SudokuLine.COLUMN_1,
+    SudokuLine.COLUMN_2,
+    SudokuLine.COLUMN_3,
+    SudokuLine.COLUMN_4,
+    SudokuLine.COLUMN_5,
+    SudokuLine.COLUMN_6,
+    SudokuLine.COLUMN_7,
+    SudokuLine.COLUMN_8,
+  ];
+  private static readonly BOXES: SudokuLine[] = [
+    SudokuLine.BOX_0,
+    SudokuLine.BOX_1,
+    SudokuLine.BOX_2,
+    SudokuLine.BOX_3,
+    SudokuLine.BOX_4,
+    SudokuLine.BOX_5,
+    SudokuLine.BOX_6,
+    SudokuLine.BOX_7,
+    SudokuLine.BOX_8,
+  ];
+
   private constructor() {}
 
   public static lineTypeAndIndex(line: SudokuLine): { virtualLineType: VirtualLineType; lineIndex: number } {
@@ -122,5 +156,16 @@ export class SudokuLineUtil {
     }
 
     return { virtualLineType, lineIndex };
+  }
+
+  public static sudokuLine(virtualLineType: VirtualLineType, lineIndex: number): SudokuLine {
+    switch (virtualLineType) {
+      case VirtualLineType.ROW:
+        return SudokuLineUtil.ROWS[lineIndex];
+      case VirtualLineType.COLUMN:
+        return SudokuLineUtil.COLUMNS[lineIndex];
+      case VirtualLineType.BOX:
+        return SudokuLineUtil.BOXES[lineIndex];
+    }
   }
 }
