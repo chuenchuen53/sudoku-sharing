@@ -2,6 +2,7 @@ import Sudoku from "../src/Sudoku/Sudoku";
 import { VirtualLineType } from "../src/Sudoku/type";
 import ArrUtil from "../src/utils/ArrUtil";
 import type { Pincer, Cell, InputClues, InputValueData, SudokuElement, VirtualLine } from "../src/Sudoku/type";
+import type { FillInputValueData, RelatedLine } from "@/Sudoku/FillStrategy";
 
 export default class TestUtil {
   static emptyPuzzle = (): InputClues => ArrUtil.create2DArray(9, 9, () => "0");
@@ -18,10 +19,30 @@ export default class TestUtil {
     return arr.map(([r, c, v]) => TestUtil.inputValueDataFactory(r, c, v));
   };
 
+  static fillInputValueDataFactory = (
+    r: number,
+    c: number,
+    v: SudokuElement,
+    virtualLineType: VirtualLineType,
+    lineIndex: number
+  ): FillInputValueData => {
+    return {
+      rowIndex: r,
+      columnIndex: c,
+      value: v,
+      relatedLine: {
+        virtualLineType,
+        lineIndex,
+      },
+    };
+  };
+
+  static fillInputValueDataArrFactory = (arr: [number, number, SudokuElement, VirtualLineType, number][]): FillInputValueData[] => {
+    return arr.map(([r, c, v, virtualLineType, lineIndex]) => TestUtil.fillInputValueDataFactory(r, c, v, virtualLineType, lineIndex));
+  };
+
   static removeDuplicate2DArray = (arr: [number, number, SudokuElement][]): [number, number, SudokuElement][] => {
-    return arr.filter(
-      ([r, c, v], index) => arr.findIndex(([r2, c2, v2]) => r === r2 && c === c2 && v === v2) === index
-    );
+    return arr.filter(([r, c, v], index) => arr.findIndex(([r2, c2, v2]) => r === r2 && c === c2 && v === v2) === index);
   };
 
   static CellFactory = (

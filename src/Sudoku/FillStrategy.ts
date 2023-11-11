@@ -1,7 +1,7 @@
 import type Sudoku from "./Sudoku";
 import type { InputValueData, VirtualLineType } from "./type";
 
-interface RelatedLine {
+export interface RelatedLine {
   virtualLineType: VirtualLineType;
   lineIndex: number;
 }

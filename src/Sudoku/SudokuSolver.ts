@@ -1,4 +1,5 @@
 import CalcUtil from "../utils/CalcUtil";
+import FillHiddenSingle from "./FillHiddenSingle";
 import FillNakedSingle from "./FillNakedSingle";
 import type FillStrategy from "./FillStrategy";
 import FillUniqueMissing from "./FillUniqueMissing";
@@ -23,8 +24,9 @@ import type {
 export default class SudokuSolver {
   public stats: SolveStats;
   public sudoku: Sudoku;
-  private fillUniqueMissing: FillStrategy = new FillUniqueMissing();
-  private fillNakedSingle = new FillNakedSingle();
+  public fillUniqueMissing: FillStrategy = new FillUniqueMissing();
+  public fillNakedSingle = new FillNakedSingle();
+  public fillHiddenSingle = new FillHiddenSingle();
   private eliminationStrategies: (() => unknown)[];
 
   constructor(sudoku: Sudoku) {
@@ -80,37 +82,37 @@ export default class SudokuSolver {
     return true;
   }
 
-  static getHiddenSingleFromVirtualLines(virtualLines: VirtualLine[]): InputValueData[] {
-    const result: InputValueData[] = [];
-    virtualLines.forEach((virtualLine) => {
-      const candidatesCount: Record<SudokuElement, number> = {
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0,
-      };
-      virtualLine.forEach((cell) => {
-        const candidates = cell.candidates;
-        if (!candidates) return;
-        SudokuSolver.loopCandidates((sudokuElement) => candidates[sudokuElement] && candidatesCount[sudokuElement]++);
-      });
-      SudokuSolver.loopCandidates((sudokuElement) => {
-        if (candidatesCount[sudokuElement] !== 1) return;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const cell = virtualLine.find((x) => x.candidates?.[sudokuElement])!;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        if (SudokuSolver.numberOfCandidates(cell.candidates!) === 1) return; // naked single
-        result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement });
-      });
-    });
+  // static getHiddenSingleFromVirtualLines(virtualLines: VirtualLine[]): InputValueData[] {
+  //   const result: InputValueData[] = [];
+  //   virtualLines.forEach((virtualLine) => {
+  //     const candidatesCount: Record<SudokuElement, number> = {
+  //       "1": 0,
+  //       "2": 0,
+  //       "3": 0,
+  //       "4": 0,
+  //       "5": 0,
+  //       "6": 0,
+  //       "7": 0,
+  //       "8": 0,
+  //       "9": 0,
+  //     };
+  //     virtualLine.forEach((cell) => {
+  //       const candidates = cell.candidates;
+  //       if (!candidates) return;
+  //       SudokuSolver.loopCandidates((sudokuElement) => candidates[sudokuElement] && candidatesCount[sudokuElement]++);
+  //     });
+  //     SudokuSolver.loopCandidates((sudokuElement) => {
+  //       if (candidatesCount[sudokuElement] !== 1) return;
+  //       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  //       const cell = virtualLine.find((x) => x.candidates?.[sudokuElement])!;
+  //       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  //       if (SudokuSolver.numberOfCandidates(cell.candidates!) === 1) return; // naked single
+  //       result.push({ rowIndex: cell.rowIndex, columnIndex: cell.columnIndex, value: sudokuElement });
+  //     });
+  //   });
 
-    return Sudoku.removeDuplicatedInputValueData(result);
-  }
+  //   return Sudoku.removeDuplicatedInputValueData(result);
+  // }
 
   static getNakedPairsFromVirtualLines(virtualLines: VirtualLine[]): NakedMultipleResult[] {
     const result: NakedMultipleResult[] = [];
@@ -355,15 +357,15 @@ export default class SudokuSolver {
     return nakedSingles.length;
   }
 
-  getHiddenSingles(): InputValueData[] {
-    const rowResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.sudoku.getAllRows());
-    const columnResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.sudoku.getAllColumns());
-    const boxResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.sudoku.getAllBoxes());
-    return Sudoku.removeDuplicatedInputValueData([...rowResult, ...columnResult, ...boxResult]);
-  }
+  // getHiddenSingles(): InputValueData[] {
+  //   const rowResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.sudoku.getAllRows());
+  //   const columnResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.sudoku.getAllColumns());
+  //   const boxResult = SudokuSolver.getHiddenSingleFromVirtualLines(this.sudoku.getAllBoxes());
+  //   return Sudoku.removeDuplicatedInputValueData([...rowResult, ...columnResult, ...boxResult]);
+  // }
 
   setHiddenSingles(): number {
-    const hiddenSingles = this.getHiddenSingles();
+    const hiddenSingles = this.fillHiddenSingle.canFill(this.sudoku);
     if (hiddenSingles.length === 0) return 0;
     this.sudoku.setInputValues(hiddenSingles);
     this.addStatsInputCount$HiddenSingle(hiddenSingles.length);
