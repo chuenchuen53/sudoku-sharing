@@ -1,10 +1,10 @@
 import CalcUtil from "../utils/CalcUtil";
+import FillNakedSingle from "./FillNakedSingle";
 import type FillStrategy from "./FillStrategy";
 import FillUniqueMissing from "./FillUniqueMissing";
 import Sudoku from "./Sudoku";
 import { VirtualLineType } from "./type";
 import type {
-  UniqueMissingResult,
   RowColumn,
   SolveStats,
   Candidates,
@@ -24,6 +24,7 @@ export default class SudokuSolver {
   public stats: SolveStats;
   public sudoku: Sudoku;
   private fillUniqueMissing: FillStrategy = new FillUniqueMissing();
+  private fillNakedSingle = new FillNakedSingle();
   private eliminationStrategies: (() => unknown)[];
 
   constructor(sudoku: Sudoku) {
@@ -65,11 +66,6 @@ export default class SudokuSolver {
     return virtualLine.filter((cell) => cell.candidates) as CandidateCell[];
   }
 
-  // static getUniqueCandidate(candidates: Candidates): SudokuElement | null {
-  //   const candidatesArr = SudokuSolver.getCandidatesArr(candidates);
-  //   return candidatesArr.length === 1 ? candidatesArr[0] : null;
-  // }
-
   static isSubset(candidates: Candidates, superset: SudokuElement[]): boolean {
     for (const sudokuElement of Sudoku.allElements()) {
       if (candidates[sudokuElement] && !superset.includes(sudokuElement)) return false;
@@ -83,24 +79,6 @@ export default class SudokuSolver {
     }
     return true;
   }
-
-  // static getUniqueMissingFromVirtualLines(virtualLines: VirtualLine[]): UniqueMissingResult[] {
-  //   const result: UniqueMissingResult[] = [];
-  //   const missingArr = virtualLines.map((x) => Sudoku.missingValuesInVirtualLine(x));
-
-  //   for (let i = 0; i < virtualLines.length; i++) {
-  //     const virtualLine = virtualLines[i];
-  //     const missing = missingArr[i];
-  //     const uniqueCandidate = SudokuSolver.getUniqueCandidate(missing);
-  //     if (uniqueCandidate) {
-  //       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  //       const cell = virtualLine.find((x) => !x.clue && !x.inputValue)!;
-  //       result.push({ virtualLine, uniqueCandidate, cell });
-  //     }
-  //   }
-
-  //   return result;
-  // }
 
   static getHiddenSingleFromVirtualLines(virtualLines: VirtualLine[]): InputValueData[] {
     const result: InputValueData[] = [];
@@ -361,15 +339,6 @@ export default class SudokuSolver {
     }
   }
 
-  // getUniqueMissing(): UniqueMissingResult[] {
-  //   const rowResult = SudokuSolver.getUniqueMissingFromVirtualLines(this.sudoku.getAllRows());
-  //   const columnResult = SudokuSolver.getUniqueMissingFromVirtualLines(this.sudoku.getAllColumns());
-  //   const boxResult = SudokuSolver.getUniqueMissingFromVirtualLines(this.sudoku.getAllBoxes());
-
-  //   const combined = [...rowResult, ...columnResult, ...boxResult];
-  //   return combined.filter((x, ix) => combined.findIndex((y) => Sudoku.isSamePos(x.cell, y.cell)) === ix);
-  // }
-
   setUniqueMissing(): number {
     const result = this.fillUniqueMissing.canFill(this.sudoku);
     if (result.length === 0) return 0;
@@ -378,18 +347,8 @@ export default class SudokuSolver {
     return result.length;
   }
 
-  getNakedSingles(): InputValueData[] {
-    const result: InputValueData[] = [];
-    this.loopGrid((rowIndex, columnIndex, cell) => {
-      if (!cell.candidates) return;
-      const candidatesArr = SudokuSolver.getCandidatesArr(cell.candidates);
-      if (candidatesArr.length === 1) result.push({ rowIndex, columnIndex, value: candidatesArr[0] });
-    });
-    return result;
-  }
-
   setNakedSingles(): number {
-    const nakedSingles = this.getNakedSingles();
+    const nakedSingles = this.fillNakedSingle.canFill(this.sudoku);
     if (nakedSingles.length === 0) return 0;
     this.sudoku.setInputValues(nakedSingles);
     this.addStatsInputCount$NakedSingle(nakedSingles.length);
@@ -727,15 +686,5 @@ export default class SudokuSolver {
     }
 
     return this.sudoku.solved;
-  }
-
-  private loopGrid(fn: (rowIndex: number, columnIndex: number, cell: Cell, row?: Cell[]) => void): void {
-    for (let rowIndex = 0; rowIndex < this.sudoku.grid.length; rowIndex++) {
-      const row = this.sudoku.grid[rowIndex];
-      for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
-        const cell = row[columnIndex];
-        fn(rowIndex, columnIndex, cell, row);
-      }
-    }
   }
 }

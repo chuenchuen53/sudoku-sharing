@@ -3,8 +3,8 @@ import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
 import type { InputClues } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
+import FillNakedSingle from "@/Sudoku/FillNakedSingle";
 
-// easy
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
   ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
@@ -17,7 +17,6 @@ const p0: InputClues = [
   ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
 ];
 
-// medium
 const p1: InputClues = [
   ["2", "0", "0", "0", "0", "0", "8", "6", "0"],
   ["0", "0", "0", "0", "4", "2", "0", "0", "0"],
@@ -31,10 +30,11 @@ const p1: InputClues = [
 ];
 
 describe("sudoku solver naked single test", () => {
-  it("getNakedSingles test 1", () => {
+  it("nakedSingles test 1", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    const nakedSingles = s.getNakedSingles();
+    const fillNakedSingle = new FillNakedSingle();
+    const nakedSingles = fillNakedSingle.canFill(s.sudoku);
     expect(nakedSingles).toStrictEqual(
       TestUtil.inputValueDataArrFactory([
         [0, 7, "3"],
@@ -57,7 +57,8 @@ describe("sudoku solver naked single test", () => {
   it("getNakedSingles test 2", () => {
     const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
-    const nakedSingles = s.getNakedSingles();
+    const fillNakedSingle = new FillNakedSingle();
+    const nakedSingles = fillNakedSingle.canFill(s.sudoku);
     expect(nakedSingles).toStrictEqual(
       TestUtil.inputValueDataArrFactory([
         [2, 0, "9"],
