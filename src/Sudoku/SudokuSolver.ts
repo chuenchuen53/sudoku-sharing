@@ -92,35 +92,6 @@ export default class SudokuSolver {
     return true;
   }
 
-  // static getMultipleNakedFromVirtualLines(virtualLines: VirtualLine[], sizeOfCandidate: 3 | 4): NakedMultipleResult[] {
-  //   const result: NakedMultipleResult[] = [];
-
-  //   for (let i = 0; i < virtualLines.length; i++) {
-  //     const virtualLine = virtualLines[i];
-  //     const missingArr = SudokuSolver.getCandidatesArr(Sudoku.missingValuesInVirtualLine(virtualLine));
-  //     if (missingArr.length < sizeOfCandidate) continue;
-  //     const emptyCells = SudokuSolver.candidateCellsFromVirtualLine(virtualLine);
-  //     const combinations = sizeOfCandidate === 3 ? CalcUtil.combinations3(missingArr) : CalcUtil.combinations4(missingArr);
-
-  //     for (const combination of combinations) {
-  //       const cells = emptyCells.filter((x) => SudokuSolver.isSubset(x.candidates, combination));
-  //       if (cells.length !== sizeOfCandidate) continue;
-
-  //       const elimination: InputValueData[] = [];
-  //       const restCells = emptyCells.filter((x) => !cells.some((y) => Sudoku.isSamePos(x, y)));
-  //       restCells.forEach(({ rowIndex, columnIndex, candidates }) => {
-  //         for (const sudokuElement of combination) {
-  //           if (candidates?.[sudokuElement]) elimination.push({ rowIndex, columnIndex, value: sudokuElement });
-  //         }
-  //       });
-
-  //       result.push({ cells, elimination });
-  //     }
-  //   }
-
-  //   return result;
-  // }
-
   static getHiddenMultipleFromVirtualLines(virtualLines: VirtualLine[], sizeOfCandidate: 2 | 3 | 4): HiddenMultipleFromVirtualLinesResult[] {
     const result: HiddenMultipleFromVirtualLinesResult[] = [];
 
@@ -329,16 +300,6 @@ export default class SudokuSolver {
     return count;
   }
 
-  // getRemovalDueToNakedTriplets(): InputValueData[] {
-  //   const size = 3;
-  //   const rowResult = NakedMultiple.nakedMultipleFromVirtualLines(this.sudoku.getAllRows(), size);
-  //   const columnResult = NakedMultiple.nakedMultipleFromVirtualLines(this.sudoku.getAllColumns(), size);
-  //   const boxResult = NakedMultiple.nakedMultipleFromVirtualLines(this.sudoku.getAllBoxes(), size);
-  //   const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
-
-  //   return Sudoku.removeDuplicatedInputValueData(elimination);
-  // }
-
   removeCandidatesDueToNakedTriplets(): number {
     const eliminationData = this.nakedTriplets.canEliminate(this.sudoku);
     const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
@@ -346,16 +307,6 @@ export default class SudokuSolver {
     this.addStatsEliminationCount$NakedTriplets(count);
     return count;
   }
-
-  // getRemovalDueToNakedQuads(): InputValueData[] {
-  //   const size = 4;
-  //   const rowResult = NakedMultiple.nakedMultipleFromVirtualLines(this.sudoku.getAllRows(), size);
-  //   const columnResult = NakedMultiple.nakedMultipleFromVirtualLines(this.sudoku.getAllColumns(), size);
-  //   const boxResult = NakedMultiple.nakedMultipleFromVirtualLines(this.sudoku.getAllBoxes(), size);
-  //   const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
-
-  //   return Sudoku.removeDuplicatedInputValueData(elimination);
-  // }
 
   removeCandidatesDueToNakedQuads(): number {
     const eliminationData = this.nakedQuads.canEliminate(this.sudoku);
