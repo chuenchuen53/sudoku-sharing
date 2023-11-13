@@ -3,6 +3,7 @@ import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
 import type { InputClues, InputValueData, HiddenMultipleFromVirtualLinesResult } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
+import HiddenMultiple from "@/Sudoku/EliminationStrategy/HiddenMultiple";
 
 const p2: InputClues = [
   ["0", "3", "0", "9", "0", "0", "0", "0", "0"],
@@ -54,7 +55,7 @@ describe("sudoku solver", () => {
       ["5", "6", "7", "8"],
     ]);
 
-    const result = SudokuSolver.getHiddenMultipleFromVirtualLines([line], 3);
+    const result = HiddenMultiple.hiddenMultipleFromVirtualLines([line], 3);
     const expectResult: HiddenMultipleFromVirtualLinesResult[] = [
       {
         combination: ["5", "6", "7"],
