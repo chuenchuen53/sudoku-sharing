@@ -77,17 +77,6 @@ export interface UniqueMissingResult {
   cell: Cell;
 }
 
-export interface NakedMultipleResult {
-  cells: Cell[];
-  elimination: InputValueData[];
-}
-
-export interface HiddenMultipleFromVirtualLinesResult {
-  combination: SudokuElement[];
-  multiple: Cell[];
-  elimination: InputValueData[];
-}
-
 export interface XWingSwordfishResult {
   sudokuElement: SudokuElement;
   multiple: Cell[];

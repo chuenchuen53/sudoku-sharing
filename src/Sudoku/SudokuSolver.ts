@@ -1,11 +1,9 @@
 import CalcUtil from "../utils/CalcUtil";
 import EliminationStrategy from "./EliminationStrategy/EliminationStrategy";
-import HiddenMultiple from "./EliminationStrategy/HiddenMultiple";
 import HiddenPairs from "./EliminationStrategy/HiddenPairs";
 import HiddenQuads from "./EliminationStrategy/HiddenQuads";
 import HiddenTriplets from "./EliminationStrategy/HiddenTriplets";
 import LockedCandidates from "./EliminationStrategy/LockedCandidates";
-import NakedMultiple from "./EliminationStrategy/NakedMultiple";
 import NakedPairs from "./EliminationStrategy/NakedPairs";
 import NakedQuads from "./EliminationStrategy/NakedQuads";
 import NakedTriplets from "./EliminationStrategy/NakedTriplets";
@@ -23,7 +21,6 @@ import type {
   InputValueData,
   Cell,
   CandidateCell,
-  HiddenMultipleFromVirtualLinesResult,
   Pincer,
   XWingSwordfishResult,
   YWingResult,
@@ -283,16 +280,6 @@ export default class SudokuSolver {
     return count;
   }
 
-  // getRemovalDueToHiddenPairs(): InputValueData[] {
-  //   const size = 2;
-  //   const rowResult = HiddenMultiple.hiddenMultipleFromVirtualLines(this.sudoku.getAllRows(), size);
-  //   const columnResult = HiddenMultiple.hiddenMultipleFromVirtualLines(this.sudoku.getAllColumns(), size);
-  //   const boxResult = HiddenMultiple.hiddenMultipleFromVirtualLines(this.sudoku.getAllBoxes(), size);
-  //   const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
-
-  //   return Sudoku.removeDuplicatedInputValueData(elimination);
-  // }
-
   removeCandidatesDueToHiddenPairs(): number {
     const eliminationData = this.hiddenPairs.canEliminate(this.sudoku);
     const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
@@ -301,16 +288,6 @@ export default class SudokuSolver {
     return count;
   }
 
-  // getRemovalDueToHiddenTriplets(): InputValueData[] {
-  //   const size = 3;
-  //   const rowResult = HiddenMultiple.hiddenMultipleFromVirtualLines(this.sudoku.getAllRows(), size);
-  //   const columnResult = HiddenMultiple.hiddenMultipleFromVirtualLines(this.sudoku.getAllColumns(), size);
-  //   const boxResult = HiddenMultiple.hiddenMultipleFromVirtualLines(this.sudoku.getAllBoxes(), size);
-  //   const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
-
-  //   return Sudoku.removeDuplicatedInputValueData(elimination);
-  // }
-
   removeCandidatesDueToHiddenTriplets(): number {
     const eliminationData = this.hiddenTriplets.canEliminate(this.sudoku);
     const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
@@ -318,16 +295,6 @@ export default class SudokuSolver {
     this.addStatsEliminationCount$HiddenTriplets(count);
     return count;
   }
-
-  // getRemovalDueToHiddenQuads(): InputValueData[] {
-  //   const size = 4;
-  //   const rowResult = HiddenMultiple.hiddenMultipleFromVirtualLines(this.sudoku.getAllRows(), size);
-  //   const columnResult = HiddenMultiple.hiddenMultipleFromVirtualLines(this.sudoku.getAllColumns(), size);
-  //   const boxResult = HiddenMultiple.hiddenMultipleFromVirtualLines(this.sudoku.getAllBoxes(), size);
-  //   const elimination = [...rowResult, ...columnResult, ...boxResult].flatMap((x) => x.elimination);
-
-  //   return Sudoku.removeDuplicatedInputValueData(elimination);
-  // }
 
   removeCandidatesDueToHiddenQuads(): number {
     const eliminationData = this.hiddenQuads.canEliminate(this.sudoku);

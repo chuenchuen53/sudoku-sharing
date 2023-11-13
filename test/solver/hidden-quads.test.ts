@@ -1,9 +1,11 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
-import type { InputClues, InputValueData, HiddenMultipleFromVirtualLinesResult } from "../../src/Sudoku/type";
+import { type InputClues, type InputValueData, VirtualLineType } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
-import HiddenMultiple from "@/Sudoku/EliminationStrategy/HiddenMultiple";
+import HiddenQuads from "@/Sudoku/EliminationStrategy/HiddenQuads";
+import { SudokuLine } from "@/Sudoku/SudokuLine";
+import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 const p5: InputClues = [
   ["0", "0", "2", "0", "1", "0", "0", "0", "0"],
@@ -18,7 +20,7 @@ const p5: InputClues = [
 ];
 
 describe("sudoku solver", () => {
-  it("getHiddenMultipleFromVirtualLines sizeOfCandidate=4", () => {
+  it("hiddenQuadsFromVirtualLines", () => {
     const line = TestUtil.virtualLineFactory([
       ["1", "2", "9"],
       undefined,
@@ -31,33 +33,44 @@ describe("sudoku solver", () => {
       ["5", "6", "7", "8", "9"],
     ]);
 
-    const result = HiddenMultiple.hiddenMultipleFromVirtualLines([line], 4);
-    const expectResult: HiddenMultipleFromVirtualLinesResult[] = [
+    const result = HiddenQuads.hiddenQuadsFromVirtualLines([line], VirtualLineType.ROW);
+    const expectResult: typeof result = [
       {
-        combination: ["5", "6", "7", "8"],
-        multiple: [line[3], line[5], line[6], line[8]],
-        elimination: TestUtil.inputValueDataArrFactory([
-          [0, 3, "3"],
-          [0, 3, "4"],
-          [0, 3, "9"],
-          [0, 5, "3"],
-          [0, 5, "4"],
-          [0, 6, "1"],
-          [0, 6, "2"],
-          [0, 6, "3"],
-          [0, 6, "4"],
-          [0, 8, "9"],
+        eliminations: TestUtil.eliminationArrFactory([
+          [0, 3, ["3", "4", "9"]],
+          [0, 5, ["3", "4"]],
+          [0, 6, ["1", "2", "3", "4"]],
+          [0, 8, ["9"]],
         ]),
+        relatedLines: [SudokuLine.ROW_0],
+        highlights: [
+          {
+            position: { rowIndex: 0, columnIndex: 3 },
+            candidates: Sudoku.candidatesFactory(true, ["7", "8"]),
+          },
+          {
+            position: { rowIndex: 0, columnIndex: 5 },
+            candidates: Sudoku.candidatesFactory(true, ["5"]),
+          },
+          {
+            position: { rowIndex: 0, columnIndex: 6 },
+            candidates: Sudoku.candidatesFactory(true, ["5", "6", "7", "8"]),
+          },
+          {
+            position: { rowIndex: 0, columnIndex: 8 },
+            candidates: Sudoku.candidatesFactory(true, ["5", "6", "7", "8"]),
+          },
+        ],
       },
     ];
 
     expect(result).toEqual(expectResult);
   });
 
-  it("getRemovalDueToNakedPairs test 1", () => {
+  it("hiddenQuads test 1", () => {
     const s = new SudokuSolver(new Sudoku(p5));
     s.setBasicCandidates();
-    const result = s.getRemovalDueToHiddenQuads();
+    const result = EliminationStrategy.removalsFromEliminationData(s.hiddenQuads.canEliminate(s.sudoku));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [0, 0, "7"], // due to [3, 4, 5, 9] in row 0
       [0, 0, "8"], // due to [3, 4, 5, 9] in row 0
