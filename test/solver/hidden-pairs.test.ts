@@ -46,18 +46,11 @@ describe("sudoku solver", () => {
     ]);
 
     const result = HiddenPairs.hiddenPairsFromVirtualLines([line], VirtualLineType.ROW);
-    console.log("file: hidden-pairs.test.ts:48 ~ it ~ result:", JSON.stringify(result, null, 2));
     const expectResult: typeof result = [
       {
-        // combination: ["5", "6"],
-        // multiple: [line[6], line[8]],
         eliminations: TestUtil.eliminationArrFactory([
           [0, 6, ["1", "2", "3", "4"]],
-          // [0, 6, "2"],
-          // [0, 6, "3"],
-          // [0, 6, "4"],
           [0, 8, ["7", "8"]],
-          // [0, 8, "8"],
         ]),
         relatedLines: [SudokuLine.ROW_0],
         highlights: [
@@ -72,12 +65,11 @@ describe("sudoku solver", () => {
         ],
       },
     ];
-    console.log("file: hidden-pairs.test.ts:74 ~ it ~ expectResult:", JSON.stringify(expectResult, null, 2));
 
     expect(result).toEqual(expectResult);
   });
 
-  it("getRemovalDueToNakedPairs test 1", () => {
+  it("hiddenPairs test 1", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
     const result = EliminationStrategy.removalsFromEliminationData(s.hiddenPairs.canEliminate(s.sudoku));
@@ -101,7 +93,7 @@ describe("sudoku solver", () => {
     expect(result).toStrictEqual(expectResult);
   });
 
-  it("getRemovalDueToNakedPairs test 2", () => {
+  it("hiddenPairs test 2", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
     const result = EliminationStrategy.removalsFromEliminationData(s.hiddenPairs.canEliminate(s.sudoku));
