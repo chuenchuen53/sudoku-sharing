@@ -2,8 +2,11 @@ import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import { VirtualLineType } from "../../src/Sudoku/type";
 import TestUtil from "../TestUtil";
-import type { InputClues, InputValueData, SudokuElement, XWingSwordfishResult } from "../../src/Sudoku/type";
+import type { InputClues, InputValueData, SudokuElement } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
+import XWing from "@/Sudoku/EliminationStrategy/XWing";
+import { SudokuLine } from "@/Sudoku/SudokuLine";
+import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -53,20 +56,10 @@ const sampleCandidates: (SudokuElement[] | undefined)[] = [
   ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
 ];
 
-const undefinedCandidates: undefined[] = [
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-  undefined,
-];
+const undefinedCandidates: undefined[] = [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined];
 
 describe("sudoku solver", () => {
-  it("x wing test 1", () => {
+  it("xWingFromVirtualLines test 1", () => {
     const row0 = TestUtil.virtualLineFactory(
       [
         ["1", "2", "4", "5", "7", "8", "9"],
@@ -119,56 +112,90 @@ describe("sudoku solver", () => {
     const allRows = [row0, row1, row2, row3, row4, row5, row6, row7, row8];
     const allColumns = [column0, column1, column2, column3, column4, column5, column6, column7, column8];
 
-    const result = SudokuSolver.getXWingFromVirtualLines(VirtualLineType.ROW, allRows, allColumns);
-    const expectResult: XWingSwordfishResult[] = [
+    const result = XWing.xWingFromVirtualLines(VirtualLineType.ROW, allRows, allColumns);
+    const expectResult: typeof result = [
       {
-        sudokuElement: "3",
-        multiple: [row0[1], row0[7], row8[1], row8[7]],
-        elimination: TestUtil.inputValueDataArrFactory([
-          // [0, 1, "3"], // in multiple
-          [1, 1, "3"],
-          [2, 1, "3"],
-          [3, 1, "3"],
-          [4, 1, "3"],
-          [5, 1, "3"],
-          [6, 1, "3"],
-          [7, 1, "3"],
-          // [8, 1, "3"], // in multiple
+        eliminations: TestUtil.eliminationArrFactory([
+          // [0, 1, ["3"]], // in multiple
+          [1, 1, ["3"]],
+          [2, 1, ["3"]],
+          [3, 1, ["3"]],
+          [4, 1, ["3"]],
+          [5, 1, ["3"]],
+          [6, 1, ["3"]],
+          [7, 1, ["3"]],
+          // [8, 1, ["3"]], // in multiple
 
-          // [0, 7, "3"], // in multiple
-          [2, 7, "3"],
-          [4, 7, "3"],
-          [6, 7, "3"],
-          // [8, 7, "3"], // in multiple
+          // [0, 7, ["3"]], // in multiple
+          [2, 7, ["3"]],
+          [4, 7, ["3"]],
+          [6, 7, ["3"]],
+          // [8, 7, ["3"]], // in multiple
         ]),
+        relatedLines: [SudokuLine.ROW_0, SudokuLine.ROW_8, SudokuLine.COLUMN_1, SudokuLine.COLUMN_7],
+        highlights: [
+          {
+            position: { rowIndex: 0, columnIndex: 1 },
+            candidates: Sudoku.candidatesFactory(true, ["3"]),
+          },
+          {
+            position: { rowIndex: 0, columnIndex: 7 },
+            candidates: Sudoku.candidatesFactory(true, ["3"]),
+          },
+          {
+            position: { rowIndex: 8, columnIndex: 1 },
+            candidates: Sudoku.candidatesFactory(true, ["3"]),
+          },
+          {
+            position: { rowIndex: 8, columnIndex: 7 },
+            candidates: Sudoku.candidatesFactory(true, ["3"]),
+          },
+        ],
       },
       {
-        sudokuElement: "6",
-        multiple: [row0[2], row0[3], row8[2], row8[3]],
-        elimination: TestUtil.inputValueDataArrFactory([
-          // [0, 2, "6"], // in multiple
-          [2, 2, "6"],
-          [4, 2, "6"],
-          [6, 2, "6"],
-          // [8, 2, "6"], // in multiple
+        eliminations: TestUtil.eliminationArrFactory([
+          // [0, 2, ["6"]], // in multiple
+          [2, 2, ["6"]],
+          [4, 2, ["6"]],
+          [6, 2, ["6"]],
+          // [8, 2, ["6"]], // in multiple
 
-          // [0, 3, "6"], // in multiple
-          [1, 3, "6"],
-          [2, 3, "6"],
-          [3, 3, "6"],
-          [4, 3, "6"],
-          [5, 3, "6"],
-          [6, 3, "6"],
-          [7, 3, "6"],
-          // [8, 3, "6"], // in multiple
+          // [0, 3, ["6"]], // in multiple
+          [1, 3, ["6"]],
+          [2, 3, ["6"]],
+          [3, 3, ["6"]],
+          [4, 3, ["6"]],
+          [5, 3, ["6"]],
+          [6, 3, ["6"]],
+          [7, 3, ["6"]],
+          // [8, 3, ["6"]], // in multiple
         ]),
+        relatedLines: [SudokuLine.ROW_0, SudokuLine.ROW_8, SudokuLine.COLUMN_2, SudokuLine.COLUMN_3],
+        highlights: [
+          {
+            position: { rowIndex: 0, columnIndex: 2 },
+            candidates: Sudoku.candidatesFactory(true, ["6"]),
+          },
+          {
+            position: { rowIndex: 0, columnIndex: 3 },
+            candidates: Sudoku.candidatesFactory(true, ["6"]),
+          },
+          {
+            position: { rowIndex: 8, columnIndex: 2 },
+            candidates: Sudoku.candidatesFactory(true, ["6"]),
+          },
+          {
+            position: { rowIndex: 8, columnIndex: 3 },
+            candidates: Sudoku.candidatesFactory(true, ["6"]),
+          },
+        ],
       },
     ];
 
     expect(result).toEqual(expectResult);
   });
 
-  it("x wing test 2", () => {
+  it("xWingFromVirtualLines test 2", () => {
     const column0 = TestUtil.virtualLineFactory(
       [
         ["1", "2", "4", "5", "7", "8", "9"],
@@ -221,49 +248,83 @@ describe("sudoku solver", () => {
     const allRows = [row0, row1, row2, row3, row4, row5, row6, row7, row8];
     const allColumns = [column0, column1, column2, column3, column4, column5, column6, column7, column8];
 
-    const result = SudokuSolver.getXWingFromVirtualLines(VirtualLineType.COLUMN, allColumns, allRows);
-    const expectResult: XWingSwordfishResult[] = [
+    const result = XWing.xWingFromVirtualLines(VirtualLineType.COLUMN, allColumns, allRows);
+    const expectResult: typeof result = [
       {
-        sudokuElement: "3",
-        multiple: [column0[1], column0[7], column8[1], column8[7]],
-        elimination: TestUtil.inputValueDataArrFactory([
-          // [1, 0, "3"], // in multiple
-          [1, 1, "3"],
-          [1, 2, "3"],
-          [1, 3, "3"],
-          [1, 4, "3"],
-          [1, 5, "3"],
-          [1, 6, "3"],
-          [1, 7, "3"],
-          // [1, 8, "3"], // in multiple
+        eliminations: TestUtil.eliminationArrFactory([
+          // [1, 0, ["3"]], // in multiple
+          [1, 1, ["3"]],
+          [1, 2, ["3"]],
+          [1, 3, ["3"]],
+          [1, 4, ["3"]],
+          [1, 5, ["3"]],
+          [1, 6, ["3"]],
+          [1, 7, ["3"]],
+          // [1, 8, ["3"]], // in multiple
 
-          // [7, 0, "3"], // in multiple
-          [7, 2, "3"],
-          [7, 4, "3"],
-          [7, 6, "3"],
-          // [7, 8, "3"], // in multiple
+          // [7, 0, ["3"]], // in multiple
+          [7, 2, ["3"]],
+          [7, 4, ["3"]],
+          [7, 6, ["3"]],
+          // [7, 8, ["3"]], // in multiple
         ]),
+        relatedLines: [SudokuLine.COLUMN_0, SudokuLine.COLUMN_8, SudokuLine.ROW_1, SudokuLine.ROW_7],
+        highlights: [
+          {
+            position: { rowIndex: 1, columnIndex: 0 },
+            candidates: Sudoku.candidatesFactory(true, ["3"]),
+          },
+          {
+            position: { rowIndex: 7, columnIndex: 0 },
+            candidates: Sudoku.candidatesFactory(true, ["3"]),
+          },
+          {
+            position: { rowIndex: 1, columnIndex: 8 },
+            candidates: Sudoku.candidatesFactory(true, ["3"]),
+          },
+          {
+            position: { rowIndex: 7, columnIndex: 8 },
+            candidates: Sudoku.candidatesFactory(true, ["3"]),
+          },
+        ],
       },
       {
-        sudokuElement: "6",
-        multiple: [column0[2], column0[3], column8[2], column8[3]],
-        elimination: TestUtil.inputValueDataArrFactory([
-          // [2, 0, "6"], // in multiple
-          [2, 2, "6"],
-          [2, 4, "6"],
-          [2, 6, "6"],
-          // [2, 8, "6"], // in multiple
+        eliminations: TestUtil.eliminationArrFactory([
+          // [2, 0, ["6"]], // in multiple
+          [2, 2, ["6"]],
+          [2, 4, ["6"]],
+          [2, 6, ["6"]],
+          // [2, 8, ["6"]], // in multiple
 
-          // [3, 0, "6"], // in multiple
-          [3, 1, "6"],
-          [3, 2, "6"],
-          [3, 3, "6"],
-          [3, 4, "6"],
-          [3, 5, "6"],
-          [3, 6, "6"],
-          [3, 7, "6"],
-          // [3, 8, "6"], // in multiple
+          // [3, 0, ["6"]], // in multiple
+          [3, 1, ["6"]],
+          [3, 2, ["6"]],
+          [3, 3, ["6"]],
+          [3, 4, ["6"]],
+          [3, 5, ["6"]],
+          [3, 6, ["6"]],
+          [3, 7, ["6"]],
+          // [3, 8, ["6"]], // in multiple
         ]),
+        relatedLines: [SudokuLine.COLUMN_0, SudokuLine.COLUMN_8, SudokuLine.ROW_2, SudokuLine.ROW_3],
+        highlights: [
+          {
+            position: { rowIndex: 2, columnIndex: 0 },
+            candidates: Sudoku.candidatesFactory(true, ["6"]),
+          },
+          {
+            position: { rowIndex: 3, columnIndex: 0 },
+            candidates: Sudoku.candidatesFactory(true, ["6"]),
+          },
+          {
+            position: { rowIndex: 2, columnIndex: 8 },
+            candidates: Sudoku.candidatesFactory(true, ["6"]),
+          },
+          {
+            position: { rowIndex: 3, columnIndex: 8 },
+            candidates: Sudoku.candidatesFactory(true, ["6"]),
+          },
+        ],
       },
     ];
 
@@ -273,7 +334,7 @@ describe("sudoku solver", () => {
   it("getRemovalDueToXWing test 1", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    const result = s.getRemovalDueToXWing();
+    const result = EliminationStrategy.removalsFromEliminationData(s.xWing.canEliminate(s.sudoku));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [1, 3, "2"], // due to element "2" in [1, 6], [7, 6], [1, 8], [7, 8]
       [1, 4, "2"], // due to element "2" in [1, 6], [7, 6], [1, 8], [7, 8]
@@ -287,7 +348,7 @@ describe("sudoku solver", () => {
   it("getRemovalDueToXWing test 2", () => {
     const s = new SudokuSolver(new Sudoku(p2));
     s.setBasicCandidates();
-    const result = s.getRemovalDueToXWing();
+    const result = EliminationStrategy.removalsFromEliminationData(s.xWing.canEliminate(s.sudoku));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [0, 7, "1"], // due to element "1" in [6, 5], [6, 7], [8, 5], [8, 7]
       [1, 7, "1"], // due to element "1" in [6, 5], [6, 7], [8, 5], [8, 7]

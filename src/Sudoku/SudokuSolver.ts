@@ -7,24 +7,13 @@ import LockedCandidates from "./EliminationStrategy/LockedCandidates";
 import NakedPairs from "./EliminationStrategy/NakedPairs";
 import NakedQuads from "./EliminationStrategy/NakedQuads";
 import NakedTriplets from "./EliminationStrategy/NakedTriplets";
+import XWing from "./EliminationStrategy/XWing";
 import FillHiddenSingle from "./FillHiddenSingle";
 import FillNakedSingle from "./FillNakedSingle";
 import type FillStrategy from "./FillStrategy";
 import FillUniqueMissing from "./FillUniqueMissing";
 import Sudoku from "./Sudoku";
-import { VirtualLineType } from "./type";
-import type {
-  SolveStats,
-  Candidates,
-  SudokuElement,
-  VirtualLine,
-  InputValueData,
-  Cell,
-  CandidateCell,
-  Pincer,
-  XWingSwordfishResult,
-  YWingResult,
-} from "./type";
+import type { SolveStats, Candidates, SudokuElement, VirtualLine, InputValueData, Cell, CandidateCell, Pincer, YWingResult } from "./type";
 
 export default class SudokuSolver {
   public stats: SolveStats;
@@ -38,6 +27,7 @@ export default class SudokuSolver {
   public hiddenPairs = new HiddenPairs();
   public hiddenTriplets = new HiddenTriplets();
   public hiddenQuads = new HiddenQuads();
+  public xWing = new XWing();
 
   public nakedPairs = new NakedPairs();
   private eliminationStrategies: (() => unknown)[];
@@ -93,60 +83,6 @@ export default class SudokuSolver {
       if (x[sudokuElement] !== y[sudokuElement]) return false;
     }
     return true;
-  }
-
-  static getXWingFromVirtualLines(
-    type: VirtualLineType.ROW | VirtualLineType.COLUMN,
-    virtualLines: VirtualLine[],
-    perpendicularVirtualLines: VirtualLine[]
-  ): XWingSwordfishResult[] {
-    const result: XWingSwordfishResult[] = [];
-
-    for (const sudokuElement of Sudoku.allElements()) {
-      const gridWithElementInCandidate = virtualLines.map((line) =>
-        line.map((cell) => (cell.candidates?.[sudokuElement] ? (cell as CandidateCell) : undefined))
-      );
-
-      const lineWithTwoCellsContained = gridWithElementInCandidate.reduce((acc, line) => {
-        const cells = line.filter((x): x is CandidateCell => Boolean(x));
-        if (cells.length === 2) acc.push({ cells });
-        return acc;
-      }, [] as { cells: Cell[] }[]);
-
-      if (lineWithTwoCellsContained.length < 2) continue;
-
-      const combinations = CalcUtil.combinations2(lineWithTwoCellsContained);
-      for (const [line1, line2] of combinations) {
-        const isSamePerpendicularPos =
-          type === VirtualLineType.ROW
-            ? line1.cells[0].columnIndex === line2.cells[0].columnIndex && line1.cells[1].columnIndex === line2.cells[1].columnIndex
-            : line1.cells[0].rowIndex === line2.cells[0].rowIndex && line1.cells[1].rowIndex === line2.cells[1].rowIndex;
-
-        if (!isSamePerpendicularPos) continue;
-
-        const transverseIndexes =
-          type === VirtualLineType.ROW
-            ? [line1.cells[0].columnIndex, line1.cells[1].columnIndex]
-            : [line1.cells[0].rowIndex, line1.cells[1].rowIndex];
-        const multiple = [line1.cells[0], line1.cells[1], line2.cells[0], line2.cells[1]];
-        const eliminationLines = [perpendicularVirtualLines[transverseIndexes[0]], perpendicularVirtualLines[transverseIndexes[1]]];
-        const elimination: InputValueData[] = [];
-        eliminationLines.forEach((line) => {
-          line.forEach((cell) => {
-            if (cell.candidates?.[sudokuElement] && !multiple.some((x) => Sudoku.isSamePos(x, cell))) {
-              elimination.push({
-                rowIndex: cell.rowIndex,
-                columnIndex: cell.columnIndex,
-                value: sudokuElement,
-              });
-            }
-          });
-        });
-        result.push({ sudokuElement, multiple, elimination });
-      }
-    }
-
-    return result;
   }
 
   static cellWithTwoCandidatesAndOnlyOneIsAorB(cell: Cell, a: SudokuElement, b: SudokuElement): null | Pincer {
@@ -304,19 +240,9 @@ export default class SudokuSolver {
     return count;
   }
 
-  getRemovalDueToXWing(): InputValueData[] {
-    const allRows = this.sudoku.getAllRows();
-    const allColumns = this.sudoku.getAllColumns();
-
-    const rowResult = SudokuSolver.getXWingFromVirtualLines(VirtualLineType.ROW, allRows, allColumns);
-    const columnResult = SudokuSolver.getXWingFromVirtualLines(VirtualLineType.COLUMN, allColumns, allRows);
-    const elimination = [...rowResult, ...columnResult].flatMap((x) => x.elimination);
-
-    return Sudoku.removeDuplicatedInputValueData(elimination);
-  }
-
   removeCandidatesDueToXWing(): number {
-    const removals = this.getRemovalDueToXWing();
+    const eliminationData = this.xWing.canEliminate(this.sudoku);
+    const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
     const count = this.sudoku.removeElementInCandidates(removals);
     this.addStatsEliminationCount$XWing(count);
     return count;

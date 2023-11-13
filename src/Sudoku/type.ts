@@ -77,12 +77,6 @@ export interface UniqueMissingResult {
   cell: Cell;
 }
 
-export interface XWingSwordfishResult {
-  sudokuElement: SudokuElement;
-  multiple: Cell[];
-  elimination: InputValueData[];
-}
-
 export interface Pincer extends Cell {
   same: SudokuElement;
   diff: SudokuElement;
