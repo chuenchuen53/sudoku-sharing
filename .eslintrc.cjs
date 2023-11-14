@@ -29,5 +29,11 @@ module.exports = {
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/member-ordering": "warn",
     "@typescript-eslint/no-unused-vars": ["warn", { vars: "all", argsIgnorePattern: "^_" }],
+    "vue/multi-word-component-names": [
+      "warn",
+      {
+        ignores: ["index", "default"],
+      },
+    ],
   },
 };
