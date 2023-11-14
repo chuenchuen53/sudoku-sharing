@@ -25,7 +25,7 @@ module.exports = {
         groups: ["builtin", "external", "internal", "parent", "sibling", "index", "object", "type"],
       },
     ],
-    "class-methods-use-this": "error",
+    // "class-methods-use-this": "error",
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/member-ordering": "warn",
     "@typescript-eslint/no-unused-vars": ["warn", { vars: "all", argsIgnorePattern: "^_" }],

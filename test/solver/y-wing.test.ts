@@ -2,15 +2,10 @@ import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
 import { VirtualLineType } from "../../src/Sudoku/type";
-import type {
-  Pincer,
-  YWingResult,
-  InputClues,
-  InputValueData,
-  SudokuElement,
-  CandidateCell,
-} from "../../src/Sudoku/type";
+import type { Pincer, InputClues, InputValueData, SudokuElement, CandidateCell } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
+import YWing from "@/Sudoku/EliminationStrategy/YWing";
+import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -25,33 +20,24 @@ const p0: InputClues = [
 ];
 
 const cf = TestUtil.CellFactory;
-const pf = TestUtil.pincerFactory;
 
 describe("sudoku solver", () => {
   it("cellWithTwoCandidatesAndOnlyOneIsAorB", () => {
-    const fn = SudokuSolver.cellWithTwoCandidatesAndOnlyOneIsAorB;
+    const fn = YWing.cellWithTwoCandidatesAndOnlyOneIsAorB;
 
     expect(fn(cf(0, 0, { clue: "3" }), "1", "2")).toBe(null);
     expect(fn(cf(0, 0, { inputValue: "3" }), "1", "2")).toBe(null);
     expect(fn(cf(0, 0, { candidates: ["1", "2", "3", "4", "5", "6", "7", "8", "9"] }), "1", "2")).toBe(null);
     expect(fn(cf(0, 0, { candidates: ["3", "4", "5"] }), "1", "2")).toBe(null);
     expect(fn(cf(0, 0, { candidates: ["1", "2"] }), "1", "2")).toBe(null);
-    expect(fn(cf(0, 0, { candidates: ["1", "3"] }), "1", "2")).toStrictEqual(
-      TestUtil.pincerFactory(cf(0, 0, { candidates: ["1", "3"] }), "1", "3")
-    );
-    expect(fn(cf(0, 0, { candidates: ["2", "3"] }), "1", "2")).toStrictEqual(
-      TestUtil.pincerFactory(cf(0, 0, { candidates: ["2", "3"] }), "2", "3")
-    );
-    expect(fn(cf(0, 0, { candidates: ["5", "7"] }), "4", "5")).toStrictEqual(
-      TestUtil.pincerFactory(cf(0, 0, { candidates: ["5", "7"] }), "5", "7")
-    );
-    expect(fn(cf(0, 0, { candidates: ["4", "7"] }), "4", "5")).toStrictEqual(
-      TestUtil.pincerFactory(cf(0, 0, { candidates: ["4", "7"] }), "4", "7")
-    );
+    expect(fn(cf(0, 0, { candidates: ["1", "3"] }), "1", "2")).toStrictEqual(TestUtil.pincerFactory(cf(0, 0, { candidates: ["1", "3"] }), "1", "3"));
+    expect(fn(cf(0, 0, { candidates: ["2", "3"] }), "1", "2")).toStrictEqual(TestUtil.pincerFactory(cf(0, 0, { candidates: ["2", "3"] }), "2", "3"));
+    expect(fn(cf(0, 0, { candidates: ["5", "7"] }), "4", "5")).toStrictEqual(TestUtil.pincerFactory(cf(0, 0, { candidates: ["5", "7"] }), "5", "7"));
+    expect(fn(cf(0, 0, { candidates: ["4", "7"] }), "4", "5")).toStrictEqual(TestUtil.pincerFactory(cf(0, 0, { candidates: ["4", "7"] }), "4", "7"));
   });
 
   it("possiblePincersFromLine", () => {
-    const fn = SudokuSolver.possiblePincersFromLine;
+    const fn = YWing.possiblePincersFromLine;
 
     const pincer = cf(2, 5, { candidates: ["1", "3"] }) as CandidateCell;
 
@@ -96,7 +82,7 @@ describe("sudoku solver", () => {
   });
 
   it("isYWingPattern", () => {
-    const fn = SudokuSolver.isYWingPattern;
+    const fn = YWing.isYWingPattern;
 
     // assume pivot 1, 2
     const p0 = TestUtil.pincerFactory(cf(0, 0, { candidates: ["1", "2"] }), "1", "2");
@@ -123,7 +109,7 @@ describe("sudoku solver", () => {
   });
 
   it("cartesianProductWithYWingPattern", () => {
-    const fn = SudokuSolver.cartesianProductWithYWingPattern;
+    const fn = YWing.cartesianProductWithYWingPattern;
 
     // assume pivot 1, 2 at [2, 2]
     const rowPincers: Pincer[] = [
@@ -167,39 +153,63 @@ describe("sudoku solver", () => {
     expect(columnBoxResult).toStrictEqual(expectColumnBoxResult);
   });
 
-  it("getYWing test 1", () => {
+  it("yWingFromSudoku test 1", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    const result = s.getYWing();
-    const expectResult: YWingResult[] = [
+    const result = YWing.yWingFromSudoku(s.sudoku);
+    const expectResult: typeof result = [
       {
-        pivot: cf(7, 4, { candidates: ["2", "8"] }),
-        pincers: [
-          pf(cf(7, 6, { candidates: ["2", "7"] }), "2", "7"),
-          pf(cf(3, 4, { candidates: ["7", "8"] }), "8", "7"),
+        eliminations: TestUtil.eliminationArrFactory([[3, 6, ["7"]]]),
+        relatedLines: [],
+        highlights: [
+          {
+            position: { rowIndex: 7, columnIndex: 4 },
+            candidates: Sudoku.candidatesFactory(true, ["2", "8"]),
+          },
+          {
+            position: { rowIndex: 7, columnIndex: 6 },
+            candidates: Sudoku.candidatesFactory(true, ["2"]),
+            isSecondaryPosition: true,
+          },
+          {
+            position: { rowIndex: 3, columnIndex: 4 },
+            candidates: Sudoku.candidatesFactory(true, ["8"]),
+            isSecondaryPosition: true,
+          },
         ],
-        elimination: TestUtil.inputValueDataArrFactory([[3, 6, "7"]]),
       },
       {
-        pivot: cf(8, 3, { candidates: ["5", "8"] }),
-        pincers: [
-          pf(cf(2, 3, { candidates: ["2", "5"] }), "5", "2"),
-          pf(cf(7, 4, { candidates: ["2", "8"] }), "8", "2"),
-        ],
-        elimination: TestUtil.inputValueDataArrFactory([
-          [2, 4, "2"],
-          [1, 4, "2"],
+        eliminations: TestUtil.eliminationArrFactory([
+          [2, 4, ["2"]],
+          [1, 4, ["2"]],
         ]),
+        relatedLines: [],
+        highlights: [
+          {
+            position: { rowIndex: 8, columnIndex: 3 },
+            candidates: Sudoku.candidatesFactory(true, ["5", "8"]),
+          },
+          {
+            position: { rowIndex: 2, columnIndex: 3 },
+            candidates: Sudoku.candidatesFactory(true, ["5"]),
+            isSecondaryPosition: true,
+          },
+          {
+            position: { rowIndex: 7, columnIndex: 4 },
+            candidates: Sudoku.candidatesFactory(true, ["8"]),
+            isSecondaryPosition: true,
+          },
+        ],
       },
     ];
 
     expect(result).toStrictEqual(expectResult);
   });
 
-  it("getRemovalDueToYWing test 1", () => {
+  it("yWing removals test", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    const result = s.getRemovalDueToYWing();
+    const result = EliminationStrategy.removalsFromEliminationData(s.yWing.canEliminate(s.sudoku));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [3, 6, "7"],
       [2, 4, "2"],

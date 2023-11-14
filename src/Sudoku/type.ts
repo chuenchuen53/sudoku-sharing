@@ -81,9 +81,3 @@ export interface Pincer extends Cell {
   same: SudokuElement;
   diff: SudokuElement;
 }
-
-export interface YWingResult {
-  pivot: Cell;
-  pincers: Pincer[];
-  elimination: InputValueData[];
-}

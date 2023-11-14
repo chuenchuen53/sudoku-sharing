@@ -1,15 +1,15 @@
-import CalcUtil from "@/utils/CalcUtil";
 import Sudoku from "../Sudoku";
 import { VirtualLineType, type CandidateCell, type RowColumn, type VirtualLine } from "../type";
-import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
 import { SudokuLineUtil, type SudokuLine } from "../SudokuLine";
+import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
+import CalcUtil from "@/utils/CalcUtil";
 
 export default class XWing extends EliminationStrategy {
   public canEliminate(sudoku: Sudoku): EliminationData[] {
-    return XWing.getXWingFromSudoku(sudoku);
+    return XWing.xWingFromSudoku(sudoku);
   }
 
-  public static getXWingFromSudoku(sudoku: Sudoku): EliminationData[] {
+  public static xWingFromSudoku(sudoku: Sudoku): EliminationData[] {
     const allRows = sudoku.getAllRows();
     const allColumns = sudoku.getAllColumns();
 
