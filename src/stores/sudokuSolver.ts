@@ -63,17 +63,17 @@ export const useSudokuSolverStore = defineStore("sudokuSolver", () => {
   const getBasicCandidates = () => sudokuSolver.value.setBasicCandidates();
 
   const getUniqueMissing = () => {
-    const result = sudokuSolver.value.fillUniqueMissing.canFill(sudokuSolver.value.sudoku as Sudoku);
+    const result = sudokuSolver.value.uniqueMissing.canFill(sudokuSolver.value.sudoku as Sudoku);
     const cells = result.map((x) => sudokuSolver.value.sudoku.grid[x.rowIndex][x.columnIndex]);
     highlight.cell = cells;
   };
 
   const getNakedSingles = () => {
-    highlight.candidate = sudokuSolver.value.fillHiddenSingle.canFill(sudokuSolver.value.sudoku as Sudoku);
+    highlight.candidate = sudokuSolver.value.hiddenSingle.canFill(sudokuSolver.value.sudoku as Sudoku);
   };
 
   const getHiddenSingles = () => {
-    highlight.candidate = sudokuSolver.value.fillHiddenSingle.canFill(sudokuSolver.value.sudoku as Sudoku);
+    highlight.candidate = sudokuSolver.value.hiddenSingle.canFill(sudokuSolver.value.sudoku as Sudoku);
   };
 
   const getRemovalDueToLockedCandidates = () => {

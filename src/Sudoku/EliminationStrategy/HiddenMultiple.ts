@@ -1,9 +1,9 @@
-import CalcUtil from "@/utils/CalcUtil";
 import Sudoku from "../Sudoku";
 import SudokuSolver from "../SudokuSolver";
-import type { VirtualLine, SudokuElement, VirtualLineType } from "../type";
-import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
 import { SudokuLineUtil } from "../SudokuLine";
+import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
+import type { VirtualLine, SudokuElement, VirtualLineType } from "../type";
+import CalcUtil from "@/utils/CalcUtil";
 
 export default abstract class HiddenMultiple extends EliminationStrategy {
   static hiddenMultipleFromVirtualLines(

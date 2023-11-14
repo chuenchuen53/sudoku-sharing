@@ -5,7 +5,7 @@ import TestUtil from "../TestUtil";
 import type { InputClues, SudokuElement } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
 import LockedCandidates from "@/Sudoku/EliminationStrategy/LockedCandidates";
-import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy, { EliminationStrategyType } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 interface AllResult {
   rowLockInBoxResult: [number, number, SudokuElement][][];
@@ -274,7 +274,7 @@ const testFactory = (solver: SudokuSolver, allResult: AllResult) => {
   });
 
   it("lock candidate overall", () => {
-    const result = EliminationStrategy.removalsFromEliminationData(solver.lockedCandidates.canEliminate(solver.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(solver.computeCanEliminate(EliminationStrategyType.LOCKED_CANDIDATES));
 
     const rowLockInBoxResultFlat = allResult.rowLockInBoxResult.flat() as [number, number, SudokuElement][];
     const columnLockInBoxResultFlat = allResult.columnLockInBoxResult.flat() as [number, number, SudokuElement][];
@@ -305,7 +305,7 @@ const testFactory = (solver: SudokuSolver, allResult: AllResult) => {
       ...boxLockInColumnResultFlat,
     ]);
 
-    expect(solver.removeCandidatesDueToLockedCandidates()).toBe(arr.length);
+    expect(solver.removeCandidatesFromEliminationStrategy(EliminationStrategyType.LOCKED_CANDIDATES)).toBe(arr.length);
   });
 };
 

@@ -19,8 +19,6 @@ export interface EliminationData {
 }
 
 export default abstract class EliminationStrategy {
-  public abstract canEliminate(sudoku: Sudoku): EliminationData[];
-
   public static removalsFromEliminationData(data: EliminationData[]): InputValueData[] {
     const flattedEliminations = data.flatMap((x) => x.eliminations);
     const result: InputValueData[] = flattedEliminations.flatMap(({ rowIndex, columnIndex, elements }) =>
@@ -28,4 +26,18 @@ export default abstract class EliminationStrategy {
     );
     return Sudoku.removeDuplicatedInputValueData(result);
   }
+
+  public abstract canEliminate(sudoku: Sudoku): EliminationData[];
+}
+
+export enum EliminationStrategyType {
+  LOCKED_CANDIDATES = "LOCKED_CANDIDATES",
+  NAKED_PAIRS = "NAKED_PAIRS",
+  NAKED_TRIPLETS = "NAKED_TRIPLETS",
+  NAKED_QUADS = "NAKED_QUADS",
+  HIDDEN_PAIRS = "HIDDEN_PAIRS",
+  HIDDEN_TRIPLETS = "HIDDEN_TRIPLETS",
+  HIDDEN_QUADS = "HIDDEN_QUADS",
+  X_WING = "X_WING",
+  Y_WING = "Y_WING",
 }

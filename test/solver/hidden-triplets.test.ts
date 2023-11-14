@@ -5,7 +5,7 @@ import { type InputClues, type InputValueData, VirtualLineType } from "../../src
 import Sudoku from "@/Sudoku/Sudoku";
 import HiddenTriplets from "@/Sudoku/EliminationStrategy/HiddenTriplets";
 import { SudokuLine } from "@/Sudoku/SudokuLine";
-import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy, { EliminationStrategyType } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 const p2: InputClues = [
   ["0", "3", "0", "9", "0", "0", "0", "0", "0"],
@@ -89,7 +89,7 @@ describe("sudoku solver", () => {
   it("hiddenTriplets test 1", () => {
     const s = new SudokuSolver(new Sudoku(p2));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(s.hiddenTriplets.canEliminate(s.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.HIDDEN_TRIPLETS));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [1, 1, "5"], // due to [1, 4, 9] in column 1
       [1, 1, "7"], // due to [1, 4, 9] in column 1
@@ -127,7 +127,7 @@ describe("sudoku solver", () => {
   it("hiddenTriplets test 2", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(s.hiddenTriplets.canEliminate(s.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.HIDDEN_TRIPLETS));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [0, 3, "2"], // due to [5, 6, 8] in box 1
       [0, 3, "3"], // due to [5, 6, 8] in box 1
@@ -146,7 +146,7 @@ describe("sudoku solver", () => {
   it("hiddenTriplets test 3", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(s.hiddenTriplets.canEliminate(s.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.HIDDEN_TRIPLETS));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [4, 3, "2"], // due to [3, 4, 9] in row 4
       [4, 3, "7"], // due to [3, 4, 9] in row 4
@@ -168,18 +168,18 @@ describe("sudoku solver", () => {
   it("removeCandidatesDueToHiddenTriplets test 1", () => {
     const s = new SudokuSolver(new Sudoku(p2));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToHiddenTriplets()).toBe(24);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.HIDDEN_TRIPLETS)).toBe(24);
   });
 
   it("removeCandidatesDueToHiddenTriplets test 2", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToHiddenTriplets()).toBe(10);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.HIDDEN_TRIPLETS)).toBe(10);
   });
 
   it("removeCandidatesDueToHiddenTriplets test 3", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToHiddenTriplets()).toBe(13);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.HIDDEN_TRIPLETS)).toBe(13);
   });
 });

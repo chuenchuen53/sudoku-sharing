@@ -4,6 +4,7 @@ import TestUtil from "../TestUtil";
 import type { InputClues } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
 import NakedSingle from "@/Sudoku/FillStrategy/NakedSingle";
+import { FillStrategyType } from "@/Sudoku/FillStrategy/FillStrategy";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -71,12 +72,12 @@ describe("sudoku solver naked single test", () => {
   it("setNakedSingles test 1", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    expect(s.setNakedSingles()).toBe(13);
+    expect(s.setValueFromFillStrategy(FillStrategyType.NAKED_SINGLE)).toBe(13);
   });
 
   it("setNakedSingles test 2", () => {
     const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
-    expect(s.setNakedSingles()).toBe(3);
+    expect(s.setValueFromFillStrategy(FillStrategyType.NAKED_SINGLE)).toBe(3);
   });
 });

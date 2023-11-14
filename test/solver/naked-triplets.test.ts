@@ -5,7 +5,7 @@ import { VirtualLineType, type InputClues, type InputValueData } from "../../src
 import Sudoku from "@/Sudoku/Sudoku";
 import NakedTriplets from "@/Sudoku/EliminationStrategy/NakedTriplets";
 import { SudokuLine } from "@/Sudoku/SudokuLine";
-import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy, { EliminationStrategyType } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 const p3: InputClues = [
   ["0", "0", "0", "0", "0", "1", "6", "0", "0"],
@@ -76,7 +76,7 @@ describe("sudoku solver", () => {
   it("canEliminate test 1", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(s.nakedTriplets.canEliminate(s.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.NAKED_TRIPLETS));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [1, 6, "7"], // due to column 6 - 347
       [1, 7, "2"], // due to box 2 - 278
@@ -91,7 +91,7 @@ describe("sudoku solver", () => {
   it("canEliminate test 2", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(s.nakedTriplets.canEliminate(s.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.NAKED_TRIPLETS));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [2, 1, "1"], // due to row 2 169
       [2, 1, "6"], // due to row 2 169
@@ -123,12 +123,12 @@ describe("sudoku solver", () => {
   it("removeCandidatesDueToNakedTriplets test 1", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToNakedTriplets()).toBe(6);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.NAKED_TRIPLETS)).toBe(6);
   });
 
   it("removeCandidatesDueToNakedTriplets test 2", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToNakedTriplets()).toBe(23);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.NAKED_TRIPLETS)).toBe(23);
   });
 });

@@ -5,7 +5,7 @@ import { VirtualLineType, type InputClues, type InputValueData } from "../../src
 import Sudoku from "@/Sudoku/Sudoku";
 import NakedQuads from "@/Sudoku/EliminationStrategy/NakedQuads";
 import { SudokuLine } from "@/Sudoku/SudokuLine";
-import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy, { EliminationStrategyType } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 const p3: InputClues = [
   ["0", "0", "0", "0", "0", "1", "6", "0", "0"],
@@ -83,7 +83,7 @@ describe("sudoku solver", () => {
   it("getRemovalDueToNakedPairs test 1", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(s.nakedQuads.canEliminate(s.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.NAKED_QUADS));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [4, 7, "3"], // due to row 4 - 3567
       [4, 7, "5"], // due to row 4 - 3567
@@ -104,7 +104,7 @@ describe("sudoku solver", () => {
   it("getRemovalDueToNakedPairs test 2", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(s.nakedQuads.canEliminate(s.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.NAKED_QUADS));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [1, 8, "5"], // due to row 1 - 2456
       [4, 4, "2"], // due to row 4 - 2579
@@ -123,12 +123,12 @@ describe("sudoku solver", () => {
   it("removeCandidatesDueToNakedQuads test 1", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToNakedQuads()).toBe(7);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.NAKED_QUADS)).toBe(7);
   });
 
   it("removeCandidatesDueToNakedQuads test 2", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToNakedQuads()).toBe(10);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.NAKED_QUADS)).toBe(10);
   });
 });

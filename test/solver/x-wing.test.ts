@@ -6,7 +6,7 @@ import type { InputClues, InputValueData, SudokuElement } from "../../src/Sudoku
 import Sudoku from "@/Sudoku/Sudoku";
 import XWing from "@/Sudoku/EliminationStrategy/XWing";
 import { SudokuLine } from "@/Sudoku/SudokuLine";
-import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy, { EliminationStrategyType } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -334,7 +334,7 @@ describe("sudoku solver", () => {
   it("getRemovalDueToXWing test 1", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(s.xWing.canEliminate(s.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.X_WING));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [1, 3, "2"], // due to element "2" in [1, 6], [7, 6], [1, 8], [7, 8]
       [1, 4, "2"], // due to element "2" in [1, 6], [7, 6], [1, 8], [7, 8]
@@ -348,7 +348,7 @@ describe("sudoku solver", () => {
   it("getRemovalDueToXWing test 2", () => {
     const s = new SudokuSolver(new Sudoku(p2));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(s.xWing.canEliminate(s.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.X_WING));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [0, 7, "1"], // due to element "1" in [6, 5], [6, 7], [8, 5], [8, 7]
       [1, 7, "1"], // due to element "1" in [6, 5], [6, 7], [8, 5], [8, 7]
@@ -364,12 +364,12 @@ describe("sudoku solver", () => {
   it("removeCandidatesDueToXWing test 1", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToXWing()).toBe(5);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.X_WING)).toBe(5);
   });
 
   it("removeCandidatesDueToXWing test 2", () => {
     const s = new SudokuSolver(new Sudoku(p2));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToXWing()).toBe(5);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.X_WING)).toBe(5);
   });
 });

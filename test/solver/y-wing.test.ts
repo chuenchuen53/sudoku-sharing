@@ -5,7 +5,7 @@ import { VirtualLineType } from "../../src/Sudoku/type";
 import type { Pincer, InputClues, InputValueData, SudokuElement, CandidateCell } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
 import YWing from "@/Sudoku/EliminationStrategy/YWing";
-import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy, { EliminationStrategyType } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -209,7 +209,7 @@ describe("sudoku solver", () => {
   it("yWing removals test", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(s.yWing.canEliminate(s.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.Y_WING));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [3, 6, "7"],
       [2, 4, "2"],
@@ -221,6 +221,6 @@ describe("sudoku solver", () => {
   it("removeCandidatesDueToYWing test 1", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToYWing()).toBe(3);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.Y_WING)).toBe(3);
   });
 });

@@ -1,15 +1,11 @@
-import CalcUtil from "@/utils/CalcUtil";
 import Sudoku from "../Sudoku";
 import SudokuSolver from "../SudokuSolver";
 import { VirtualLineType, type VirtualLine } from "../type";
-import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
 import { SudokuLineUtil } from "../SudokuLine";
+import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
+import CalcUtil from "@/utils/CalcUtil";
 
 export default class NakedPairs extends EliminationStrategy {
-  public canEliminate(sudoku: Sudoku): EliminationData[] {
-    return NakedPairs.removalDueToNakedPairs(sudoku);
-  }
-
   public static removalDueToNakedPairs(sudoku: Sudoku): EliminationData[] {
     const rowResult = NakedPairs.nakedPairsFromVirtualLines(sudoku.getAllRows(), VirtualLineType.ROW);
     const columnResult = NakedPairs.nakedPairsFromVirtualLines(sudoku.getAllColumns(), VirtualLineType.COLUMN);
@@ -65,5 +61,9 @@ export default class NakedPairs extends EliminationStrategy {
     }
 
     return result;
+  }
+
+  public canEliminate(sudoku: Sudoku): EliminationData[] {
+    return NakedPairs.removalDueToNakedPairs(sudoku);
   }
 }

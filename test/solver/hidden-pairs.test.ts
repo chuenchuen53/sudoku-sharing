@@ -5,7 +5,7 @@ import { VirtualLineType, type InputClues, type InputValueData } from "../../src
 import Sudoku from "@/Sudoku/Sudoku";
 import HiddenPairs from "@/Sudoku/EliminationStrategy/HiddenPairs";
 import { SudokuLine } from "@/Sudoku/SudokuLine";
-import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy, { EliminationStrategyType } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 const p3: InputClues = [
   ["0", "0", "0", "0", "0", "1", "6", "0", "0"],
@@ -72,7 +72,7 @@ describe("sudoku solver", () => {
   it("hiddenPairs test 1", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(s.hiddenPairs.canEliminate(s.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.HIDDEN_PAIRS));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [0, 7, "7"], // due to [1, 2] in column 7
       [0, 7, "8"], // due to [1, 2] in column 7
@@ -96,7 +96,9 @@ describe("sudoku solver", () => {
   it("hiddenPairs test 2", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(s.hiddenPairs.canEliminate(s.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(
+      s.eliminationStrategiesMap[EliminationStrategyType.HIDDEN_PAIRS].canEliminate(s.sudoku)
+    );
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [4, 4, "2"], // due to [3, 4] in row 4
       [4, 4, "5"], // due to [3, 4] in row 4
@@ -115,12 +117,12 @@ describe("sudoku solver", () => {
   it("removeCandidatesDueToHiddenPairs test 1", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToHiddenPairs()).toBe(11);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.HIDDEN_PAIRS)).toBe(11);
   });
 
   it("removeCandidatesDueToHiddenPairs test 2", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToHiddenPairs()).toBe(10);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.HIDDEN_PAIRS)).toBe(10);
   });
 });

@@ -4,7 +4,7 @@ import TestUtil from "../TestUtil";
 import { VirtualLineType, type InputClues, type InputValueData } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
 import NakedPairs from "@/Sudoku/EliminationStrategy/NakedPairs";
-import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy, { EliminationStrategyType } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 import { SudokuLine } from "@/Sudoku/SudokuLine";
 
 const p0: InputClues = [
@@ -89,7 +89,7 @@ describe("sudoku solver", () => {
   it("getRemovalDueToNakedPairs test 1", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    const removals = EliminationStrategy.removalsFromEliminationData(s.nakedPairs.canEliminate(s.sudoku));
+    const removals = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.NAKED_PAIRS));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [4, 8, "5"],
       [4, 8, "7"],
@@ -102,7 +102,7 @@ describe("sudoku solver", () => {
   it("getRemovalDueToNakedPairs test 2", () => {
     const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
-    const removals = EliminationStrategy.removalsFromEliminationData(s.nakedPairs.canEliminate(s.sudoku));
+    const removals = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.NAKED_PAIRS));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [6, 8, "5"],
       [1, 6, "3"],
@@ -117,12 +117,12 @@ describe("sudoku solver", () => {
   it("removeCandidatesDueToNakedPairs test 1", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToNakedPairs()).toStrictEqual(4);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.NAKED_PAIRS)).toStrictEqual(4);
   });
 
   it("removeCandidatesDueToNakedPairs test 2", () => {
     const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToNakedPairs()).toStrictEqual(5);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.NAKED_PAIRS)).toStrictEqual(5);
   });
 });

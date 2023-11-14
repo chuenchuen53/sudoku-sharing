@@ -5,7 +5,7 @@ import { type InputClues, type InputValueData, VirtualLineType } from "../../src
 import Sudoku from "@/Sudoku/Sudoku";
 import HiddenQuads from "@/Sudoku/EliminationStrategy/HiddenQuads";
 import { SudokuLine } from "@/Sudoku/SudokuLine";
-import EliminationStrategy from "@/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy, { EliminationStrategyType } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 const p5: InputClues = [
   ["0", "0", "2", "0", "1", "0", "0", "0", "0"],
@@ -70,7 +70,7 @@ describe("sudoku solver", () => {
   it("hiddenQuads test 1", () => {
     const s = new SudokuSolver(new Sudoku(p5));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(s.hiddenQuads.canEliminate(s.sudoku));
+    const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.HIDDEN_QUADS));
     const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
       [0, 0, "7"], // due to [3, 4, 5, 9] in row 0
       [0, 0, "8"], // due to [3, 4, 5, 9] in row 0
@@ -100,6 +100,6 @@ describe("sudoku solver", () => {
   it("removeCandidatesDueToHiddenQuads test 1", () => {
     const s = new SudokuSolver(new Sudoku(p5));
     s.setBasicCandidates();
-    expect(s.removeCandidatesDueToHiddenQuads()).toBe(16);
+    expect(s.removeCandidatesFromEliminationStrategy(EliminationStrategyType.HIDDEN_QUADS)).toBe(16);
   });
 });

@@ -6,10 +6,6 @@ import type { EliminationData } from "./EliminationStrategy";
 export default class NakedQuads extends NakedMultiple {
   public static readonly SIZE_OF_CANDIDATE = 4;
 
-  public canEliminate(sudoku: Sudoku): EliminationData[] {
-    return NakedQuads.nakedQuadsFromSudoku(sudoku);
-  }
-
   public static nakedQuadsFromVirtualLines(virtualLines: VirtualLine[], virtualLineType: VirtualLineType): EliminationData[] {
     return NakedMultiple.nakedMultipleFromVirtualLines(virtualLines, NakedQuads.SIZE_OF_CANDIDATE, virtualLineType);
   }
@@ -19,5 +15,9 @@ export default class NakedQuads extends NakedMultiple {
     const columnResult = NakedQuads.nakedQuadsFromVirtualLines(sudoku.getAllColumns(), VirtualLineType.COLUMN);
     const boxResult = NakedQuads.nakedQuadsFromVirtualLines(sudoku.getAllBoxes(), VirtualLineType.BOX);
     return [...rowResult, ...columnResult, ...boxResult];
+  }
+
+  public canEliminate(sudoku: Sudoku): EliminationData[] {
+    return NakedQuads.nakedQuadsFromSudoku(sudoku);
   }
 }

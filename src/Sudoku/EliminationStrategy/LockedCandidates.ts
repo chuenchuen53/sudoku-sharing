@@ -1,14 +1,10 @@
 import Sudoku from "../Sudoku";
 import { SudokuLineUtil } from "../SudokuLine";
 import SudokuSolver from "../SudokuSolver";
-import { VirtualLineType, type InputValueData, type RowColumn } from "../type";
+import { VirtualLineType, type RowColumn } from "../type";
 import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
 
 export default class LockedCandidates extends EliminationStrategy {
-  public canEliminate(sudoku: Sudoku): EliminationData[] {
-    return LockedCandidates.getRemovalDueToLockedCandidates(sudoku);
-  }
-
   public static rowColumnLockInBox(sudoku: Sudoku, lineType: RowColumn, index: number): EliminationData[] {
     const result: EliminationData[] = [];
     const virtualLine = lineType === VirtualLineType.ROW ? sudoku.getRow(index) : sudoku.getColumn(index);
@@ -106,5 +102,9 @@ export default class LockedCandidates extends EliminationStrategy {
     const boxLockInColumn = indexes.map((x) => LockedCandidates.boxLockInRowColumn(sudoku, VirtualLineType.COLUMN, x)).flat();
 
     return [...rowLockInBox, ...columnLockInBox, ...boxLockInRow, ...boxLockInColumn];
+  }
+
+  public canEliminate(sudoku: Sudoku): EliminationData[] {
+    return LockedCandidates.getRemovalDueToLockedCandidates(sudoku);
   }
 }

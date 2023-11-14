@@ -2,7 +2,7 @@ import { expect, describe, it } from "vitest";
 import TestUtil from "test/TestUtil";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import { type InputClues, type SudokuElement, VirtualLineType, type Cell } from "../../src/Sudoku/type";
-import type { FillInputValueData } from "@/Sudoku/FillStrategy/FillStrategy";
+import { FillStrategyType, type FillInputValueData } from "@/Sudoku/FillStrategy/FillStrategy";
 import Sudoku from "@/Sudoku/Sudoku";
 import UniqueMissing from "@/Sudoku/FillStrategy/UniqueMissing";
 
@@ -164,9 +164,9 @@ describe("sudoku solver unique missing test", () => {
     // check remove duplicated
     expect(UniqueMissing.uniqueMissing(s.sudoku)).toStrictEqual([dataFactory(s.sudoku.getRow(8)[8], "7", VirtualLineType.ROW, 8)]);
 
-    expect(s.setUniqueMissing()).toBe(1);
+    expect(s.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING)).toBe(1);
     expect(s.sudoku.isValid).toBe(true);
     expect(s.sudoku.solved).toBe(true);
-    expect(s.setUniqueMissing()).toBe(0);
+    expect(s.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING)).toBe(0);
   });
 });

@@ -1,4 +1,4 @@
-import EliminationStrategy from "./EliminationStrategy/EliminationStrategy";
+import EliminationStrategy, { EliminationStrategyType, type EliminationData } from "./EliminationStrategy/EliminationStrategy";
 import HiddenPairs from "./EliminationStrategy/HiddenPairs";
 import HiddenQuads from "./EliminationStrategy/HiddenQuads";
 import HiddenTriplets from "./EliminationStrategy/HiddenTriplets";
@@ -12,41 +12,44 @@ import NakedSingle from "./FillStrategy/NakedSingle";
 import UniqueMissing from "./FillStrategy/UniqueMissing";
 import Sudoku from "./Sudoku";
 import YWing from "./EliminationStrategy/YWing";
+import { FillStrategyType, type FillInputValueData } from "./FillStrategy/FillStrategy";
 import type FillStrategy from "./FillStrategy/FillStrategy";
 import type { SolveStats, Candidates, SudokuElement, VirtualLine, CandidateCell } from "./type";
 
 export default class SudokuSolver {
   public sudoku: Sudoku;
   public stats: SolveStats;
-  public fillUniqueMissing: FillStrategy = new UniqueMissing();
-  public fillNakedSingle: FillStrategy = new NakedSingle();
-  public fillHiddenSingle: FillStrategy = new HiddenSingle();
-  public lockedCandidates: EliminationStrategy = new LockedCandidates();
-  public nakedPairs: EliminationStrategy = new NakedPairs();
-  public nakedTriplets: EliminationStrategy = new NakedTriplets();
-  public nakedQuads: EliminationStrategy = new NakedQuads();
-  public hiddenPairs: EliminationStrategy = new HiddenPairs();
-  public hiddenTriplets: EliminationStrategy = new HiddenTriplets();
-  public hiddenQuads: EliminationStrategy = new HiddenQuads();
-  public xWing: EliminationStrategy = new XWing();
-  public yWing: EliminationStrategy = new YWing();
-
-  private eliminationStrategies: (() => unknown)[];
+  public fillStrategiesMap: Record<FillStrategyType, FillStrategy> = {
+    [FillStrategyType.UNIQUE_MISSING]: new UniqueMissing(),
+    [FillStrategyType.NAKED_SINGLE]: new NakedSingle(),
+    [FillStrategyType.HIDDEN_SINGLE]: new HiddenSingle(),
+  };
+  public eliminationStrategiesMap: Record<EliminationStrategyType, EliminationStrategy> = {
+    [EliminationStrategyType.LOCKED_CANDIDATES]: new LockedCandidates(),
+    [EliminationStrategyType.NAKED_PAIRS]: new NakedPairs(),
+    [EliminationStrategyType.NAKED_TRIPLETS]: new NakedTriplets(),
+    [EliminationStrategyType.NAKED_QUADS]: new NakedQuads(),
+    [EliminationStrategyType.HIDDEN_PAIRS]: new HiddenPairs(),
+    [EliminationStrategyType.HIDDEN_TRIPLETS]: new HiddenTriplets(),
+    [EliminationStrategyType.HIDDEN_QUADS]: new HiddenQuads(),
+    [EliminationStrategyType.X_WING]: new XWing(),
+    [EliminationStrategyType.Y_WING]: new YWing(),
+  };
+  public enabledEliminationStrategies: EliminationStrategyType[] = [
+    EliminationStrategyType.LOCKED_CANDIDATES,
+    EliminationStrategyType.NAKED_PAIRS,
+    EliminationStrategyType.HIDDEN_PAIRS,
+    EliminationStrategyType.X_WING,
+    EliminationStrategyType.Y_WING,
+    EliminationStrategyType.NAKED_TRIPLETS,
+    EliminationStrategyType.HIDDEN_TRIPLETS,
+    EliminationStrategyType.NAKED_QUADS,
+    EliminationStrategyType.HIDDEN_QUADS,
+  ];
 
   constructor(sudoku: Sudoku) {
     this.sudoku = sudoku;
     this.stats = SudokuSolver.statsTemplate();
-    this.eliminationStrategies = [
-      this.removeCandidatesDueToLockedCandidates.bind(this),
-      this.removeCandidatesDueToNakedPairs.bind(this),
-      this.removeCandidatesDueToHiddenPairs.bind(this),
-      this.removeCandidatesDueToXWing.bind(this),
-      this.removeCandidatesDueToYWing.bind(this),
-      this.removeCandidatesDueToNakedTriplets.bind(this),
-      this.removeCandidatesDueToNakedQuads.bind(this),
-      this.removeCandidatesDueToHiddenTriplets.bind(this),
-      this.removeCandidatesDueToHiddenQuads.bind(this),
-    ];
   }
 
   static loopCandidates(fn: (sudokuElement: SudokuElement) => void): void {
@@ -131,99 +134,65 @@ export default class SudokuSolver {
     }
   }
 
-  setUniqueMissing(): number {
-    const result = this.fillUniqueMissing.canFill(this.sudoku);
+  computeCanFill(fillStrategyType: FillStrategyType): FillInputValueData[] {
+    return this.fillStrategiesMap[fillStrategyType].canFill(this.sudoku);
+  }
+
+  setValueFromFillStrategy(fillStrategyType: FillStrategyType): number {
+    const result = this.computeCanFill(fillStrategyType);
     if (result.length === 0) return 0;
     this.sudoku.setInputValues(result);
-    this.addStatsInputCount$UniqueMissing(result.length);
+    switch (fillStrategyType) {
+      case FillStrategyType.UNIQUE_MISSING:
+        this.addStatsInputCount$UniqueMissing(result.length);
+        break;
+      case FillStrategyType.NAKED_SINGLE:
+        this.addStatsInputCount$NakedSingle(result.length);
+        break;
+      case FillStrategyType.HIDDEN_SINGLE:
+        this.addStatsInputCount$HiddenSingle(result.length);
+        break;
+    }
     return result.length;
   }
 
-  setNakedSingles(): number {
-    const nakedSingles = this.fillNakedSingle.canFill(this.sudoku);
-    if (nakedSingles.length === 0) return 0;
-    this.sudoku.setInputValues(nakedSingles);
-    this.addStatsInputCount$NakedSingle(nakedSingles.length);
-    return nakedSingles.length;
+  computeCanEliminate(eliminationStrategy: EliminationStrategyType): EliminationData[] {
+    return this.eliminationStrategiesMap[eliminationStrategy].canEliminate(this.sudoku);
   }
 
-  setHiddenSingles(): number {
-    const hiddenSingles = this.fillHiddenSingle.canFill(this.sudoku);
-    if (hiddenSingles.length === 0) return 0;
-    this.sudoku.setInputValues(hiddenSingles);
-    this.addStatsInputCount$HiddenSingle(hiddenSingles.length);
-    return hiddenSingles.length;
-  }
-
-  removeCandidatesDueToLockedCandidates(): number {
-    const eliminationData = this.lockedCandidates.canEliminate(this.sudoku);
+  removeCandidatesFromEliminationStrategy(eliminationStrategy: EliminationStrategyType): number {
+    const eliminationData = this.computeCanEliminate(eliminationStrategy);
     const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
     const count = this.sudoku.removeElementInCandidates(removals);
-    this.addStatsEliminationCount$LockedCandidates(count);
-    return count;
-  }
-
-  removeCandidatesDueToNakedPairs(): number {
-    const eliminationData = this.nakedPairs.canEliminate(this.sudoku);
-    const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
-    const count = this.sudoku.removeElementInCandidates(removals);
-    this.addStatsEliminationCount$NakedPairs(count);
-    return count;
-  }
-
-  removeCandidatesDueToNakedTriplets(): number {
-    const eliminationData = this.nakedTriplets.canEliminate(this.sudoku);
-    const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
-    const count = this.sudoku.removeElementInCandidates(removals);
-    this.addStatsEliminationCount$NakedTriplets(count);
-    return count;
-  }
-
-  removeCandidatesDueToNakedQuads(): number {
-    const eliminationData = this.nakedQuads.canEliminate(this.sudoku);
-    const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
-    const count = this.sudoku.removeElementInCandidates(removals);
-    this.addStatsEliminationCount$NakedQuads(count);
-    return count;
-  }
-
-  removeCandidatesDueToHiddenPairs(): number {
-    const eliminationData = this.hiddenPairs.canEliminate(this.sudoku);
-    const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
-    const count = this.sudoku.removeElementInCandidates(removals);
-    this.addStatsEliminationCount$HiddenPairs(count);
-    return count;
-  }
-
-  removeCandidatesDueToHiddenTriplets(): number {
-    const eliminationData = this.hiddenTriplets.canEliminate(this.sudoku);
-    const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
-    const count = this.sudoku.removeElementInCandidates(removals);
-    this.addStatsEliminationCount$HiddenTriplets(count);
-    return count;
-  }
-
-  removeCandidatesDueToHiddenQuads(): number {
-    const eliminationData = this.hiddenQuads.canEliminate(this.sudoku);
-    const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
-    const count = this.sudoku.removeElementInCandidates(removals);
-    this.addStatsEliminationCount$HiddenQuads(count);
-    return count;
-  }
-
-  removeCandidatesDueToXWing(): number {
-    const eliminationData = this.xWing.canEliminate(this.sudoku);
-    const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
-    const count = this.sudoku.removeElementInCandidates(removals);
-    this.addStatsEliminationCount$XWing(count);
-    return count;
-  }
-
-  removeCandidatesDueToYWing(): number {
-    const eliminationData = this.yWing.canEliminate(this.sudoku);
-    const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
-    const count = this.sudoku.removeElementInCandidates(removals);
-    this.addStatsEliminationCount$YWing(count);
+    switch (eliminationStrategy) {
+      case EliminationStrategyType.LOCKED_CANDIDATES:
+        this.addStatsEliminationCount$LockedCandidates(count);
+        break;
+      case EliminationStrategyType.NAKED_PAIRS:
+        this.addStatsEliminationCount$NakedPairs(count);
+        break;
+      case EliminationStrategyType.NAKED_TRIPLETS:
+        this.addStatsEliminationCount$NakedTriplets(count);
+        break;
+      case EliminationStrategyType.NAKED_QUADS:
+        this.addStatsEliminationCount$NakedQuads(count);
+        break;
+      case EliminationStrategyType.HIDDEN_PAIRS:
+        this.addStatsEliminationCount$HiddenPairs(count);
+        break;
+      case EliminationStrategyType.HIDDEN_TRIPLETS:
+        this.addStatsEliminationCount$HiddenTriplets(count);
+        break;
+      case EliminationStrategyType.HIDDEN_QUADS:
+        this.addStatsEliminationCount$HiddenQuads(count);
+        break;
+      case EliminationStrategyType.X_WING:
+        this.addStatsEliminationCount$XWing(count);
+        break;
+      case EliminationStrategyType.Y_WING:
+        this.addStatsEliminationCount$YWing(count);
+        break;
+    }
     return count;
   }
 
@@ -284,20 +253,20 @@ export default class SudokuSolver {
   // }
 
   trySolveByCandidates(): boolean {
-    if (this.setNakedSingles()) return true;
-    if (this.setHiddenSingles()) return true;
+    if (this.setValueFromFillStrategy(FillStrategyType.NAKED_SINGLE)) return true;
+    if (this.setValueFromFillStrategy(FillStrategyType.HIDDEN_SINGLE)) return true;
 
     return false;
   }
 
   trySolve(): boolean {
-    if (this.setUniqueMissing()) return this.trySolve();
+    if (this.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING)) return this.trySolve();
 
     this.setBasicCandidates();
     if (this.trySolveByCandidates()) return this.trySolve();
 
-    for (let i = 0; i < this.eliminationStrategies.length; i++) {
-      if (this.eliminationStrategies[i]() && this.trySolveByCandidates()) return this.trySolve();
+    for (const x of this.enabledEliminationStrategies) {
+      if (this.removeCandidatesFromEliminationStrategy(x) && this.trySolveByCandidates()) return this.trySolve();
     }
 
     return this.sudoku.solved;

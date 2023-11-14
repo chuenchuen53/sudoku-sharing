@@ -1,8 +1,8 @@
 import TestUtil from "test/TestUtil";
-import { expect, describe, it, vitest } from "vitest";
+import { expect, describe, it } from "vitest";
 import Sudoku from "../../src/Sudoku/Sudoku";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import type { InputClues, Candidates, SudokuElement, CandidateCell } from "../../src/Sudoku/type";
+import type { InputClues, Candidates } from "../../src/Sudoku/type";
 
 const candidatesFactory = Sudoku.candidatesFactory;
 

@@ -5,10 +5,6 @@ import EliminationStrategy, { type Elimination, type EliminationData, type Highl
 import CalcUtil from "@/utils/CalcUtil";
 
 export default class XWing extends EliminationStrategy {
-  public canEliminate(sudoku: Sudoku): EliminationData[] {
-    return XWing.xWingFromSudoku(sudoku);
-  }
-
   public static xWingFromSudoku(sudoku: Sudoku): EliminationData[] {
     const allRows = sudoku.getAllRows();
     const allColumns = sudoku.getAllColumns();
@@ -96,5 +92,9 @@ export default class XWing extends EliminationStrategy {
     }
 
     return result;
+  }
+
+  public canEliminate(sudoku: Sudoku): EliminationData[] {
+    return XWing.xWingFromSudoku(sudoku);
   }
 }
