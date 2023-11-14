@@ -13,12 +13,13 @@ import UniqueMissing from "./FillStrategy/UniqueMissing";
 import Sudoku from "./Sudoku";
 import YWing from "./EliminationStrategy/YWing";
 import { FillStrategyType, type FillInputValueData } from "./FillStrategy/FillStrategy";
+import CSolveStats from "./SolveStats";
 import type FillStrategy from "./FillStrategy/FillStrategy";
-import type { SolveStats, Candidates, SudokuElement, VirtualLine, CandidateCell } from "./type";
+import type { Candidates, SudokuElement, VirtualLine, CandidateCell } from "./type";
 
 export default class SudokuSolver {
   public sudoku: Sudoku;
-  public stats: SolveStats;
+  public stats: CSolveStats = new CSolveStats();
   public fillStrategiesMap: Record<FillStrategyType, FillStrategy> = {
     [FillStrategyType.UNIQUE_MISSING]: new UniqueMissing(),
     [FillStrategyType.NAKED_SINGLE]: new NakedSingle(),
@@ -49,7 +50,6 @@ export default class SudokuSolver {
 
   constructor(sudoku: Sudoku) {
     this.sudoku = sudoku;
-    this.stats = SudokuSolver.statsTemplate();
   }
 
   static loopCandidates(fn: (sudokuElement: SudokuElement) => void): void {
@@ -89,26 +89,13 @@ export default class SudokuSolver {
     return true;
   }
 
-  static statsTemplate() {
-    return {
-      inputCount: {
-        uniqueMissing: 0,
-        nakedSingle: 0,
-        hiddenSingle: 0,
-      },
-      eliminationCount: {
-        lockedCandidates: 0,
-        nakedPairs: 0,
-        nakedTriplets: 0,
-        nakedQuads: 0,
-        hiddenPairs: 0,
-        hiddenTriplets: 0,
-        hiddenQuads: 0,
-        xWing: 0,
-        yWing: 0,
-        // swordfish: 0,
-      },
-    };
+  replaceSudoku(sudoku: Sudoku): void {
+    this.sudoku = sudoku;
+    this.resetStats();
+  }
+
+  resetStats(): void {
+    this.stats.reset();
   }
 
   setBasicCandidates(): void {
@@ -142,17 +129,7 @@ export default class SudokuSolver {
     const result = this.computeCanFill(fillStrategyType);
     if (result.length === 0) return 0;
     this.sudoku.setInputValues(result);
-    switch (fillStrategyType) {
-      case FillStrategyType.UNIQUE_MISSING:
-        this.addStatsInputCount$UniqueMissing(result.length);
-        break;
-      case FillStrategyType.NAKED_SINGLE:
-        this.addStatsInputCount$NakedSingle(result.length);
-        break;
-      case FillStrategyType.HIDDEN_SINGLE:
-        this.addStatsInputCount$HiddenSingle(result.length);
-        break;
-    }
+    this.stats.addFilled(fillStrategyType, result.length);
     return result.length;
   }
 
@@ -164,93 +141,9 @@ export default class SudokuSolver {
     const eliminationData = this.computeCanEliminate(eliminationStrategy);
     const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
     const count = this.sudoku.removeElementInCandidates(removals);
-    switch (eliminationStrategy) {
-      case EliminationStrategyType.LOCKED_CANDIDATES:
-        this.addStatsEliminationCount$LockedCandidates(count);
-        break;
-      case EliminationStrategyType.NAKED_PAIRS:
-        this.addStatsEliminationCount$NakedPairs(count);
-        break;
-      case EliminationStrategyType.NAKED_TRIPLETS:
-        this.addStatsEliminationCount$NakedTriplets(count);
-        break;
-      case EliminationStrategyType.NAKED_QUADS:
-        this.addStatsEliminationCount$NakedQuads(count);
-        break;
-      case EliminationStrategyType.HIDDEN_PAIRS:
-        this.addStatsEliminationCount$HiddenPairs(count);
-        break;
-      case EliminationStrategyType.HIDDEN_TRIPLETS:
-        this.addStatsEliminationCount$HiddenTriplets(count);
-        break;
-      case EliminationStrategyType.HIDDEN_QUADS:
-        this.addStatsEliminationCount$HiddenQuads(count);
-        break;
-      case EliminationStrategyType.X_WING:
-        this.addStatsEliminationCount$XWing(count);
-        break;
-      case EliminationStrategyType.Y_WING:
-        this.addStatsEliminationCount$YWing(count);
-        break;
-    }
+    this.stats.addElimination(eliminationStrategy, count);
     return count;
   }
-
-  resetStats(): void {
-    this.stats = SudokuSolver.statsTemplate();
-  }
-
-  addStatsInputCount$UniqueMissing(increment: number): void {
-    this.stats.inputCount.uniqueMissing += increment;
-  }
-
-  addStatsInputCount$NakedSingle(increment: number): void {
-    this.stats.inputCount.nakedSingle += increment;
-  }
-
-  addStatsInputCount$HiddenSingle(increment: number): void {
-    this.stats.inputCount.hiddenSingle += increment;
-  }
-
-  addStatsEliminationCount$LockedCandidates(increment: number): void {
-    this.stats.eliminationCount.lockedCandidates += increment;
-  }
-
-  addStatsEliminationCount$NakedPairs(increment: number): void {
-    this.stats.eliminationCount.nakedPairs += increment;
-  }
-
-  addStatsEliminationCount$NakedTriplets(increment: number): void {
-    this.stats.eliminationCount.nakedTriplets += increment;
-  }
-
-  addStatsEliminationCount$NakedQuads(increment: number): void {
-    this.stats.eliminationCount.nakedQuads += increment;
-  }
-
-  addStatsEliminationCount$HiddenPairs(increment: number): void {
-    this.stats.eliminationCount.hiddenPairs += increment;
-  }
-
-  addStatsEliminationCount$HiddenTriplets(increment: number): void {
-    this.stats.eliminationCount.hiddenTriplets += increment;
-  }
-
-  addStatsEliminationCount$HiddenQuads(increment: number): void {
-    this.stats.eliminationCount.hiddenQuads += increment;
-  }
-
-  addStatsEliminationCount$XWing(increment: number): void {
-    this.stats.eliminationCount.xWing += increment;
-  }
-
-  addStatsEliminationCount$YWing(increment: number): void {
-    this.stats.eliminationCount.yWing += increment;
-  }
-
-  // addStatsEliminationCount$Swordfish(increment: number): void {
-  //   this.stats.eliminationCount.swordfish += increment;
-  // }
 
   trySolveByCandidates(): boolean {
     if (this.setValueFromFillStrategy(FillStrategyType.NAKED_SINGLE)) return true;
