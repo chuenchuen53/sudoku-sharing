@@ -1,13 +1,9 @@
 import Sudoku from "../Sudoku";
 import SudokuSolver from "../SudokuSolver";
-import { VirtualLineType, type CandidateCell, type SudokuElement, type VirtualLine } from "../type";
+import { VirtualLineType, type SudokuElement, type VirtualLine } from "../type";
 import FillStrategy, { type FillInputValueData } from "./FillStrategy";
 
-export default class FillHiddenSingle extends FillStrategy {
-  canFill(sudoku: Sudoku): FillInputValueData[] {
-    return FillHiddenSingle.hiddenSingles(sudoku);
-  }
-
+export default class HiddenSingle extends FillStrategy {
   static candidatesCountFactory(): Record<SudokuElement, number> {
     return {
       "1": 0,
@@ -23,9 +19,9 @@ export default class FillHiddenSingle extends FillStrategy {
   }
 
   static hiddenSingles(sudoku: Sudoku): FillInputValueData[] {
-    const rowResult = FillHiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllRows(), VirtualLineType.ROW);
-    const columnResult = FillHiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllColumns(), VirtualLineType.COLUMN);
-    const boxResult = FillHiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllBoxes(), VirtualLineType.BOX);
+    const rowResult = HiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllRows(), VirtualLineType.ROW);
+    const columnResult = HiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllColumns(), VirtualLineType.COLUMN);
+    const boxResult = HiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllBoxes(), VirtualLineType.BOX);
     return Sudoku.removeDuplicatedInputValueData([...rowResult, ...columnResult, ...boxResult]);
   }
 
@@ -33,7 +29,7 @@ export default class FillHiddenSingle extends FillStrategy {
     const result: FillInputValueData[] = [];
     for (let i = 0; i < virtualLines.length; i++) {
       const virtualLine = virtualLines[i];
-      const candidatesCount = FillHiddenSingle.candidatesCountFactory();
+      const candidatesCount = HiddenSingle.candidatesCountFactory();
       for (const cell of virtualLine) {
         const candidates = cell.candidates;
         if (!candidates) continue;
@@ -58,5 +54,9 @@ export default class FillHiddenSingle extends FillStrategy {
     }
 
     return result;
+  }
+
+  canFill(sudoku: Sudoku): FillInputValueData[] {
+    return HiddenSingle.hiddenSingles(sudoku);
   }
 }

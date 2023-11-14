@@ -7,30 +7,30 @@ import NakedPairs from "./EliminationStrategy/NakedPairs";
 import NakedQuads from "./EliminationStrategy/NakedQuads";
 import NakedTriplets from "./EliminationStrategy/NakedTriplets";
 import XWing from "./EliminationStrategy/XWing";
-import FillHiddenSingle from "./FillStrategy/FillHiddenSingle";
-import FillNakedSingle from "./FillStrategy/FillNakedSingle";
-import FillUniqueMissing from "./FillStrategy/FillUniqueMissing";
+import HiddenSingle from "./FillStrategy/HiddenSingle";
+import NakedSingle from "./FillStrategy/NakedSingle";
+import UniqueMissing from "./FillStrategy/UniqueMissing";
 import Sudoku from "./Sudoku";
 import YWing from "./EliminationStrategy/YWing";
 import type FillStrategy from "./FillStrategy/FillStrategy";
 import type { SolveStats, Candidates, SudokuElement, VirtualLine, CandidateCell } from "./type";
 
 export default class SudokuSolver {
-  public stats: SolveStats;
   public sudoku: Sudoku;
-  public fillUniqueMissing: FillStrategy = new FillUniqueMissing();
-  public fillNakedSingle = new FillNakedSingle();
-  public fillHiddenSingle = new FillHiddenSingle();
-  public lockedCandidates = new LockedCandidates();
-  public nakedTriplets = new NakedTriplets();
-  public nakedQuads = new NakedQuads();
-  public hiddenPairs = new HiddenPairs();
-  public hiddenTriplets = new HiddenTriplets();
-  public hiddenQuads = new HiddenQuads();
-  public xWing = new XWing();
-  public yWing = new YWing();
+  public stats: SolveStats;
+  public fillUniqueMissing: FillStrategy = new UniqueMissing();
+  public fillNakedSingle: FillStrategy = new NakedSingle();
+  public fillHiddenSingle: FillStrategy = new HiddenSingle();
+  public lockedCandidates: EliminationStrategy = new LockedCandidates();
+  public nakedPairs: EliminationStrategy = new NakedPairs();
+  public nakedTriplets: EliminationStrategy = new NakedTriplets();
+  public nakedQuads: EliminationStrategy = new NakedQuads();
+  public hiddenPairs: EliminationStrategy = new HiddenPairs();
+  public hiddenTriplets: EliminationStrategy = new HiddenTriplets();
+  public hiddenQuads: EliminationStrategy = new HiddenQuads();
+  public xWing: EliminationStrategy = new XWing();
+  public yWing: EliminationStrategy = new YWing();
 
-  public nakedPairs = new NakedPairs();
   private eliminationStrategies: (() => unknown)[];
 
   constructor(sudoku: Sudoku) {

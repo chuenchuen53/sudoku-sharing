@@ -1,10 +1,10 @@
 import { expect, describe, it } from "vitest";
 import TestUtil from "test/TestUtil";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import { type InputClues, type SudokuElement, type VirtualLine, type UniqueMissingResult, VirtualLineType, type Cell } from "../../src/Sudoku/type";
-import Sudoku from "@/Sudoku/Sudoku";
-import FillUniqueMissing from "@/Sudoku/FillStrategy/FillUniqueMissing";
+import { type InputClues, type SudokuElement, VirtualLineType, type Cell } from "../../src/Sudoku/type";
 import type { FillInputValueData } from "@/Sudoku/FillStrategy/FillStrategy";
+import Sudoku from "@/Sudoku/Sudoku";
+import UniqueMissing from "@/Sudoku/FillStrategy/UniqueMissing";
 
 const candidatesFactory = Sudoku.candidatesFactory;
 
@@ -25,9 +25,9 @@ describe("sudoku solver unique missing test", () => {
     const c1 = candidatesFactory(true, ["1"]);
     const c2 = candidatesFactory(true, ["1", "8"]);
     const c3 = candidatesFactory(true, ["1", "3", "5", "6", "7", "9"]);
-    expect(FillUniqueMissing.uniqueCandidate(c1)).toBe("1");
-    expect(FillUniqueMissing.uniqueCandidate(c2)).toBeNull();
-    expect(FillUniqueMissing.uniqueCandidate(c3)).toBeNull();
+    expect(UniqueMissing.uniqueCandidate(c1)).toBe("1");
+    expect(UniqueMissing.uniqueCandidate(c2)).toBeNull();
+    expect(UniqueMissing.uniqueCandidate(c3)).toBeNull();
   });
 
   it("uniqueMissingFromVirtualLines test 1", () => {
@@ -110,11 +110,11 @@ describe("sudoku solver unique missing test", () => {
       },
     ];
 
-    expect(FillUniqueMissing.uniqueMissingFromVirtualLines(lines, VirtualLineType.ROW)).toStrictEqual(expectedResult);
+    expect(UniqueMissing.uniqueMissingFromVirtualLines(lines, VirtualLineType.ROW)).toStrictEqual(expectedResult);
   });
 
   it("uniqueMissingFromVirtualLines test 2", () => {
-    const fn = FillUniqueMissing.uniqueMissingFromVirtualLines;
+    const fn = UniqueMissing.uniqueMissingFromVirtualLines;
 
     const clue: InputClues = [
       ["2", "9", "0", "4", "6", "7", "5", "3", "8"],
@@ -138,7 +138,7 @@ describe("sudoku solver unique missing test", () => {
   });
 
   it("fillUniqueMissing overall", () => {
-    const fn = FillUniqueMissing.uniqueMissingFromVirtualLines;
+    const fn = UniqueMissing.uniqueMissingFromVirtualLines;
 
     const clue: InputClues = [
       ["2", "9", "1", "4", "6", "7", "5", "3", "8"],
@@ -162,7 +162,7 @@ describe("sudoku solver unique missing test", () => {
     ]);
 
     // check remove duplicated
-    expect(FillUniqueMissing.uniqueMissing(s.sudoku)).toStrictEqual([dataFactory(s.sudoku.getRow(8)[8], "7", VirtualLineType.ROW, 8)]);
+    expect(UniqueMissing.uniqueMissing(s.sudoku)).toStrictEqual([dataFactory(s.sudoku.getRow(8)[8], "7", VirtualLineType.ROW, 8)]);
 
     expect(s.setUniqueMissing()).toBe(1);
     expect(s.sudoku.isValid).toBe(true);
