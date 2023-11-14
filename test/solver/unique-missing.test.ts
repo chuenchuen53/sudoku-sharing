@@ -3,8 +3,8 @@ import TestUtil from "test/TestUtil";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import { type InputClues, type SudokuElement, type VirtualLine, type UniqueMissingResult, VirtualLineType, type Cell } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
-import FillUniqueMissing from "@/Sudoku/FillUniqueMissing";
-import type { FillInputValueData } from "@/Sudoku/FillStrategy";
+import FillUniqueMissing from "@/Sudoku/FillStrategy/FillUniqueMissing";
+import type { FillInputValueData } from "@/Sudoku/FillStrategy/FillStrategy";
 
 const candidatesFactory = Sudoku.candidatesFactory;
 

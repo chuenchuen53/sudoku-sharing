@@ -1,7 +1,7 @@
+import Sudoku from "../Sudoku";
+import SudokuSolver from "../SudokuSolver";
+import { VirtualLineType, type Candidates, type InputValueData, type SudokuElement, type UniqueMissingResult, type VirtualLine } from "../type";
 import FillStrategy, { type FillInputValueData } from "./FillStrategy";
-import Sudoku from "./Sudoku";
-import SudokuSolver from "./SudokuSolver";
-import { VirtualLineType, type Candidates, type InputValueData, type SudokuElement, type UniqueMissingResult, type VirtualLine } from "./type";
 
 export default class FillUniqueMissing extends FillStrategy {
   canFill(sudoku: Sudoku): FillInputValueData[] {

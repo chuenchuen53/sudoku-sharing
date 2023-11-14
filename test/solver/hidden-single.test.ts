@@ -4,7 +4,7 @@ import TestUtil from "../TestUtil";
 import { VirtualLineType } from "../../src/Sudoku/type";
 import type { InputClues } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
-import FillHiddenSingle from "@/Sudoku/FillHiddenSingle";
+import FillHiddenSingle from "@/Sudoku/FillStrategy/FillHiddenSingle";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],

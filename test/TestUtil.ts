@@ -2,7 +2,7 @@ import Sudoku from "../src/Sudoku/Sudoku";
 import { VirtualLineType } from "../src/Sudoku/type";
 import ArrUtil from "../src/utils/ArrUtil";
 import type { Pincer, Cell, InputClues, InputValueData, SudokuElement, VirtualLine, EliminationCount } from "../src/Sudoku/type";
-import type { FillInputValueData, RelatedLine } from "@/Sudoku/FillStrategy";
+import type { FillInputValueData, RelatedLine } from "@/Sudoku/FillStrategy/FillStrategy";
 import type { Elimination } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
 
 export default class TestUtil {

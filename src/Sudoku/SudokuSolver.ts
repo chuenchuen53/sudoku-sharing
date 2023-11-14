@@ -7,12 +7,12 @@ import NakedPairs from "./EliminationStrategy/NakedPairs";
 import NakedQuads from "./EliminationStrategy/NakedQuads";
 import NakedTriplets from "./EliminationStrategy/NakedTriplets";
 import XWing from "./EliminationStrategy/XWing";
-import FillHiddenSingle from "./FillHiddenSingle";
-import FillNakedSingle from "./FillNakedSingle";
-import FillUniqueMissing from "./FillUniqueMissing";
+import FillHiddenSingle from "./FillStrategy/FillHiddenSingle";
+import FillNakedSingle from "./FillStrategy/FillNakedSingle";
+import FillUniqueMissing from "./FillStrategy/FillUniqueMissing";
 import Sudoku from "./Sudoku";
 import YWing from "./EliminationStrategy/YWing";
-import type FillStrategy from "./FillStrategy";
+import type FillStrategy from "./FillStrategy/FillStrategy";
 import type { SolveStats, Candidates, SudokuElement, VirtualLine, CandidateCell } from "./type";
 
 export default class SudokuSolver {

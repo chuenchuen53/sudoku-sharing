@@ -1,7 +1,7 @@
+import Sudoku from "../Sudoku";
+import SudokuSolver from "../SudokuSolver";
+import { VirtualLineType, type CandidateCell, type SudokuElement, type VirtualLine } from "../type";
 import FillStrategy, { type FillInputValueData } from "./FillStrategy";
-import Sudoku from "./Sudoku";
-import SudokuSolver from "./SudokuSolver";
-import { VirtualLineType, type CandidateCell, type SudokuElement, type VirtualLine } from "./type";
 
 export default class FillHiddenSingle extends FillStrategy {
   canFill(sudoku: Sudoku): FillInputValueData[] {

@@ -1,5 +1,5 @@
-import type Sudoku from "./Sudoku";
-import type { InputValueData, VirtualLineType } from "./type";
+import type Sudoku from "../Sudoku";
+import type { InputValueData, VirtualLineType } from "../type";
 
 export interface RelatedLine {
   virtualLineType: VirtualLineType;

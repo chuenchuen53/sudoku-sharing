@@ -1,7 +1,7 @@
 import FillStrategy, { type FillInputValueData } from "./FillStrategy";
-import type Sudoku from "./Sudoku";
-import SudokuSolver from "./SudokuSolver";
-import type { Cell, Grid } from "./type";
+import type Sudoku from "../Sudoku";
+import SudokuSolver from "../SudokuSolver";
+import type { Cell, Grid } from "../type";
 
 export default class FillNakedSingle extends FillStrategy {
   canFill(sudoku: Sudoku): FillInputValueData[] {

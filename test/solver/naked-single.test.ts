@@ -3,7 +3,7 @@ import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
 import type { InputClues } from "../../src/Sudoku/type";
 import Sudoku from "@/Sudoku/Sudoku";
-import FillNakedSingle from "@/Sudoku/FillNakedSingle";
+import FillNakedSingle from "@/Sudoku/FillStrategy/FillNakedSingle";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
