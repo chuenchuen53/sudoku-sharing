@@ -25,6 +25,21 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+.fleet
+.idea
+
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Local env files
+.env
+.env.*
+!.env.example
 
 # project
 script/sample

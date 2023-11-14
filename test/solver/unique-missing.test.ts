@@ -1,5 +1,5 @@
 import { expect, describe, it } from "vitest";
-import TestUtil from "test/TestUtil";
+import TestUtil from "../TestUtil";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import { type InputClues, type SudokuElement, VirtualLineType, type Cell } from "../../src/Sudoku/type";
 import { FillStrategyType, type FillInputValueData } from "@/Sudoku/FillStrategy/FillStrategy";

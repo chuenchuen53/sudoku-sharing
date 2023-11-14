@@ -1,4 +1,4 @@
-import TestUtil from "test/TestUtil";
+import TestUtil from "../TestUtil";
 import { expect, describe, it, vitest } from "vitest";
 import Sudoku from "../../src/Sudoku/Sudoku";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
