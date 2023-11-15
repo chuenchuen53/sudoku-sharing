@@ -1,5 +1,6 @@
-import type { InputValueData, VirtualLineType } from "../type";
+import type { InputValueData } from "../type";
 import type Sudoku from "../Sudoku";
+import type { SudokuLine } from "../SudokuLine";
 
 export enum FillStrategyType {
   UNIQUE_MISSING = "UNIQUE_MISSING",
@@ -7,13 +8,8 @@ export enum FillStrategyType {
   HIDDEN_SINGLE = "HIDDEN_SINGLE",
 }
 
-export interface RelatedLine {
-  virtualLineType: VirtualLineType;
-  lineIndex: number;
-}
-
 export interface FillInputValueData extends InputValueData {
-  relatedLine?: RelatedLine;
+  relatedLine?: SudokuLine;
 }
 
 export default abstract class FillStrategy {

@@ -34,7 +34,7 @@ export default class Sudoku {
         const firstRowIndex = Sudoku.boxFirstLineIndex(i, VirtualLineType.ROW);
         const firstColumnIndex = Sudoku.boxFirstLineIndex(i, VirtualLineType.COLUMN);
         return nineLenArr.map((_, j) => this.grid[firstRowIndex + Math.floor(j / 3)][firstColumnIndex + (j % 3)]);
-      })
+      }),
     );
 
     const { isValid, validateDetail } = this.validatePuzzle("clue");
@@ -89,9 +89,14 @@ export default class Sudoku {
     return missing;
   }
 
+  static removeDuplicatedPositions(positions: Position[]): Position[] {
+    return positions.filter((cur, index, self) => index === self.findIndex((x) => Sudoku.isSamePos(x, cur)));
+  }
+
   static removeDuplicatedInputValueData(data: InputValueData[]): InputValueData[] {
     return data.filter(
-      (cur, index, self) => index === self.findIndex((x) => x.rowIndex === cur.rowIndex && x.columnIndex === cur.columnIndex && x.value === cur.value)
+      (cur, index, self) =>
+        index === self.findIndex((x) => x.rowIndex === cur.rowIndex && x.columnIndex === cur.columnIndex && x.value === cur.value),
     );
   }
 
@@ -133,7 +138,7 @@ export default class Sudoku {
 
   static checkVirtualLineHaveDuplicateValue(
     virtualLine: VirtualLine,
-    key: Extract<keyof Cell, "clue" | "inputValue">
+    key: Extract<keyof Cell, "clue" | "inputValue">,
   ): CheckVirtualLineDuplicateResult {
     const duplicatedCells: Cell[] = [];
     const values = key === "clue" ? virtualLine.map((x) => x.clue) : virtualLine.map((x) => x.clue ?? x.inputValue);
@@ -152,7 +157,7 @@ export default class Sudoku {
     clues.forEach((row, i) =>
       row.forEach((clue, j) => {
         if (clue !== "0") grid[i][j].clue = clue;
-      })
+      }),
     );
 
     return grid;
@@ -231,7 +236,7 @@ export default class Sudoku {
     const column = this.getColumn(cell.columnIndex);
     const box = this.getBoxFromRowColumnIndex(cell.rowIndex, cell.columnIndex);
     return [...row, ...column, ...box].filter(
-      (x, index, arr) => !Sudoku.isSamePos(x, cell) && arr.findIndex((y) => Sudoku.isSamePos(x, y)) === index
+      (x, index, arr) => !Sudoku.isSamePos(x, cell) && arr.findIndex((y) => Sudoku.isSamePos(x, y)) === index,
     );
   }
 

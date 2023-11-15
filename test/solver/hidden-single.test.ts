@@ -2,10 +2,10 @@ import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../core/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
 import { VirtualLineType } from "../../core/Sudoku/type";
-import type { InputClues } from "../../core/Sudoku/type";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import HiddenSingle from "../../core/Sudoku/FillStrategy/HiddenSingle";
 import { FillStrategyType } from "../../core/Sudoku/FillStrategy/FillStrategy";
+import type { InputClues } from "../../core/Sudoku/type";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],

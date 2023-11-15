@@ -1,4 +1,6 @@
-import { VirtualLineType } from "./type";
+import { s } from "vitest/dist/reporters-5f784f42";
+import Sudoku from "./Sudoku";
+import { VirtualLineType, type Position } from "./type";
 
 export enum SudokuLine {
   ROW_0 = "ROW_0",
@@ -30,8 +32,41 @@ export enum SudokuLine {
   BOX_8 = "BOX_8",
 }
 
+export type SudokuLineRow =
+  | SudokuLine.ROW_0
+  | SudokuLine.ROW_1
+  | SudokuLine.ROW_2
+  | SudokuLine.ROW_3
+  | SudokuLine.ROW_4
+  | SudokuLine.ROW_5
+  | SudokuLine.ROW_6
+  | SudokuLine.ROW_7
+  | SudokuLine.ROW_8;
+
+export type SudokuLineColumn =
+  | SudokuLine.COLUMN_0
+  | SudokuLine.COLUMN_1
+  | SudokuLine.COLUMN_2
+  | SudokuLine.COLUMN_3
+  | SudokuLine.COLUMN_4
+  | SudokuLine.COLUMN_5
+  | SudokuLine.COLUMN_6
+  | SudokuLine.COLUMN_7
+  | SudokuLine.COLUMN_8;
+
+export type SudokuLineBox =
+  | SudokuLine.BOX_0
+  | SudokuLine.BOX_1
+  | SudokuLine.BOX_2
+  | SudokuLine.BOX_3
+  | SudokuLine.BOX_4
+  | SudokuLine.BOX_5
+  | SudokuLine.BOX_6
+  | SudokuLine.BOX_7
+  | SudokuLine.BOX_8;
+
 export class SudokuLineUtil {
-  private static readonly ROWS: SudokuLine[] = [
+  private static readonly ROWS: SudokuLineRow[] = [
     SudokuLine.ROW_0,
     SudokuLine.ROW_1,
     SudokuLine.ROW_2,
@@ -42,7 +77,7 @@ export class SudokuLineUtil {
     SudokuLine.ROW_7,
     SudokuLine.ROW_8,
   ];
-  private static readonly COLUMNS: SudokuLine[] = [
+  private static readonly COLUMNS: SudokuLineColumn[] = [
     SudokuLine.COLUMN_0,
     SudokuLine.COLUMN_1,
     SudokuLine.COLUMN_2,
@@ -53,7 +88,7 @@ export class SudokuLineUtil {
     SudokuLine.COLUMN_7,
     SudokuLine.COLUMN_8,
   ];
-  private static readonly BOXES: SudokuLine[] = [
+  private static readonly BOXES: SudokuLineBox[] = [
     SudokuLine.BOX_0,
     SudokuLine.BOX_1,
     SudokuLine.BOX_2,
@@ -167,5 +202,45 @@ export class SudokuLineUtil {
       case VirtualLineType.BOX:
         return SudokuLineUtil.BOXES[lineIndex];
     }
+  }
+
+  public static allPositionsInLine(line: SudokuLine): Position[] {
+    if (SudokuLineUtil.ROWS.some((row) => row === line)) {
+      return SudokuLineUtil.allPositionsInRow(line as unknown as SudokuLineRow);
+    } else if (SudokuLineUtil.COLUMNS.some((column) => column === line)) {
+      return SudokuLineUtil.allPositionsInColumn(line as unknown as SudokuLineColumn);
+    }
+    return SudokuLineUtil.allPositionsInBox(line as unknown as SudokuLineBox);
+  }
+
+  public static allPositionsInRow(row: SudokuLineRow): Position[] {
+    const rowIndex = SudokuLineUtil.lineTypeAndIndex(row).lineIndex;
+    const positions: Position[] = new Array(9);
+    for (let columnIndex = 0; columnIndex < 9; columnIndex++) {
+      positions[columnIndex] = { rowIndex, columnIndex };
+    }
+    return positions;
+  }
+
+  public static allPositionsInColumn(column: SudokuLineColumn): Position[] {
+    const columnIndex = SudokuLineUtil.lineTypeAndIndex(column).lineIndex;
+    const positions: Position[] = new Array(9);
+    for (let rowIndex = 0; rowIndex < 9; rowIndex++) {
+      positions[rowIndex] = { rowIndex, columnIndex };
+    }
+    return positions;
+  }
+
+  public static allPositionsInBox(box: SudokuLineBox): Position[] {
+    const boxIndex = SudokuLineUtil.lineTypeAndIndex(box).lineIndex;
+    const positions: Position[] = new Array(9);
+    const firstRowIndex = Sudoku.boxFirstLineIndex(boxIndex, VirtualLineType.ROW);
+    const firstColumnIndex = Sudoku.boxFirstLineIndex(boxIndex, VirtualLineType.COLUMN);
+    for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
+      for (let columnIndex = 0; columnIndex < 3; columnIndex++) {
+        positions[rowIndex * 3 + columnIndex] = { rowIndex: firstRowIndex + rowIndex, columnIndex: firstColumnIndex + columnIndex };
+      }
+    }
+    return positions;
   }
 }

@@ -1,3 +1,67 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  /* main 600 */
+  --primary-900: #0000f0;
+  --primary-800: #0000f3;
+  --primary-700: #2800f7;
+  --primary-600: #4800ff;
+  --primary-500: #5906ff;
+  --primary-400: #7c42ff;
+  --primary-300: #9968ff;
+  --primary-200: #b996ff;
+  --primary-100: #d6c1ff;
+  --primary-50: #f0e6ff;
+
+  /* main 300 */
+  --accent-900: #005735;
+  --accent-800: #007453;
+  --accent-700: #008462;
+  --accent-600: #009573;
+  --accent-500: #00a280;
+  --accent-400: #00b394;
+  --accent-300: #00c3a7;
+  --accent-200: #00d7c2;
+  --accent-100: #91e7da;
+  --accent-50: #d4f6f1;
+
+  /* main 500 */
+  --warning-900: #ff6d00;
+  --warning-800: #ff8d00;
+  --warning-700: #ff9e00;
+  --warning-600: #ffb100;
+  --warning-500: #ffbf00;
+  --warning-400: #ffc825;
+  --warning-300: #ffd44d;
+  --warning-200: #ffdf81;
+  --warning-100: #ffebb2;
+  --warning-50: #fff8e1;
+
+  /* main: 300 */
+  @media (prefers-color-scheme: dark) {
+    --primary-900: #1600af;
+    --primary-800: #1f20c8;
+    --primary-700: #252dd6;
+    --primary-600: #2f39e3;
+    --primary-500: #3442ee;
+    --primary-400: #5061fe;
+    --primary-300: #7480ff;
+    --primary-200: #a0a4fe;
+    --primary-100: #c7c8fe;
+    --primary-50: #e9e9ff;
+
+    /* main 300 */
+    --accent-900: #00654a;
+    --accent-800: #008268;
+    --accent-700: #009377;
+    --accent-600: #00a489;
+    --accent-500: #00b297;
+    --accent-400: #00c0a8;
+    --accent-300: #00cdb9;
+    --accent-200: #71dcce;
+    --accent-100: #ade9e1;
+    --accent-50: #def6f4;
+  }
+}

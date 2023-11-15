@@ -2,10 +2,10 @@ import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../core/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
 import { VirtualLineType } from "../../core/Sudoku/type";
-import type { Pincer, InputClues, InputValueData, SudokuElement, CandidateCell } from "../../core/Sudoku/type";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import YWing from "../../core/Sudoku/EliminationStrategy/YWing";
 import EliminationStrategy, { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import type { Pincer, InputClues, InputValueData, SudokuElement, CandidateCell } from "../../core/Sudoku/type";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],

@@ -1,7 +1,8 @@
 import Sudoku from "../core/Sudoku/Sudoku";
 import { VirtualLineType } from "../core/Sudoku/type";
 import ArrUtil from "../core/utils/ArrUtil";
-import type { Pincer, Cell, InputClues, InputValueData, SudokuElement, VirtualLine, EliminationCount } from "../core/Sudoku/type";
+import { SudokuLineUtil } from "../core/Sudoku/SudokuLine";
+import type { Pincer, Cell, InputClues, InputValueData, SudokuElement, VirtualLine } from "../core/Sudoku/type";
 import type { FillInputValueData } from "../core/Sudoku/FillStrategy/FillStrategy";
 import type { Elimination } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 
@@ -31,10 +32,7 @@ export default class TestUtil {
       rowIndex: r,
       columnIndex: c,
       value: v,
-      relatedLine: {
-        virtualLineType,
-        lineIndex,
-      },
+      relatedLine: SudokuLineUtil.sudokuLine(virtualLineType, lineIndex),
     };
   };
 

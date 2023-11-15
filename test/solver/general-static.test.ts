@@ -1,5 +1,5 @@
-import TestUtil from "../TestUtil";
 import { expect, describe, it, vitest } from "vitest";
+import TestUtil from "../TestUtil";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import SudokuSolver from "../../core/Sudoku/SudokuSolver";
 import type { SudokuElement, CandidateCell } from "../../core/Sudoku/type";

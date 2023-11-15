@@ -1,4 +1,5 @@
 import Sudoku from "../Sudoku";
+import { SudokuLineUtil } from "../SudokuLine";
 import SudokuSolver from "../SudokuSolver";
 import { VirtualLineType, type Candidates, type SudokuElement, type VirtualLine } from "../type";
 import FillStrategy, { type FillInputValueData } from "./FillStrategy";
@@ -30,7 +31,7 @@ export default class UniqueMissing extends FillStrategy {
           rowIndex: cell.rowIndex,
           columnIndex: cell.columnIndex,
           value: uniqueCandidate,
-          relatedLine: { virtualLineType, lineIndex: i },
+          relatedLine: SudokuLineUtil.sudokuLine(virtualLineType, i),
         });
       }
     }

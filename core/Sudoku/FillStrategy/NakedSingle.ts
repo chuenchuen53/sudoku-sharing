@@ -6,6 +6,10 @@ import type { Cell, Grid } from "../type";
 export default class NakedSingle extends FillStrategy {
   private static readonly instance = new NakedSingle();
 
+  private constructor() {
+    super();
+  }
+
   public static getInstance(): NakedSingle {
     return NakedSingle.instance;
   }
@@ -28,10 +32,6 @@ export default class NakedSingle extends FillStrategy {
       if (candidatesArr.length === 1) result.push({ rowIndex, columnIndex, value: candidatesArr[0] });
     });
     return result;
-  }
-
-  private constructor() {
-    super();
   }
 
   public override canFill(sudoku: Sudoku): FillInputValueData[] {

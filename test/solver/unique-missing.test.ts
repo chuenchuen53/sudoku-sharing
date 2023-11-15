@@ -5,6 +5,7 @@ import { type InputClues, type SudokuElement, VirtualLineType, type Cell } from 
 import { FillStrategyType, type FillInputValueData } from "../../core/Sudoku/FillStrategy/FillStrategy";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import UniqueMissing from "../../core/Sudoku/FillStrategy/UniqueMissing";
+import { SudokuLine, SudokuLineUtil } from "../../core/Sudoku/SudokuLine";
 
 const candidatesFactory = Sudoku.candidatesFactory;
 
@@ -17,7 +18,7 @@ const dataFactory: (cell: Cell, value: SudokuElement, lineType: VirtualLineType,
   rowIndex: cell.rowIndex,
   columnIndex: cell.columnIndex,
   value,
-  relatedLine: { virtualLineType: lineType, lineIndex },
+  relatedLine: SudokuLineUtil.sudokuLine(lineType, lineIndex),
 });
 
 describe("sudoku solver unique missing test", () => {
@@ -94,19 +95,19 @@ describe("sudoku solver unique missing test", () => {
         rowIndex: line1[1].rowIndex,
         columnIndex: line1[1].columnIndex,
         value: "2",
-        relatedLine: { virtualLineType: VirtualLineType.ROW, lineIndex: 1 },
+        relatedLine: SudokuLine.ROW_1,
       },
       {
         rowIndex: line2[1].rowIndex,
         columnIndex: line2[1].columnIndex,
         value: "2",
-        relatedLine: { virtualLineType: VirtualLineType.ROW, lineIndex: 2 },
+        relatedLine: SudokuLine.ROW_2,
       },
       {
         rowIndex: line3[1].rowIndex,
         columnIndex: line3[1].columnIndex,
         value: "2",
-        relatedLine: { virtualLineType: VirtualLineType.ROW, lineIndex: 3 },
+        relatedLine: SudokuLine.ROW_3,
       },
     ];
 

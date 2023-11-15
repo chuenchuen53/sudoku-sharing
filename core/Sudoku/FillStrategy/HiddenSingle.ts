@@ -1,10 +1,15 @@
 import Sudoku from "../Sudoku";
+import { SudokuLineUtil } from "../SudokuLine";
 import SudokuSolver from "../SudokuSolver";
 import { VirtualLineType, type SudokuElement, type VirtualLine } from "../type";
 import FillStrategy, { type FillInputValueData } from "./FillStrategy";
 
 export default class HiddenSingle extends FillStrategy {
   private static readonly instance = new HiddenSingle();
+
+  private constructor() {
+    super();
+  }
 
   public static getInstance(): HiddenSingle {
     return HiddenSingle.instance;
@@ -51,19 +56,12 @@ export default class HiddenSingle extends FillStrategy {
           rowIndex: cell.rowIndex,
           columnIndex: cell.columnIndex,
           value: sudokuElement,
-          relatedLine: {
-            virtualLineType,
-            lineIndex: i,
-          },
+          relatedLine: SudokuLineUtil.sudokuLine(virtualLineType, i),
         });
       });
     }
 
     return result;
-  }
-
-  private constructor() {
-    super();
   }
 
   public override canFill(sudoku: Sudoku): FillInputValueData[] {
