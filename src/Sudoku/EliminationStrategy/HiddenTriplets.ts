@@ -5,6 +5,11 @@ import type { EliminationData } from "./EliminationStrategy";
 
 export default class HiddenTriplets extends HiddenMultiple {
   public static readonly SIZE_OF_CANDIDATE = 3;
+  public static readonly instance = new HiddenTriplets();
+
+  public static getInstance(): HiddenTriplets {
+    return HiddenTriplets.instance;
+  }
 
   public static hiddenTripletsFromVirtualLines(virtualLines: VirtualLine[], virtualLineType: VirtualLineType): EliminationData[] {
     return HiddenMultiple.hiddenMultipleFromVirtualLines(virtualLines, HiddenTriplets.SIZE_OF_CANDIDATE, virtualLineType);
@@ -16,7 +21,12 @@ export default class HiddenTriplets extends HiddenMultiple {
     const boxResult = HiddenTriplets.hiddenTripletsFromVirtualLines(sudoku.getAllBoxes(), VirtualLineType.BOX);
     return [...rowResult, ...columnResult, ...boxResult];
   }
-  public canEliminate(sudoku: Sudoku): EliminationData[] {
+
+  private constructor() {
+    super();
+  }
+
+  public override canEliminate(sudoku: Sudoku): EliminationData[] {
     return HiddenTriplets.hiddenTripletsFromSudoku(sudoku);
   }
 }

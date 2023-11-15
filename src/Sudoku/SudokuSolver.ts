@@ -21,20 +21,20 @@ export default class SudokuSolver {
   public sudoku: Sudoku;
   public stats: CSolveStats = new CSolveStats();
   public fillStrategiesMap: Record<FillStrategyType, FillStrategy> = {
-    [FillStrategyType.UNIQUE_MISSING]: new UniqueMissing(),
-    [FillStrategyType.NAKED_SINGLE]: new NakedSingle(),
-    [FillStrategyType.HIDDEN_SINGLE]: new HiddenSingle(),
+    [FillStrategyType.UNIQUE_MISSING]: UniqueMissing.getInstance(),
+    [FillStrategyType.NAKED_SINGLE]: NakedSingle.getInstance(),
+    [FillStrategyType.HIDDEN_SINGLE]: HiddenSingle.getInstance(),
   };
   public eliminationStrategiesMap: Record<EliminationStrategyType, EliminationStrategy> = {
-    [EliminationStrategyType.LOCKED_CANDIDATES]: new LockedCandidates(),
-    [EliminationStrategyType.NAKED_PAIRS]: new NakedPairs(),
-    [EliminationStrategyType.NAKED_TRIPLETS]: new NakedTriplets(),
-    [EliminationStrategyType.NAKED_QUADS]: new NakedQuads(),
-    [EliminationStrategyType.HIDDEN_PAIRS]: new HiddenPairs(),
-    [EliminationStrategyType.HIDDEN_TRIPLETS]: new HiddenTriplets(),
-    [EliminationStrategyType.HIDDEN_QUADS]: new HiddenQuads(),
-    [EliminationStrategyType.X_WING]: new XWing(),
-    [EliminationStrategyType.Y_WING]: new YWing(),
+    [EliminationStrategyType.LOCKED_CANDIDATES]: LockedCandidates.getInstance(),
+    [EliminationStrategyType.NAKED_PAIRS]: NakedPairs.getInstance(),
+    [EliminationStrategyType.NAKED_TRIPLETS]: NakedTriplets.getInstance(),
+    [EliminationStrategyType.NAKED_QUADS]: NakedQuads.getInstance(),
+    [EliminationStrategyType.HIDDEN_PAIRS]: HiddenPairs.getInstance(),
+    [EliminationStrategyType.HIDDEN_TRIPLETS]: HiddenTriplets.getInstance(),
+    [EliminationStrategyType.HIDDEN_QUADS]: HiddenQuads.getInstance(),
+    [EliminationStrategyType.X_WING]: XWing.getInstance(),
+    [EliminationStrategyType.Y_WING]: YWing.getInstance(),
   };
   public enabledEliminationStrategies: EliminationStrategyType[] = [
     EliminationStrategyType.LOCKED_CANDIDATES,

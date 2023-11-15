@@ -137,7 +137,7 @@ describe("sudoku solver hidden single test", () => {
   it("getHiddenSingles test 1", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    const fillHiddenSingle = new HiddenSingle();
+    const fillHiddenSingle = HiddenSingle.getInstance();
     const overallResult = fillHiddenSingle.canFill(s.sudoku);
 
     const expectedRowResult = TestUtil.fillInputValueDataArrFactory([
@@ -202,7 +202,7 @@ describe("sudoku solver hidden single test", () => {
   it("getHiddenSingles test 1", () => {
     const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
-    const fillHiddenSingle = new HiddenSingle();
+    const fillHiddenSingle = HiddenSingle.getInstance();
     const overallResult = fillHiddenSingle.canFill(s.sudoku);
 
     const expectedRowResult = TestUtil.fillInputValueDataArrFactory([

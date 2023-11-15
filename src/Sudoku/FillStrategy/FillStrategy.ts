@@ -17,5 +17,5 @@ export interface FillInputValueData extends InputValueData {
 }
 
 export default abstract class FillStrategy {
-  abstract canFill(sudoku: Sudoku): FillInputValueData[];
+  public abstract canFill(sudoku: Sudoku): FillInputValueData[];
 }

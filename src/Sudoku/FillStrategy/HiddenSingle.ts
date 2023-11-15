@@ -4,7 +4,13 @@ import { VirtualLineType, type SudokuElement, type VirtualLine } from "../type";
 import FillStrategy, { type FillInputValueData } from "./FillStrategy";
 
 export default class HiddenSingle extends FillStrategy {
-  static candidatesCountFactory(): Record<SudokuElement, number> {
+  private static readonly instance = new HiddenSingle();
+
+  public static getInstance(): HiddenSingle {
+    return HiddenSingle.instance;
+  }
+
+  public static candidatesCountFactory(): Record<SudokuElement, number> {
     return {
       "1": 0,
       "2": 0,
@@ -18,14 +24,14 @@ export default class HiddenSingle extends FillStrategy {
     };
   }
 
-  static hiddenSingles(sudoku: Sudoku): FillInputValueData[] {
+  public static hiddenSingles(sudoku: Sudoku): FillInputValueData[] {
     const rowResult = HiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllRows(), VirtualLineType.ROW);
     const columnResult = HiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllColumns(), VirtualLineType.COLUMN);
     const boxResult = HiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllBoxes(), VirtualLineType.BOX);
     return Sudoku.removeDuplicatedInputValueData([...rowResult, ...columnResult, ...boxResult]);
   }
 
-  static hiddenSingleFromVirtualLines(virtualLines: VirtualLine[], virtualLineType: VirtualLineType): FillInputValueData[] {
+  public static hiddenSingleFromVirtualLines(virtualLines: VirtualLine[], virtualLineType: VirtualLineType): FillInputValueData[] {
     const result: FillInputValueData[] = [];
     for (let i = 0; i < virtualLines.length; i++) {
       const virtualLine = virtualLines[i];
@@ -56,7 +62,11 @@ export default class HiddenSingle extends FillStrategy {
     return result;
   }
 
-  canFill(sudoku: Sudoku): FillInputValueData[] {
+  private constructor() {
+    super();
+  }
+
+  public override canFill(sudoku: Sudoku): FillInputValueData[] {
     return HiddenSingle.hiddenSingles(sudoku);
   }
 }

@@ -6,7 +6,7 @@ import type { VirtualLine, SudokuElement, VirtualLineType } from "../type";
 import CalcUtil from "../../utils/CalcUtil";
 
 export default abstract class HiddenMultiple extends EliminationStrategy {
-  static hiddenMultipleFromVirtualLines(
+  public static hiddenMultipleFromVirtualLines(
     virtualLines: VirtualLine[],
     sizeOfCandidate: 2 | 3 | 4,
     virtualLineType: VirtualLineType,

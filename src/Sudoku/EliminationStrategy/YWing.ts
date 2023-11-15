@@ -5,6 +5,12 @@ import type { CandidateCell, Cell, Pincer, SudokuElement, VirtualLine } from "..
 import CalcUtil from "../../utils/CalcUtil";
 
 export default class YWing extends EliminationStrategy {
+  private static readonly instance = new YWing();
+
+  public static getInstance(): YWing {
+    return YWing.instance;
+  }
+
   public static yWingFromSudoku(sudoku: Sudoku): EliminationData[] {
     const result: EliminationData[] = [];
     const cellsWithTwoCandidates = sudoku
@@ -94,7 +100,11 @@ export default class YWing extends EliminationStrategy {
     return CalcUtil.cartesianProduct(a, b).filter(([x, y]) => YWing.isYWingPattern(x, y));
   }
 
-  public canEliminate(sudoku: Sudoku): EliminationData[] {
+  private constructor() {
+    super();
+  }
+
+  public override canEliminate(sudoku: Sudoku): EliminationData[] {
     return YWing.yWingFromSudoku(sudoku);
   }
 }

@@ -34,7 +34,7 @@ describe("sudoku solver naked single test", () => {
   it("nakedSingles test 1", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    const fillNakedSingle = new NakedSingle();
+    const fillNakedSingle = NakedSingle.getInstance();
     const nakedSingles = fillNakedSingle.canFill(s.sudoku);
     expect(nakedSingles).toStrictEqual(
       TestUtil.inputValueDataArrFactory([
@@ -58,7 +58,7 @@ describe("sudoku solver naked single test", () => {
   it("getNakedSingles test 2", () => {
     const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
-    const fillNakedSingle = new NakedSingle();
+    const fillNakedSingle = NakedSingle.getInstance();
     const nakedSingles = fillNakedSingle.canFill(s.sudoku);
     expect(nakedSingles).toStrictEqual(
       TestUtil.inputValueDataArrFactory([

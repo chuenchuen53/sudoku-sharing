@@ -4,7 +4,12 @@ import type Sudoku from "../Sudoku";
 import type { EliminationData } from "./EliminationStrategy";
 
 export default class NakedTriplets extends NakedMultiple {
+  private static readonly instance = new NakedTriplets();
   public static readonly SIZE_OF_CANDIDATE = 3;
+
+  public static getInstance(): NakedTriplets {
+    return NakedTriplets.instance;
+  }
 
   public static nakedTripletsFromVirtualLines(virtualLines: VirtualLine[], virtualLineType: VirtualLineType): EliminationData[] {
     return NakedMultiple.nakedMultipleFromVirtualLines(virtualLines, NakedTriplets.SIZE_OF_CANDIDATE, virtualLineType);
@@ -17,7 +22,11 @@ export default class NakedTriplets extends NakedMultiple {
     return [...rowResult, ...columnResult, ...boxResult];
   }
 
-  public canEliminate(sudoku: Sudoku): EliminationData[] {
+  private constructor() {
+    super();
+  }
+
+  public override canEliminate(sudoku: Sudoku): EliminationData[] {
     return NakedTriplets.nakedTripletsFromSudoku(sudoku);
   }
 }

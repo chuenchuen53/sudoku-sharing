@@ -6,6 +6,12 @@ import EliminationStrategy, { type Elimination, type EliminationData, type Highl
 import CalcUtil from "../../utils/CalcUtil";
 
 export default class NakedPairs extends EliminationStrategy {
+  private static readonly instance = new NakedPairs();
+
+  public static getInstance(): NakedPairs {
+    return NakedPairs.instance;
+  }
+
   public static removalDueToNakedPairs(sudoku: Sudoku): EliminationData[] {
     const rowResult = NakedPairs.nakedPairsFromVirtualLines(sudoku.getAllRows(), VirtualLineType.ROW);
     const columnResult = NakedPairs.nakedPairsFromVirtualLines(sudoku.getAllColumns(), VirtualLineType.COLUMN);
@@ -63,7 +69,11 @@ export default class NakedPairs extends EliminationStrategy {
     return result;
   }
 
-  public canEliminate(sudoku: Sudoku): EliminationData[] {
+  private constructor() {
+    super();
+  }
+
+  public override canEliminate(sudoku: Sudoku): EliminationData[] {
     return NakedPairs.removalDueToNakedPairs(sudoku);
   }
 }

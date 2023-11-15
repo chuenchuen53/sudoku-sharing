@@ -4,12 +4,18 @@ import { VirtualLineType, type Candidates, type SudokuElement, type VirtualLine 
 import FillStrategy, { type FillInputValueData } from "./FillStrategy";
 
 export default class UniqueMissing extends FillStrategy {
-  static uniqueCandidate(candidates: Candidates): SudokuElement | null {
+  private static readonly instance = new UniqueMissing();
+
+  public static getInstance(): UniqueMissing {
+    return UniqueMissing.instance;
+  }
+
+  public static uniqueCandidate(candidates: Candidates): SudokuElement | null {
     const candidatesArr = SudokuSolver.getCandidatesArr(candidates);
     return candidatesArr.length === 1 ? candidatesArr[0] : null;
   }
 
-  static uniqueMissingFromVirtualLines(virtualLines: VirtualLine[], virtualLineType: VirtualLineType): FillInputValueData[] {
+  public static uniqueMissingFromVirtualLines(virtualLines: VirtualLine[], virtualLineType: VirtualLineType): FillInputValueData[] {
     const result: FillInputValueData[] = [];
     const missingArr = virtualLines.map((x) => Sudoku.missingValuesInVirtualLine(x));
 
@@ -32,7 +38,7 @@ export default class UniqueMissing extends FillStrategy {
     return result;
   }
 
-  static uniqueMissing(sudoku: Sudoku): FillInputValueData[] {
+  public static uniqueMissing(sudoku: Sudoku): FillInputValueData[] {
     const rowResult = UniqueMissing.uniqueMissingFromVirtualLines(sudoku.getAllRows(), VirtualLineType.ROW);
     const columnResult = UniqueMissing.uniqueMissingFromVirtualLines(sudoku.getAllColumns(), VirtualLineType.COLUMN);
     const boxResult = UniqueMissing.uniqueMissingFromVirtualLines(sudoku.getAllBoxes(), VirtualLineType.BOX);
@@ -41,7 +47,11 @@ export default class UniqueMissing extends FillStrategy {
     return combined.filter((x, ix) => combined.findIndex((y) => Sudoku.isSamePos(x, y)) === ix);
   }
 
-  canFill(sudoku: Sudoku): FillInputValueData[] {
+  private constructor() {
+    super();
+  }
+
+  public override canFill(sudoku: Sudoku): FillInputValueData[] {
     return UniqueMissing.uniqueMissing(sudoku);
   }
 }

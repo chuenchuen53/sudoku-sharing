@@ -4,7 +4,13 @@ import type Sudoku from "../Sudoku";
 import type { Cell, Grid } from "../type";
 
 export default class NakedSingle extends FillStrategy {
-  static loopGrid(grid: Grid, fn: (rowIndex: number, columnIndex: number, cell: Cell, row?: Cell[]) => void): void {
+  private static readonly instance = new NakedSingle();
+
+  public static getInstance(): NakedSingle {
+    return NakedSingle.instance;
+  }
+
+  public static loopGrid(grid: Grid, fn: (rowIndex: number, columnIndex: number, cell: Cell, row?: Cell[]) => void): void {
     for (let rowIndex = 0; rowIndex < grid.length; rowIndex++) {
       const row = grid[rowIndex];
       for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
@@ -14,7 +20,7 @@ export default class NakedSingle extends FillStrategy {
     }
   }
 
-  static nakedSingles(sudoku: Sudoku): FillInputValueData[] {
+  public static nakedSingles(sudoku: Sudoku): FillInputValueData[] {
     const result: FillInputValueData[] = [];
     NakedSingle.loopGrid(sudoku.grid, (rowIndex, columnIndex, cell) => {
       if (!cell.candidates) return;
@@ -24,7 +30,11 @@ export default class NakedSingle extends FillStrategy {
     return result;
   }
 
-  canFill(sudoku: Sudoku): FillInputValueData[] {
+  private constructor() {
+    super();
+  }
+
+  public override canFill(sudoku: Sudoku): FillInputValueData[] {
     return NakedSingle.nakedSingles(sudoku);
   }
 }

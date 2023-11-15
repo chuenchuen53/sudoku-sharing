@@ -5,6 +5,12 @@ import { VirtualLineType, type RowColumn } from "../type";
 import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
 
 export default class LockedCandidates extends EliminationStrategy {
+  private static readonly instance = new LockedCandidates();
+
+  public static getInstance(): LockedCandidates {
+    return LockedCandidates.instance;
+  }
+
   public static rowColumnLockInBox(sudoku: Sudoku, lineType: RowColumn, index: number): EliminationData[] {
     const result: EliminationData[] = [];
     const virtualLine = lineType === VirtualLineType.ROW ? sudoku.getRow(index) : sudoku.getColumn(index);
@@ -15,7 +21,7 @@ export default class LockedCandidates extends EliminationStrategy {
       if (!missing[sudokuElement]) return;
 
       const boxesContainedTheElement = relatedBoxes.filter((box) =>
-        box.some((x) => (lineType === VirtualLineType.ROW ? x.rowIndex : x.columnIndex) === index && x.candidates?.[sudokuElement])
+        box.some((x) => (lineType === VirtualLineType.ROW ? x.rowIndex : x.columnIndex) === index && x.candidates?.[sudokuElement]),
       );
       if (boxesContainedTheElement.length !== 1) return;
 
@@ -61,7 +67,9 @@ export default class LockedCandidates extends EliminationStrategy {
       const cellsContainTheElement = box.filter((x) => x.candidates?.[sudokuElement]);
       if (cellsContainTheElement.length === 0) return;
       const allInSameLine = cellsContainTheElement.every((x) =>
-        lineType === VirtualLineType.ROW ? x.rowIndex === cellsContainTheElement[0].rowIndex : x.columnIndex === cellsContainTheElement[0].columnIndex
+        lineType === VirtualLineType.ROW
+          ? x.rowIndex === cellsContainTheElement[0].rowIndex
+          : x.columnIndex === cellsContainTheElement[0].columnIndex,
       );
       if (!allInSameLine) return;
 
@@ -104,7 +112,11 @@ export default class LockedCandidates extends EliminationStrategy {
     return [...rowLockInBox, ...columnLockInBox, ...boxLockInRow, ...boxLockInColumn];
   }
 
-  public canEliminate(sudoku: Sudoku): EliminationData[] {
+  private constructor() {
+    super();
+  }
+
+  public override canEliminate(sudoku: Sudoku): EliminationData[] {
     return LockedCandidates.getRemovalDueToLockedCandidates(sudoku);
   }
 }

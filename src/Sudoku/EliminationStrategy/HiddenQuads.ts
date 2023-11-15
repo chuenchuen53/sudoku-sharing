@@ -4,7 +4,12 @@ import type Sudoku from "../Sudoku";
 import type { EliminationData } from "./EliminationStrategy";
 
 export default class HiddenQuads extends HiddenMultiple {
+  private static readonly instance = new HiddenQuads();
   public static readonly SIZE_OF_CANDIDATE = 4;
+
+  public static getInstance(): HiddenQuads {
+    return HiddenQuads.instance;
+  }
 
   public static hiddenQuadsFromVirtualLines(virtualLines: VirtualLine[], virtualLineType: VirtualLineType): EliminationData[] {
     return HiddenMultiple.hiddenMultipleFromVirtualLines(virtualLines, HiddenQuads.SIZE_OF_CANDIDATE, virtualLineType);
@@ -16,7 +21,12 @@ export default class HiddenQuads extends HiddenMultiple {
     const boxResult = HiddenQuads.hiddenQuadsFromVirtualLines(sudoku.getAllBoxes(), VirtualLineType.BOX);
     return [...rowResult, ...columnResult, ...boxResult];
   }
-  public canEliminate(sudoku: Sudoku): EliminationData[] {
+
+  private constructor() {
+    super();
+  }
+
+  public override canEliminate(sudoku: Sudoku): EliminationData[] {
     return HiddenQuads.hiddenQuadsFromSudoku(sudoku);
   }
 }
