@@ -2,5 +2,10 @@
   "tab": 2,
   "printWidth": 150,
   "semi": true,
-  "singleQuote": false
+  "singleQuote": false,
+  "quoteProps": "as-needed",
+  "bracketSpacing": true,
+  "htmlWhitespaceSensitivity": "ignore",
+  "useTabs": false,
+  "endOfLine": "lf"
 }
