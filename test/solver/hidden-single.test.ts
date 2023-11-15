@@ -3,9 +3,9 @@ import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
 import { VirtualLineType } from "../../src/Sudoku/type";
 import type { InputClues } from "../../src/Sudoku/type";
-import Sudoku from "@/Sudoku/Sudoku";
-import HiddenSingle from "@/Sudoku/FillStrategy/HiddenSingle";
-import { FillStrategyType } from "@/Sudoku/FillStrategy/FillStrategy";
+import Sudoku from "../../src/Sudoku/Sudoku";
+import HiddenSingle from "../../src/Sudoku/FillStrategy/HiddenSingle";
+import { FillStrategyType } from "../../src/Sudoku/FillStrategy/FillStrategy";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -38,14 +38,14 @@ describe("sudoku solver hidden single test", () => {
       TestUtil.fillInputValueDataArrFactory([
         [0, 4, "4", VirtualLineType.ROW, 0],
         [0, 8, "6", VirtualLineType.ROW, 0],
-      ])
+      ]),
     );
   });
 
   it("hiddenSingleFromVirtualLines test2", () => {
     const line = TestUtil.virtualLineFactory([["2", "3"], undefined, ["2", "3", "6"], undefined, undefined, ["4"], undefined, undefined, ["3"]]);
     expect(HiddenSingle.hiddenSingleFromVirtualLines([line], VirtualLineType.ROW)).toStrictEqual(
-      TestUtil.fillInputValueDataArrFactory([[0, 2, "6", VirtualLineType.ROW, 0]])
+      TestUtil.fillInputValueDataArrFactory([[0, 2, "6", VirtualLineType.ROW, 0]]),
     );
   });
 
@@ -65,7 +65,7 @@ describe("sudoku solver hidden single test", () => {
       {
         type: VirtualLineType.ROW,
         lineIndex: 0,
-      }
+      },
     );
     const row1 = TestUtil.virtualLineFactory(
       [
@@ -82,7 +82,7 @@ describe("sudoku solver hidden single test", () => {
       {
         type: VirtualLineType.ROW,
         lineIndex: 1,
-      }
+      },
     );
     const row2 = TestUtil.virtualLineFactory(
       [
@@ -99,7 +99,7 @@ describe("sudoku solver hidden single test", () => {
       {
         type: VirtualLineType.ROW,
         lineIndex: 2,
-      }
+      },
     );
 
     const rows = [row0, row1, row2];
@@ -109,7 +109,7 @@ describe("sudoku solver hidden single test", () => {
         [0, 3, "5", VirtualLineType.ROW, 0],
         [1, 3, "5", VirtualLineType.ROW, 1],
         [2, 3, "5", VirtualLineType.ROW, 2],
-      ])
+      ]),
     );
   });
 

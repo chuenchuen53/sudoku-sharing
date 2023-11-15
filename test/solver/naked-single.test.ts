@@ -2,9 +2,9 @@ import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
 import type { InputClues } from "../../src/Sudoku/type";
-import Sudoku from "@/Sudoku/Sudoku";
-import NakedSingle from "@/Sudoku/FillStrategy/NakedSingle";
-import { FillStrategyType } from "@/Sudoku/FillStrategy/FillStrategy";
+import Sudoku from "../../src/Sudoku/Sudoku";
+import NakedSingle from "../../src/Sudoku/FillStrategy/NakedSingle";
+import { FillStrategyType } from "../../src/Sudoku/FillStrategy/FillStrategy";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -51,7 +51,7 @@ describe("sudoku solver naked single test", () => {
         [6, 4, "2"],
         [7, 1, "7"],
         [8, 0, "3"],
-      ])
+      ]),
     );
   });
 
@@ -65,7 +65,7 @@ describe("sudoku solver naked single test", () => {
         [2, 0, "9"],
         [3, 6, "7"],
         [5, 1, "9"],
-      ])
+      ]),
     );
   });
 

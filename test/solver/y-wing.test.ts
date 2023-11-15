@@ -3,9 +3,9 @@ import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
 import { VirtualLineType } from "../../src/Sudoku/type";
 import type { Pincer, InputClues, InputValueData, SudokuElement, CandidateCell } from "../../src/Sudoku/type";
-import Sudoku from "@/Sudoku/Sudoku";
-import YWing from "@/Sudoku/EliminationStrategy/YWing";
-import EliminationStrategy, { EliminationStrategyType } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
+import Sudoku from "../../src/Sudoku/Sudoku";
+import YWing from "../../src/Sudoku/EliminationStrategy/YWing";
+import EliminationStrategy, { EliminationStrategyType } from "../../src/Sudoku/EliminationStrategy/EliminationStrategy";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],

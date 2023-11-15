@@ -2,9 +2,9 @@ import { expect, describe, it } from "vitest";
 import TestUtil from "../TestUtil";
 import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import { type InputClues, type SudokuElement, VirtualLineType, type Cell } from "../../src/Sudoku/type";
-import { FillStrategyType, type FillInputValueData } from "@/Sudoku/FillStrategy/FillStrategy";
-import Sudoku from "@/Sudoku/Sudoku";
-import UniqueMissing from "@/Sudoku/FillStrategy/UniqueMissing";
+import { FillStrategyType, type FillInputValueData } from "../../src/Sudoku/FillStrategy/FillStrategy";
+import Sudoku from "../../src/Sudoku/Sudoku";
+import UniqueMissing from "../../src/Sudoku/FillStrategy/UniqueMissing";
 
 const candidatesFactory = Sudoku.candidatesFactory;
 
@@ -12,7 +12,7 @@ const dataFactory: (cell: Cell, value: SudokuElement, lineType: VirtualLineType,
   cell,
   value,
   lineType,
-  lineIndex
+  lineIndex,
 ) => ({
   rowIndex: cell.rowIndex,
   columnIndex: cell.columnIndex,

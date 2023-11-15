@@ -3,10 +3,10 @@ import SudokuSolver from "../../src/Sudoku/SudokuSolver";
 import { VirtualLineType } from "../../src/Sudoku/type";
 import TestUtil from "../TestUtil";
 import type { InputClues, InputValueData, SudokuElement } from "../../src/Sudoku/type";
-import Sudoku from "@/Sudoku/Sudoku";
-import XWing from "@/Sudoku/EliminationStrategy/XWing";
-import { SudokuLine } from "@/Sudoku/SudokuLine";
-import EliminationStrategy, { EliminationStrategyType } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
+import Sudoku from "../../src/Sudoku/Sudoku";
+import XWing from "../../src/Sudoku/EliminationStrategy/XWing";
+import { SudokuLine } from "../../src/Sudoku/SudokuLine";
+import EliminationStrategy, { EliminationStrategyType } from "../../src/Sudoku/EliminationStrategy/EliminationStrategy";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -75,7 +75,7 @@ describe("sudoku solver", () => {
       {
         type: VirtualLineType.ROW,
         lineIndex: 0,
-      }
+      },
     );
     const row1 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 1 });
     const row2 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.ROW, lineIndex: 2 });
@@ -96,7 +96,7 @@ describe("sudoku solver", () => {
         ["3", "4", "5"],
         ["1", "2", "4", "5", "7", "8", "9"],
       ],
-      { type: VirtualLineType.ROW, lineIndex: 8 }
+      { type: VirtualLineType.ROW, lineIndex: 8 },
     );
 
     const column0 = TestUtil.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.COLUMN, lineIndex: 0 });
@@ -211,7 +211,7 @@ describe("sudoku solver", () => {
       {
         type: VirtualLineType.COLUMN,
         lineIndex: 0,
-      }
+      },
     );
     const column1 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 1 });
     const column2 = TestUtil.virtualLineFactory(allCandidates, { type: VirtualLineType.COLUMN, lineIndex: 2 });
@@ -232,7 +232,7 @@ describe("sudoku solver", () => {
         ["3", "4", "5"],
         ["1", "2", "4", "5", "7", "8", "9"],
       ],
-      { type: VirtualLineType.COLUMN, lineIndex: 8 }
+      { type: VirtualLineType.COLUMN, lineIndex: 8 },
     );
 
     const row0 = TestUtil.virtualLineFactory(undefinedCandidates, { type: VirtualLineType.ROW, lineIndex: 0 });

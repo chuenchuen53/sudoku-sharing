@@ -1,8 +1,8 @@
 import { expect, describe, it } from "vitest";
-import SudokuSolver from "@/Sudoku/SudokuSolver";
-import samplePuzzles from "@/samplePuzzle";
-import samplePuzzlesSolution from "@/samplePuzzleSolution";
-import Sudoku from "@/Sudoku/Sudoku";
+import SudokuSolver from "../../src/Sudoku/SudokuSolver";
+import samplePuzzles from "../../src/samplePuzzle";
+import samplePuzzlesSolution from "../../src/samplePuzzleSolution";
+import Sudoku from "../../src/Sudoku/Sudoku";
 
 describe("solver", () => {
   it("sample puzzle test", () => {

@@ -2,7 +2,7 @@ import Sudoku from "../Sudoku";
 import { VirtualLineType, type CandidateCell, type RowColumn, type VirtualLine } from "../type";
 import { SudokuLineUtil, type SudokuLine } from "../SudokuLine";
 import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
-import CalcUtil from "@/utils/CalcUtil";
+import CalcUtil from "../../utils/CalcUtil";
 
 export default class XWing extends EliminationStrategy {
   public static xWingFromSudoku(sudoku: Sudoku): EliminationData[] {
@@ -17,18 +17,21 @@ export default class XWing extends EliminationStrategy {
   public static xWingFromVirtualLines(
     perspective: RowColumn,
     virtualLines: VirtualLine[],
-    perpendicularVirtualLines: VirtualLine[]
+    perpendicularVirtualLines: VirtualLine[],
   ): EliminationData[] {
     const result: EliminationData[] = [];
 
     for (const sudokuElement of Sudoku.allElements()) {
       const gridWithElementInCandidate = virtualLines.map((line) => line.map((cell) => (cell.candidates?.[sudokuElement] ? cell : undefined)));
 
-      const lineWithTwoCellsContained = gridWithElementInCandidate.reduce((acc, line) => {
-        const cells = line.filter((x): x is CandidateCell => Boolean(x?.candidates));
-        if (cells.length === 2) acc.push({ cells });
-        return acc;
-      }, [] as { cells: CandidateCell[] }[]);
+      const lineWithTwoCellsContained = gridWithElementInCandidate.reduce(
+        (acc, line) => {
+          const cells = line.filter((x): x is CandidateCell => Boolean(x?.candidates));
+          if (cells.length === 2) acc.push({ cells });
+          return acc;
+        },
+        [] as { cells: CandidateCell[] }[],
+      );
 
       if (lineWithTwoCellsContained.length < 2) continue;
 

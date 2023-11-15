@@ -2,7 +2,7 @@ import Sudoku from "../Sudoku";
 import SudokuSolver from "../SudokuSolver";
 import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
 import type { CandidateCell, Cell, Pincer, SudokuElement, VirtualLine } from "../type";
-import CalcUtil from "@/utils/CalcUtil";
+import CalcUtil from "../../utils/CalcUtil";
 
 export default class YWing extends EliminationStrategy {
   public static yWingFromSudoku(sudoku: Sudoku): EliminationData[] {
@@ -10,7 +10,7 @@ export default class YWing extends EliminationStrategy {
     const cellsWithTwoCandidates = sudoku
       .getAllRows()
       .map((row) =>
-        row.map((cell) => (cell.candidates && SudokuSolver.numberOfCandidates(cell.candidates) === 2 ? (cell as CandidateCell) : undefined))
+        row.map((cell) => (cell.candidates && SudokuSolver.numberOfCandidates(cell.candidates) === 2 ? (cell as CandidateCell) : undefined)),
       );
 
     for (let i = 0; i < cellsWithTwoCandidates.length; i++) {

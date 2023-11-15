@@ -3,13 +3,13 @@ import SudokuSolver from "../SudokuSolver";
 import { SudokuLineUtil } from "../SudokuLine";
 import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
 import type { VirtualLine, SudokuElement, VirtualLineType } from "../type";
-import CalcUtil from "@/utils/CalcUtil";
+import CalcUtil from "../../utils/CalcUtil";
 
 export default abstract class HiddenMultiple extends EliminationStrategy {
   static hiddenMultipleFromVirtualLines(
     virtualLines: VirtualLine[],
     sizeOfCandidate: 2 | 3 | 4,
-    virtualLineType: VirtualLineType
+    virtualLineType: VirtualLineType,
   ): EliminationData[] {
     const result: EliminationData[] = [];
 

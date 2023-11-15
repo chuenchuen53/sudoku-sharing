@@ -3,7 +3,7 @@ import SudokuSolver from "../SudokuSolver";
 import { VirtualLineType, type VirtualLine } from "../type";
 import { SudokuLineUtil } from "../SudokuLine";
 import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
-import CalcUtil from "@/utils/CalcUtil";
+import CalcUtil from "../../utils/CalcUtil";
 
 export default class NakedPairs extends EliminationStrategy {
   public static removalDueToNakedPairs(sudoku: Sudoku): EliminationData[] {
@@ -19,7 +19,7 @@ export default class NakedPairs extends EliminationStrategy {
     for (let i = 0; i < virtualLines.length; i++) {
       const virtualLine = virtualLines[i];
       const cellWith2Candidates = SudokuSolver.candidateCellsFromVirtualLine(virtualLine).filter(
-        (x) => SudokuSolver.numberOfCandidates(x.candidates) === 2
+        (x) => SudokuSolver.numberOfCandidates(x.candidates) === 2,
       );
       if (cellWith2Candidates.length < 2) continue;
 

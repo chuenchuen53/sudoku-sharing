@@ -2,8 +2,8 @@ import Sudoku from "../src/Sudoku/Sudoku";
 import { VirtualLineType } from "../src/Sudoku/type";
 import ArrUtil from "../src/utils/ArrUtil";
 import type { Pincer, Cell, InputClues, InputValueData, SudokuElement, VirtualLine, EliminationCount } from "../src/Sudoku/type";
-import type { FillInputValueData, RelatedLine } from "@/Sudoku/FillStrategy/FillStrategy";
-import type { Elimination } from "@/Sudoku/EliminationStrategy/EliminationStrategy";
+import type { FillInputValueData } from "../src/Sudoku/FillStrategy/FillStrategy";
+import type { Elimination } from "../src/Sudoku/EliminationStrategy/EliminationStrategy";
 
 export default class TestUtil {
   static emptyPuzzle = (): InputClues => ArrUtil.create2DArray(9, 9, () => "0");
@@ -25,7 +25,7 @@ export default class TestUtil {
     c: number,
     v: SudokuElement,
     virtualLineType: VirtualLineType,
-    lineIndex: number
+    lineIndex: number,
   ): FillInputValueData => {
     return {
       rowIndex: r,
@@ -65,7 +65,7 @@ export default class TestUtil {
       clue?: SudokuElement;
       inputValue?: SudokuElement;
       candidates?: SudokuElement[];
-    }
+    },
   ): Cell => {
     const c: Cell = {
       rowIndex,
@@ -97,7 +97,7 @@ export default class TestUtil {
       | {
           type: VirtualLineType.BOX;
           boxIndex: number;
-        } = { type: VirtualLineType.ROW, lineIndex: 0 }
+        } = { type: VirtualLineType.ROW, lineIndex: 0 },
   ): VirtualLine => {
     function getRowColumnIndex(x: number): { rowIndex: number; columnIndex: number } {
       switch (option.type) {
