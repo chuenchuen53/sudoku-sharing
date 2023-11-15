@@ -1,9 +1,9 @@
 import { expect, describe, it, vitest, beforeAll } from "vitest";
-import ArrUtil from "../src/utils/ArrUtil";
-import Sudoku from "../src/Sudoku/Sudoku";
-import { VirtualLineType } from "../src/Sudoku/type";
+import ArrUtil from "../core/utils/ArrUtil";
+import Sudoku from "../core/Sudoku/Sudoku";
+import { VirtualLineType } from "../core/Sudoku/type";
 import TestUtil from "./TestUtil";
-import type { Cell, InputClues, CheckVirtualLineDuplicateResult } from "../src/Sudoku/type";
+import type { Cell, InputClues, CheckVirtualLineDuplicateResult } from "../core/Sudoku/type";
 
 const candidatesFactory = Sudoku.candidatesFactory;
 
@@ -93,9 +93,7 @@ describe("sudoku basic", () => {
       [{}, {}, {}, { clue: "6" }, { clue: "8" }, {}, {}, { clue: "1" }, { clue: "2" }],
       [{ clue: "5" }, {}, { clue: "8" }, {}, {}, {}, {}, {}, { clue: "4" }],
     ];
-    const gridExpected = values.map((row, rowIndex) =>
-      row.map((cell, columnIndex) => ({ ...cell, rowIndex, columnIndex }))
-    );
+    const gridExpected = values.map((row, rowIndex) => row.map((cell, columnIndex) => ({ ...cell, rowIndex, columnIndex })));
     expect(sudoku.grid).toStrictEqual(gridExpected);
   });
 
@@ -112,9 +110,7 @@ describe("sudoku basic", () => {
       [{ clue: "1" }, {}, {}, {}, {}, {}, {}, { clue: "6" }, {}],
       [{}, {}, { clue: "4" }, {}, { clue: "6" }, {}, { clue: "9" }, {}, { clue: "8" }],
     ];
-    const gridExpected = values.map((row, rowIndex) =>
-      row.map((cell, columnIndex) => ({ ...cell, rowIndex, columnIndex }))
-    );
+    const gridExpected = values.map((row, rowIndex) => row.map((cell, columnIndex) => ({ ...cell, rowIndex, columnIndex })));
     expect(sudoku.grid).toStrictEqual(gridExpected);
   });
 
@@ -126,17 +122,17 @@ describe("sudoku basic", () => {
     s1DetailExpected[VirtualLineType.ROW][0].haveDuplicate = true;
     s1DetailExpected[VirtualLineType.ROW][0].duplicatedCells.push(
       { clue: "2", rowIndex: 0, columnIndex: 0 },
-      { clue: "2", rowIndex: 0, columnIndex: 1 }
+      { clue: "2", rowIndex: 0, columnIndex: 1 },
     );
     s1DetailExpected[VirtualLineType.COLUMN][1].haveDuplicate = true;
     s1DetailExpected[VirtualLineType.COLUMN][1].duplicatedCells.push(
       { clue: "2", rowIndex: 0, columnIndex: 1 },
-      { clue: "2", rowIndex: 4, columnIndex: 1 }
+      { clue: "2", rowIndex: 4, columnIndex: 1 },
     );
     s1DetailExpected[VirtualLineType.BOX][0].haveDuplicate = true;
     s1DetailExpected[VirtualLineType.BOX][0].duplicatedCells.push(
       { clue: "2", rowIndex: 0, columnIndex: 0 },
-      { clue: "2", rowIndex: 0, columnIndex: 1 }
+      { clue: "2", rowIndex: 0, columnIndex: 1 },
     );
     const s1Expected = {
       isValid: false,
@@ -153,17 +149,17 @@ describe("sudoku basic", () => {
     s1DetailExpected[VirtualLineType.ROW][0].haveDuplicate = true;
     s1DetailExpected[VirtualLineType.ROW][0].duplicatedCells.push(
       { clue: "2", rowIndex: 0, columnIndex: 0 },
-      { inputValue: "2", rowIndex: 0, columnIndex: 1 }
+      { inputValue: "2", rowIndex: 0, columnIndex: 1 },
     );
     s1DetailExpected[VirtualLineType.COLUMN][1].haveDuplicate = true;
     s1DetailExpected[VirtualLineType.COLUMN][1].duplicatedCells.push(
       { inputValue: "2", rowIndex: 0, columnIndex: 1 },
-      { clue: "2", rowIndex: 4, columnIndex: 1 }
+      { clue: "2", rowIndex: 4, columnIndex: 1 },
     );
     s1DetailExpected[VirtualLineType.BOX][0].haveDuplicate = true;
     s1DetailExpected[VirtualLineType.BOX][0].duplicatedCells.push(
       { clue: "2", rowIndex: 0, columnIndex: 0 },
-      { inputValue: "2", rowIndex: 0, columnIndex: 1 }
+      { inputValue: "2", rowIndex: 0, columnIndex: 1 },
     );
     const s1Expected = {
       isValid: false,
@@ -187,7 +183,7 @@ describe("sudoku basic", () => {
       { clue: "1", rowIndex: 2, columnIndex: 1 },
       { clue: "1", rowIndex: 2, columnIndex: 3 },
       { clue: "6", rowIndex: 2, columnIndex: 4 },
-      { clue: "1", rowIndex: 2, columnIndex: 6 }
+      { clue: "1", rowIndex: 2, columnIndex: 6 },
     );
     const s1Expected = {
       isValid: false,
@@ -810,11 +806,7 @@ describe("sudoku basic", () => {
     expect(Sudoku.removeDuplicatedInputValueData([input1, input2, input1, input1])).toStrictEqual([input1]);
     expect(Sudoku.removeDuplicatedInputValueData([input1, input3])).toStrictEqual([input1, input3]);
     expect(Sudoku.removeDuplicatedInputValueData([input3, input4])).toStrictEqual([input3, input4]);
-    expect(Sudoku.removeDuplicatedInputValueData([input1, input2, input3, input4])).toStrictEqual([
-      input1,
-      input3,
-      input4,
-    ]);
+    expect(Sudoku.removeDuplicatedInputValueData([input1, input2, input3, input4])).toStrictEqual([input1, input3, input4]);
   });
 
   it("missingInVirtualLine", () => {

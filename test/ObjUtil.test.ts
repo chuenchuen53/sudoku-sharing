@@ -1,5 +1,5 @@
 import { expect, describe, it } from "vitest";
-import ObjUtil from "../src/utils/ObjUtil";
+import ObjUtil from "../core/utils/ObjUtil";
 
 describe("ObjUtil", () => {
   it("ObjUtil.boolObjEquality", () => {

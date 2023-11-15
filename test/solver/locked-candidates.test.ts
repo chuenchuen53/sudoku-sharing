@@ -1,11 +1,11 @@
 import { expect, describe, it } from "vitest";
-import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import { VirtualLineType } from "../../src/Sudoku/type";
+import SudokuSolver from "../../core/Sudoku/SudokuSolver";
+import { VirtualLineType } from "../../core/Sudoku/type";
 import TestUtil from "../TestUtil";
-import type { InputClues, SudokuElement } from "../../src/Sudoku/type";
-import Sudoku from "../../src/Sudoku/Sudoku";
-import LockedCandidates from "../../src/Sudoku/EliminationStrategy/LockedCandidates";
-import EliminationStrategy, { EliminationStrategyType } from "../../src/Sudoku/EliminationStrategy/EliminationStrategy";
+import type { InputClues, SudokuElement } from "../../core/Sudoku/type";
+import Sudoku from "../../core/Sudoku/Sudoku";
+import LockedCandidates from "../../core/Sudoku/EliminationStrategy/LockedCandidates";
+import EliminationStrategy, { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
 
 interface AllResult {
   rowLockInBoxResult: [number, number, SudokuElement][][];

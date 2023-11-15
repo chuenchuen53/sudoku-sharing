@@ -1,9 +1,9 @@
-import Sudoku from "../src/Sudoku/Sudoku";
-import { VirtualLineType } from "../src/Sudoku/type";
-import ArrUtil from "../src/utils/ArrUtil";
-import type { Pincer, Cell, InputClues, InputValueData, SudokuElement, VirtualLine, EliminationCount } from "../src/Sudoku/type";
-import type { FillInputValueData } from "../src/Sudoku/FillStrategy/FillStrategy";
-import type { Elimination } from "../src/Sudoku/EliminationStrategy/EliminationStrategy";
+import Sudoku from "../core/Sudoku/Sudoku";
+import { VirtualLineType } from "../core/Sudoku/type";
+import ArrUtil from "../core/utils/ArrUtil";
+import type { Pincer, Cell, InputClues, InputValueData, SudokuElement, VirtualLine, EliminationCount } from "../core/Sudoku/type";
+import type { FillInputValueData } from "../core/Sudoku/FillStrategy/FillStrategy";
+import type { Elimination } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 
 export default class TestUtil {
   static emptyPuzzle = (): InputClues => ArrUtil.create2DArray(9, 9, () => "0");

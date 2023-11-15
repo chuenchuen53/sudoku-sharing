@@ -1,11 +1,11 @@
 import { expect, describe, it } from "vitest";
-import SudokuSolver from "../../src/Sudoku/SudokuSolver";
+import SudokuSolver from "../../core/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
-import { VirtualLineType, type InputClues, type InputValueData } from "../../src/Sudoku/type";
-import Sudoku from "../../src/Sudoku/Sudoku";
-import NakedPairs from "../../src/Sudoku/EliminationStrategy/NakedPairs";
-import EliminationStrategy, { EliminationStrategyType } from "../../src/Sudoku/EliminationStrategy/EliminationStrategy";
-import { SudokuLine } from "../../src/Sudoku/SudokuLine";
+import { VirtualLineType, type InputClues, type InputValueData } from "../../core/Sudoku/type";
+import Sudoku from "../../core/Sudoku/Sudoku";
+import NakedPairs from "../../core/Sudoku/EliminationStrategy/NakedPairs";
+import EliminationStrategy, { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import { SudokuLine } from "../../core/Sudoku/SudokuLine";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],

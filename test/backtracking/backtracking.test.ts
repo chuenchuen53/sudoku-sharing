@@ -1,5 +1,5 @@
 import { expect, describe, it } from "vitest";
-import Backtracking from "../../src/Sudoku/Backtracking";
+import Backtracking from "../../core/Sudoku/Backtracking";
 import samplePuzzles from "../../src/samplePuzzle";
 import samplePuzzlesSolution from "../../src/samplePuzzleSolution";
 

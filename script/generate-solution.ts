@@ -1,7 +1,7 @@
 import samplePuzzle from "../src/samplePuzzle";
-import SudokuSolver from "../src/Sudoku/SudokuSolver";
-import ArrUtil from "../src/utils/ArrUtil";
-import type { InputClues } from "../src/Sudoku/type";
+import SudokuSolver from "../core/Sudoku/SudokuSolver";
+import ArrUtil from "../core/utils/ArrUtil";
+import type { InputClues } from "../core/Sudoku/type";
 
 const inputCluesTemplate: () => InputClues = () => ArrUtil.create2DArray(9, 9, "0");
 

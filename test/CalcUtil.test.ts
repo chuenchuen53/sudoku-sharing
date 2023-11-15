@@ -1,5 +1,5 @@
 import { expect, describe, it } from "vitest";
-import CalcUtil from "../src/utils/CalcUtil";
+import CalcUtil from "../core/utils/CalcUtil";
 
 describe("CalcUtil", () => {
   it("CalcUtil.xor test 1", () => {

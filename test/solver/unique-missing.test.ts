@@ -1,10 +1,10 @@
 import { expect, describe, it } from "vitest";
 import TestUtil from "../TestUtil";
-import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import { type InputClues, type SudokuElement, VirtualLineType, type Cell } from "../../src/Sudoku/type";
-import { FillStrategyType, type FillInputValueData } from "../../src/Sudoku/FillStrategy/FillStrategy";
-import Sudoku from "../../src/Sudoku/Sudoku";
-import UniqueMissing from "../../src/Sudoku/FillStrategy/UniqueMissing";
+import SudokuSolver from "../../core/Sudoku/SudokuSolver";
+import { type InputClues, type SudokuElement, VirtualLineType, type Cell } from "../../core/Sudoku/type";
+import { FillStrategyType, type FillInputValueData } from "../../core/Sudoku/FillStrategy/FillStrategy";
+import Sudoku from "../../core/Sudoku/Sudoku";
+import UniqueMissing from "../../core/Sudoku/FillStrategy/UniqueMissing";
 
 const candidatesFactory = Sudoku.candidatesFactory;
 

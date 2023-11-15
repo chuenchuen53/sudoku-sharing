@@ -1,5 +1,5 @@
 import { expect, describe, it } from "vitest";
-import ArrUtil from "../src/utils/ArrUtil";
+import ArrUtil from "../core/utils/ArrUtil";
 
 describe("ArrUtil", () => {
   it("ArrUtil.create2DArray", () => {

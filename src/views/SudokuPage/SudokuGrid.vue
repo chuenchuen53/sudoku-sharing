@@ -242,8 +242,7 @@ $invalid-cells-color: var(--el-color-danger);
         height: 100%;
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: repeat(3, 1fr);
-        align-items: center;
-        justify-items: center;
+        place-items: center center;
 
         .candidate {
           display: flex;
@@ -305,3 +304,4 @@ $invalid-cells-color: var(--el-color-danger);
   position: relative;
 }
 </style>
+../../../core/utils/ArrUtil

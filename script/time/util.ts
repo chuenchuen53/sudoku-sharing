@@ -1,9 +1,9 @@
 import path from "path";
 import fs from "fs";
-import ArrUtil from "../../src/utils/ArrUtil";
-import SudokuSolver from "../../src/Sudoku/SudokuSolver";
-import Backtracking from "../../src/Sudoku/Backtracking";
-import type { SolveStats, SudokuElementWithZero } from "../../src/Sudoku/type";
+import ArrUtil from "../../core/utils/ArrUtil";
+import SudokuSolver from "../../core/Sudoku/SudokuSolver";
+import Backtracking from "../../core/Sudoku/Backtracking";
+import type { SolveStats, SudokuElementWithZero } from "../../core/Sudoku/type";
 
 interface Result {
   timeSpent: number;
@@ -57,10 +57,10 @@ const sample = {
 };
 
 export default function generateResult(
-  strategy: typeof Strategy[keyof typeof Strategy],
-  difficulty: typeof Difficulty[keyof typeof Difficulty],
+  strategy: (typeof Strategy)[keyof typeof Strategy],
+  difficulty: (typeof Difficulty)[keyof typeof Difficulty],
   size: number,
-  folder: string
+  folder: string,
 ) {
   const result = countTimeForSolvingSample(sample[difficulty], strategy, size);
   const filePath = path.join(__dirname, "result", folder, `${strategy}-${difficulty}.json`);
@@ -78,7 +78,7 @@ export default function generateResult(
   console.log(`[${new Date().toLocaleString()}] Result for ${strategy} ${difficulty} is saved to ${filePath}`);
 }
 
-function readSampleFromJson(difficulty: typeof Difficulty[keyof typeof Difficulty]): [string, string][] {
+function readSampleFromJson(difficulty: (typeof Difficulty)[keyof typeof Difficulty]): [string, string][] {
   const filePath = path.join(__dirname, "sample", `${difficulty}.json`);
   const content = fs.readFileSync(filePath, "utf-8");
   const obj = JSON.parse(content);
@@ -86,11 +86,7 @@ function readSampleFromJson(difficulty: typeof Difficulty[keyof typeof Difficult
   return puzzles;
 }
 
-function countTimeForSolvingSample(
-  puzzles: [string, string][],
-  strategy: typeof Strategy[keyof typeof Strategy],
-  size: number
-): Result[] {
+function countTimeForSolvingSample(puzzles: [string, string][], strategy: (typeof Strategy)[keyof typeof Strategy], size: number): Result[] {
   if (strategy === Strategy.HUMAN) {
     return humanSolver(puzzles, size);
   } else {

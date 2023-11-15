@@ -1,4 +1,4 @@
-import type { InputClues } from "./Sudoku/type";
+import type { InputClues } from "../core/Sudoku/type";
 
 // easy
 const p0: InputClues = [
