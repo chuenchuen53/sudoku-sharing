@@ -10,6 +10,7 @@ export enum FillStrategyType {
 
 export interface FillInputValueData extends InputValueData {
   relatedLine?: SudokuLine;
+  highlightWholeCell?: boolean;
 }
 
 export default abstract class FillStrategy {

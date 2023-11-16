@@ -1,4 +1,3 @@
-import { s } from "vitest/dist/reporters-5f784f42";
 import Sudoku from "./Sudoku";
 import { VirtualLineType, type Position } from "./type";
 

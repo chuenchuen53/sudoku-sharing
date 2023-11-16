@@ -19,6 +19,7 @@ const dataFactory: (cell: Cell, value: SudokuElement, lineType: VirtualLineType,
   columnIndex: cell.columnIndex,
   value,
   relatedLine: SudokuLineUtil.sudokuLine(lineType, lineIndex),
+  highlightWholeCell: true,
 });
 
 describe("sudoku solver unique missing test", () => {
@@ -96,18 +97,21 @@ describe("sudoku solver unique missing test", () => {
         columnIndex: line1[1].columnIndex,
         value: "2",
         relatedLine: SudokuLine.ROW_1,
+        highlightWholeCell: true,
       },
       {
         rowIndex: line2[1].rowIndex,
         columnIndex: line2[1].columnIndex,
         value: "2",
         relatedLine: SudokuLine.ROW_2,
+        highlightWholeCell: true,
       },
       {
         rowIndex: line3[1].rowIndex,
         columnIndex: line3[1].columnIndex,
         value: "2",
         relatedLine: SudokuLine.ROW_3,
+        highlightWholeCell: true,
       },
     ];
 

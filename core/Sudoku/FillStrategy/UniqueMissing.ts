@@ -7,6 +7,10 @@ import FillStrategy, { type FillInputValueData } from "./FillStrategy";
 export default class UniqueMissing extends FillStrategy {
   private static readonly instance = new UniqueMissing();
 
+  private constructor() {
+    super();
+  }
+
   public static getInstance(): UniqueMissing {
     return UniqueMissing.instance;
   }
@@ -32,6 +36,7 @@ export default class UniqueMissing extends FillStrategy {
           columnIndex: cell.columnIndex,
           value: uniqueCandidate,
           relatedLine: SudokuLineUtil.sudokuLine(virtualLineType, i),
+          highlightWholeCell: true,
         });
       }
     }
@@ -46,10 +51,6 @@ export default class UniqueMissing extends FillStrategy {
 
     const combined = [...rowResult, ...columnResult, ...boxResult];
     return combined.filter((x, ix) => combined.findIndex((y) => Sudoku.isSamePos(x, y)) === ix);
-  }
-
-  private constructor() {
-    super();
   }
 
   public override canFill(sudoku: Sudoku): FillInputValueData[] {

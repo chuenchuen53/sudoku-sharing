@@ -127,18 +127,18 @@ $main-border-width: 2px;
 $sub-border-width: 1px;
 
 .sudoku-view {
-  --main-grid-color: #262626;
-  --sub-grid-color: #52525b;
   --cell-font-size: 25px;
   --candidate-font-size: 8px;
   --cell-size: calc((100vw - 64px) / 9);
   --cell-size-with-sub-border: calc(var(--cell-size) + #{$sub-border-width});
   --cell-size-with-main-border: calc(var(--cell-size) + #{$main-border-width});
   --puzzle-size: calc(9 * var(--cell-size) + 2 * #{$grand-border-width} + 2 * #{$main-border-width} + 6 * #{$sub-border-width});
+  --main-grid-color: #262626;
+  --sub-grid-color: #52525b;
 
   @media (prefers-color-scheme: dark) {
-    --main-grid-color: #a3a3a3;
-    --sub-grid-color: #737373;
+    --main-grid-color: #f4f4f5;
+    --sub-grid-color: #d4d4d8;
   }
 
   @media (width >= 640px) {
@@ -147,7 +147,8 @@ $sub-border-width: 1px;
     --candidate-font-size: 10px;
   }
 
-  @apply border-base-content;
+  @apply bg-base-100 dark:bg-base-100;
+  @apply border-base-content dark:border-slate-50;
 
   display: flex;
   flex-direction: column;
@@ -161,7 +162,7 @@ $sub-border-width: 1px;
     flex: 1 1 auto;
 
     .sudoku-cell {
-      flex: 0 0 auto;
+      flex: 1 1 auto;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -194,23 +195,27 @@ $sub-border-width: 1px;
       }
 
       .clue {
-        @apply text-base-content;
+        @apply text-base-content dark:text-zinc-100;
+      }
+
+      .input-value {
+        @apply text-primary dark:text-primary;
       }
 
       &.related-line-highlight {
-        @apply bg-[--accent-100] dark:bg-[--accent-200];
+        @apply bg-neutral-300 dark:bg-accent dark:bg-opacity-30;
 
-        .clue {
-          @apply dark:text-accent-content dark:text-opacity-70;
+        .input-value {
+          @apply dark:text-[--primary-200];
         }
       }
 
       &.primary-cell-highlight {
-        @apply bg-primary;
+        @apply bg-primary bg-opacity-60 dark:bg-primary dark:bg-opacity-90;
       }
 
       &.secondary-cell-highlight {
-        @apply bg-secondary;
+        @apply bg-secondary bg-opacity-30 dark:bg-secondary dark:bg-opacity-60;
       }
 
       &.selected {
@@ -224,10 +229,6 @@ $sub-border-width: 1px;
         &.secondary-cell-highlight {
           background-color: $selected-and-highlight-bgcolor;
         }
-      }
-
-      .input-value {
-        @apply text-[--primary-400] dark:text-[--primary-400];
       }
 
       &.invalid {
@@ -246,7 +247,7 @@ $sub-border-width: 1px;
         grid-template-rows: repeat(3, 1fr);
         place-items: center center;
 
-        @apply text-[--primary-300] dark:text-[--primary-300];
+        @apply text-[--primary-300] dark:text-[--primary-200];
 
         .candidate {
           display: flex;
@@ -263,8 +264,8 @@ $sub-border-width: 1px;
           }
 
           &.highlight {
-            @apply bg-accent dark:bg-[--accent-800];
-            @apply text-accent-content dark:text-neutral-200;
+            @apply bg-accent dark:bg-accent;
+            @apply text-accent-content dark:text-accent-content;
           }
 
           &.eliminate {

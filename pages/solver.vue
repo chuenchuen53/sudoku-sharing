@@ -37,6 +37,8 @@ const eliminationDataArr0 = sudokuSolver.computeCanEliminate(EliminationStrategy
 const eliminationDataArr1 = sudokuSolver.computeCanEliminate(EliminationStrategyType.Y_WING);
 
 const eliminationDataArr = [...eliminationDataArr0, ...eliminationDataArr1];
+
+sudoku.setInputValue({ rowIndex: 7, columnIndex: 2, value: "9" }, false);
 </script>
 
 <style></style>
