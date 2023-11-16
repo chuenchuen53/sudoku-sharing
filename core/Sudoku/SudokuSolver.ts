@@ -15,10 +15,15 @@ import YWing from "./EliminationStrategy/YWing";
 import { FillStrategyType, type FillInputValueData } from "./FillStrategy/FillStrategy";
 import CSolveStats from "./SolveStats";
 import FillStrategy from "./FillStrategy/FillStrategy";
+import SingleEliminationStep from "./SingleEliminationStep";
 import type { Candidates, SudokuElement, VirtualLine, CandidateCell, Grid } from "./type";
 
 export interface BaseStep {
   grid: Grid;
+}
+
+export interface FillCandidatesStep extends BaseStep {
+  fillCandidates: true;
 }
 
 export interface FillStep extends BaseStep {
@@ -41,7 +46,11 @@ export interface EliminationStep extends BaseStep {
   };
 }
 
-export type Step = BaseStep | FillStep | EliminationAfterFillStep | EliminationStep;
+export interface FinalStep extends BaseStep {
+  final: true;
+}
+
+export type Step = FillCandidatesStep | FillStep | EliminationAfterFillStep | EliminationStep | FinalStep;
 
 export default class SudokuSolver {
   public sudoku: Sudoku;
@@ -147,7 +156,7 @@ export default class SudokuSolver {
         this.sudoku.setCandidates(i, j, candidatesTemplate);
       }
     }
-    const step: BaseStep = { grid: Sudoku.cloneGrid(this.sudoku.grid) };
+    const step: FillCandidatesStep = { grid: Sudoku.cloneGrid(this.sudoku.grid), fillCandidates: true };
     this.steps.push(step);
   }
 
@@ -208,6 +217,19 @@ export default class SudokuSolver {
     return count;
   }
 
+  getSteps(): Step[] {
+    const result: Step[] = [];
+    for (const step of this.steps) {
+      if ("elimination" in step) {
+        const singularizedSteps = SingleEliminationStep.singularizeSteps(step);
+        result.push(...singularizedSteps);
+      } else {
+        result.push(step);
+      }
+    }
+    return result;
+  }
+
   tryFillAfterSetCandidates(): boolean {
     if (this.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING)) return true;
     if (this.setValueFromFillStrategy(FillStrategyType.NAKED_SINGLE)) return true;
@@ -246,6 +268,12 @@ export default class SudokuSolver {
       if (!haveNewFill) stop = true;
     }
 
-    return this.sudoku.solved;
+    const solved = this.sudoku.solved;
+    if (solved) {
+      const finalStep: FinalStep = { grid: Sudoku.cloneGrid(this.sudoku.grid), final: true };
+      this.steps.push(finalStep);
+    }
+
+    return solved;
   }
 }

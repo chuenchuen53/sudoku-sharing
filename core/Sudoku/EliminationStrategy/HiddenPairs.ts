@@ -4,8 +4,12 @@ import type Sudoku from "../Sudoku";
 import type { EliminationData } from "./EliminationStrategy";
 
 export default class HiddenPairs extends HiddenMultiple {
-  private static readonly instance = new HiddenPairs();
   public static readonly SIZE_OF_CANDIDATE = 2;
+  private static readonly instance = new HiddenPairs();
+
+  private constructor() {
+    super();
+  }
 
   public static getInstance(): HiddenPairs {
     return HiddenPairs.instance;
@@ -20,10 +24,6 @@ export default class HiddenPairs extends HiddenMultiple {
     const columnResult = HiddenPairs.hiddenPairsFromVirtualLines(sudoku.getAllColumns(), VirtualLineType.COLUMN);
     const boxResult = HiddenPairs.hiddenPairsFromVirtualLines(sudoku.getAllBoxes(), VirtualLineType.BOX);
     return [...rowResult, ...columnResult, ...boxResult];
-  }
-
-  private constructor() {
-    super();
   }
 
   public override canEliminate(sudoku: Sudoku): EliminationData[] {

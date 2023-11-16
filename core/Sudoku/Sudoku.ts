@@ -49,6 +49,22 @@ export default class Sudoku {
     return this.isValid && this.grid.every((row) => row.every((cell) => cell.clue || cell.inputValue));
   }
 
+  static sudokuFromGrid(grid: Grid): Sudoku {
+    const clues: InputClues = grid.map((row) => row.map((cell) => cell.clue ?? "0"));
+    const sudoku = new Sudoku(clues);
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = 0; j < grid[i].length; j++) {
+        const { inputValue, candidates } = grid[i][j];
+        if (inputValue) {
+          sudoku.setInputValue({ rowIndex: i, columnIndex: j, value: inputValue }, false);
+        } else if (candidates) {
+          sudoku.setCandidates(i, j, candidates);
+        }
+      }
+    }
+    return sudoku;
+  }
+
   static boxFirstLineIndex(boxIndex: number, type: RowColumn): number {
     switch (type) {
       case VirtualLineType.ROW:
