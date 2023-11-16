@@ -14,7 +14,7 @@ import Sudoku from "./Sudoku";
 import YWing from "./EliminationStrategy/YWing";
 import { FillStrategyType, type FillInputValueData } from "./FillStrategy/FillStrategy";
 import CSolveStats from "./SolveStats";
-import type FillStrategy from "./FillStrategy/FillStrategy";
+import FillStrategy from "./FillStrategy/FillStrategy";
 import type { Candidates, SudokuElement, VirtualLine, CandidateCell, Grid } from "./type";
 
 export interface BaseStep {
@@ -28,6 +28,12 @@ export interface FillStep extends BaseStep {
   };
 }
 
+export interface EliminationAfterFillStep extends BaseStep {
+  afterFill: {
+    data: EliminationData;
+  };
+}
+
 export interface EliminationStep extends BaseStep {
   elimination: {
     strategy: EliminationStrategyType;
@@ -35,7 +41,7 @@ export interface EliminationStep extends BaseStep {
   };
 }
 
-export type Step = BaseStep | FillStep | EliminationStep;
+export type Step = BaseStep | FillStep | EliminationAfterFillStep | EliminationStep;
 
 export default class SudokuSolver {
   public sudoku: Sudoku;
@@ -152,16 +158,32 @@ export default class SudokuSolver {
   setValueFromFillStrategy(fillStrategyType: FillStrategyType): number {
     const result = this.computeCanFill(fillStrategyType);
     if (result.length === 0) return 0;
-    const step: FillStep = {
+    const fillStep: FillStep = {
       grid: Sudoku.cloneGrid(this.sudoku.grid),
       fill: {
         strategy: fillStrategyType,
         data: result,
       },
     };
-    this.steps.push(step);
+    this.steps.push(fillStep);
     this.sudoku.setInputValues(result);
     this.stats.addFilled(fillStrategyType, result.length);
+    const { removals, eliminations } = FillStrategy.eliminationAfterFill(this.sudoku, result);
+    if (removals.length > 0) {
+      const allFalseCandidates = Sudoku.candidatesFactory(false);
+      const step: EliminationAfterFillStep = {
+        grid: Sudoku.cloneGrid(this.sudoku.grid),
+        afterFill: {
+          data: {
+            eliminations,
+            relatedLines: [],
+            highlights: result.map((x) => ({ position: { rowIndex: x.rowIndex, columnIndex: x.columnIndex }, candidates: allFalseCandidates })),
+          },
+        },
+      };
+      this.steps.push(step);
+      this.sudoku.removeElementInCandidates(removals);
+    }
     return result.length;
   }
 
@@ -186,7 +208,8 @@ export default class SudokuSolver {
     return count;
   }
 
-  trySolveByCandidates(): boolean {
+  tryFillAfterSetCandidates(): boolean {
+    if (this.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING)) return true;
     if (this.setValueFromFillStrategy(FillStrategyType.NAKED_SINGLE)) return true;
     if (this.setValueFromFillStrategy(FillStrategyType.HIDDEN_SINGLE)) return true;
 
@@ -194,15 +217,33 @@ export default class SudokuSolver {
   }
 
   trySolve(): boolean {
-    if (this.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING)) {
-      return this.sudoku.solved || this.trySolve();
+    let haveSetCandidates = false;
+    while (!haveSetCandidates) {
+      if (this.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING) === 0) {
+        this.setBasicCandidates();
+        haveSetCandidates = true;
+      }
     }
 
-    this.setBasicCandidates();
-    if (this.trySolveByCandidates()) return this.trySolve();
+    let stop = false;
+    while (!stop) {
+      let haveNewFill = this.tryFillAfterSetCandidates();
+      if (haveNewFill) continue;
 
-    for (const x of this.enabledEliminationStrategies) {
-      if (this.removeCandidatesFromEliminationStrategy(x) && this.trySolveByCandidates()) return this.trySolve();
+      let haveRemovals = true;
+      while (haveRemovals) {
+        haveRemovals = false;
+        for (const x of this.enabledEliminationStrategies) {
+          haveRemovals = haveRemovals || this.removeCandidatesFromEliminationStrategy(x) > 0;
+          if (haveRemovals && this.tryFillAfterSetCandidates()) {
+            haveNewFill = true;
+            haveRemovals = false;
+            break;
+          }
+        }
+      }
+
+      if (!haveNewFill) stop = true;
     }
 
     return this.sudoku.solved;

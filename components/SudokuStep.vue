@@ -1,13 +1,17 @@
 <template>
   <div>
     <div class="text-lg">Step {{ stepNum }}</div>
-    <div v-if="!('fill' in step) && !('elimination' in step)">
+    <div v-if="!('fill' in step) && !('elimination' in step) && !('afterFill' in step)">
       <div>Fill in candidates</div>
       <SudokuView :grid="step.grid" :can-fill-data-arr="[]" :elimination-data-arr="[]" :invalid-positions="[]" />
     </div>
     <div v-else-if="'fill' in step">
       <div>Fill by {{ FillStrategy.strategyName(step.fill.strategy) }}</div>
       <SudokuView :grid="step.grid" :can-fill-data-arr="step.fill.data" :elimination-data-arr="[]" :invalid-positions="[]" />
+    </div>
+    <div v-else-if="'afterFill' in step">
+      <div>Update candidates after fill</div>
+      <SudokuView :grid="step.grid" :can-fill-data-arr="[]" :elimination-data-arr="[step.afterFill.data]" :invalid-positions="[]" />
     </div>
     <div v-else-if="'elimination' in step">
       <div>Eliminate by {{ EliminationStrategy.strategyName(step.elimination.strategy) }}</div>

@@ -41,7 +41,6 @@ const eliminationDataArr = [...eliminationDataArr0, ...eliminationDataArr1];
 sudoku.setInputValue({ rowIndex: 7, columnIndex: 2, value: "9" }, false);
 
 sudokuSolver.trySolve();
-console.log(sudokuSolver.steps);
 </script>
 
 <style></style>

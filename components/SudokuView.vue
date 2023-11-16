@@ -304,6 +304,10 @@ $sub-border-width: 1px;
       &.primary-cell-highlight {
         @apply bg-primary bg-opacity-60 dark:bg-primary dark:bg-opacity-100;
 
+        .input-value {
+          @apply text-primary-content dark:text-primary-content;
+        }
+
         .candidates-container {
           @apply text-primary-content dark:text-primary-content;
         }

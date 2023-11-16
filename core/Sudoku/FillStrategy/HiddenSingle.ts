@@ -29,13 +29,6 @@ export default class HiddenSingle extends FillStrategy {
     };
   }
 
-  public static hiddenSingles(sudoku: Sudoku): FillInputValueData[] {
-    const rowResult = HiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllRows(), VirtualLineType.ROW);
-    const columnResult = HiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllColumns(), VirtualLineType.COLUMN);
-    const boxResult = HiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllBoxes(), VirtualLineType.BOX);
-    return Sudoku.removeDuplicatedInputValueData([...rowResult, ...columnResult, ...boxResult]);
-  }
-
   public static hiddenSingleFromVirtualLines(virtualLines: VirtualLine[], virtualLineType: VirtualLineType): FillInputValueData[] {
     const result: FillInputValueData[] = [];
     for (let i = 0; i < virtualLines.length; i++) {
@@ -62,6 +55,13 @@ export default class HiddenSingle extends FillStrategy {
     }
 
     return result;
+  }
+
+  public static hiddenSingles(sudoku: Sudoku): FillInputValueData[] {
+    const rowResult = HiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllRows(), VirtualLineType.ROW);
+    const columnResult = HiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllColumns(), VirtualLineType.COLUMN);
+    const boxResult = HiddenSingle.hiddenSingleFromVirtualLines(sudoku.getAllBoxes(), VirtualLineType.BOX);
+    return Sudoku.removeDuplicatedInputValueData([...rowResult, ...columnResult, ...boxResult]);
   }
 
   public override canFill(sudoku: Sudoku): FillInputValueData[] {
