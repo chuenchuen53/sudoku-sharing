@@ -203,7 +203,7 @@ $sub-border-width: 1px;
       }
 
       &.related-line-highlight {
-        @apply bg-neutral-300 dark:bg-accent dark:bg-opacity-30;
+        @apply bg-neutral-300 dark:bg-neutral-400 dark:bg-opacity-30;
 
         .input-value {
           @apply dark:text-[--primary-200];
@@ -211,11 +211,11 @@ $sub-border-width: 1px;
       }
 
       &.primary-cell-highlight {
-        @apply bg-primary bg-opacity-60 dark:bg-primary dark:bg-opacity-90;
+        @apply bg-primary bg-opacity-60 dark:bg-primary dark:bg-opacity-100;
       }
 
       &.secondary-cell-highlight {
-        @apply bg-secondary bg-opacity-30 dark:bg-secondary dark:bg-opacity-60;
+        @apply bg-secondary bg-opacity-30 dark:bg-secondary dark:bg-opacity-80;
       }
 
       &.selected {

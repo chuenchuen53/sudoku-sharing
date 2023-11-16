@@ -8,13 +8,13 @@
 
 <script setup lang="ts">
 import { useDark } from "@vueuse/core";
-const isDark = useDark();
+useDark();
 
-useHead({
-  htmlAttrs: {
-    "data-theme": isDark.value ? "sunset" : "light",
-  },
-});
+// useHead({
+//   htmlAttrs: {
+//     "data-theme": isDark.value ? "sunset" : "light",
+//   },
+// });
 </script>
 
 <style>
