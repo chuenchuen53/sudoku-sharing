@@ -45,7 +45,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup scoped>
 import { SudokuLineUtil, type SudokuLine } from "../core/Sudoku/SudokuLine";
 import type { Highlight, EliminationData } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import type { Grid, Position } from "../core/Sudoku/type";
@@ -292,46 +292,50 @@ $sub-border-width: 1px;
           }
         }
       }
-    }
 
-    &.related-line-highlight {
-      @apply bg-neutral-300 dark:bg-neutral-400 dark:bg-opacity-30;
+      &.related-line-highlight {
+        @apply bg-neutral-300 dark:bg-neutral-400 dark:bg-opacity-30;
 
-      .input-value {
-        @apply dark:text-[--primary-200];
+        .input-value {
+          @apply dark:text-[--primary-200];
+        }
       }
-    }
 
-    &.primary-cell-highlight {
-      @apply bg-primary bg-opacity-60 dark:bg-primary dark:bg-opacity-100;
+      &.primary-cell-highlight {
+        @apply bg-primary bg-opacity-60 dark:bg-primary dark:bg-opacity-100;
 
-      .candidates-container {
-        @apply text-primary-content dark:text-primary-content;
+        .candidates-container {
+          @apply text-primary-content dark:text-primary-content;
+        }
       }
-    }
 
-    &.secondary-cell-highlight {
-      @apply bg-secondary bg-opacity-30 dark:bg-secondary dark:bg-opacity-80;
-    }
+      &.secondary-cell-highlight {
+        @apply bg-secondary bg-opacity-30 dark:bg-secondary dark:bg-opacity-80;
 
-    &.selected {
-      background-color: $selected-bgcolor;
+        .candidates-container {
+          @apply text-secondary-content dark:text-secondary-content;
+        }
+      }
+
+      &.selected {
+        background-color: $selected-bgcolor;
+
+        &.invalid {
+          background-color: $selected-bgcolor;
+        }
+
+        &.primary-cell-highlight,
+        &.secondary-cell-highlight {
+          background-color: $selected-and-highlight-bgcolor;
+        }
+      }
 
       &.invalid {
-        background-color: $selected-bgcolor;
-      }
+        background-color: $invalid-cells-bgcolor;
 
-      &.primary-cell-highlight,
-      &.secondary-cell-highlight {
-        background-color: $selected-and-highlight-bgcolor;
-      }
-    }
-
-    &.invalid {
-      background-color: $invalid-cells-bgcolor;
-
-      .input-value {
-        @apply text-error;
+        .input-value {
+          @apply text-error;
+        }
       }
     }
 
