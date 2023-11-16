@@ -22,20 +22,22 @@
         </div>
         <div v-else-if="cell.candidates" class="candidates-container">
           <div
-            v-for="(value, key) in cell.candidates"
-            :key="key"
+            v-for="value in SudokuSolver.getCandidatesArr(cell.candidates)"
+            :key="value"
             class="candidate"
-            :class="{
-              invisible: !value,
-              highlight: highlightedCandidates
-                .filter((x) => x.position.rowIndex === rowIndex && x.position.columnIndex === columnIndex)
-                .some((x) => x.candidates[key]),
-              eliminate: props.eliminationDataArr.some((x) =>
-                x.eliminations.some((y) => y.rowIndex === rowIndex && y.columnIndex === columnIndex && y.elements.includes(key)),
-              ),
-            }"
+            :class="[
+              `c${value}`,
+              {
+                highlight: highlightedCandidates
+                  .filter((x) => x.position.rowIndex === rowIndex && x.position.columnIndex === columnIndex)
+                  .some((x) => x.candidates[value]),
+                eliminate: props.eliminationDataArr.some((x) =>
+                  x.eliminations.some((y) => y.rowIndex === rowIndex && y.columnIndex === columnIndex && y.elements.includes(value)),
+                ),
+              },
+            ]"
           >
-            {{ key }}
+            {{ value }}
           </div>
         </div>
       </div>
@@ -49,6 +51,7 @@ import type { Highlight, EliminationData } from "../core/Sudoku/EliminationStrat
 import type { Grid, Position } from "../core/Sudoku/type";
 import type { FillInputValueData } from "../core/Sudoku/FillStrategy/FillStrategy";
 import Sudoku from "~/core/Sudoku/Sudoku";
+import SudokuSolver from "~/core/Sudoku/SudokuSolver";
 
 const props = defineProps<{
   grid: Grid;
@@ -205,47 +208,6 @@ $sub-border-width: 1px;
         @apply text-primary dark:text-primary;
       }
 
-      &.related-line-highlight {
-        @apply bg-neutral-300 dark:bg-neutral-400 dark:bg-opacity-30;
-
-        .input-value {
-          @apply dark:text-[--primary-200];
-        }
-      }
-
-      &.primary-cell-highlight {
-        @apply bg-primary bg-opacity-60 dark:bg-primary dark:bg-opacity-100;
-
-        .candidates-container {
-          @apply text-primary-content dark:text-primary-content;
-        }
-      }
-
-      &.secondary-cell-highlight {
-        @apply bg-secondary bg-opacity-30 dark:bg-secondary dark:bg-opacity-80;
-      }
-
-      &.selected {
-        background-color: $selected-bgcolor;
-
-        &.invalid {
-          background-color: $selected-bgcolor;
-        }
-
-        &.primary-cell-highlight,
-        &.secondary-cell-highlight {
-          background-color: $selected-and-highlight-bgcolor;
-        }
-      }
-
-      &.invalid {
-        background-color: $invalid-cells-bgcolor;
-
-        .input-value {
-          @apply text-error;
-        }
-      }
-
       .candidates-container {
         display: grid;
         width: 100%;
@@ -266,8 +228,49 @@ $sub-border-width: 1px;
           height: 100%;
           position: relative;
 
-          &.invisible {
-            visibility: hidden;
+          &.c1 {
+            grid-row: 1;
+            grid-column: 1;
+          }
+
+          &.c2 {
+            grid-row: 1;
+            grid-column: 2;
+          }
+
+          &.c3 {
+            grid-row: 1;
+            grid-column: 3;
+          }
+
+          &.c4 {
+            grid-row: 2;
+            grid-column: 1;
+          }
+
+          &.c5 {
+            grid-row: 2;
+            grid-column: 2;
+          }
+
+          &.c6 {
+            grid-row: 2;
+            grid-column: 3;
+          }
+
+          &.c7 {
+            grid-row: 3;
+            grid-column: 1;
+          }
+
+          &.c8 {
+            grid-row: 3;
+            grid-column: 2;
+          }
+
+          &.c9 {
+            grid-row: 3;
+            grid-column: 3;
           }
 
           &.highlight {
@@ -288,6 +291,47 @@ $sub-border-width: 1px;
             }
           }
         }
+      }
+    }
+
+    &.related-line-highlight {
+      @apply bg-neutral-300 dark:bg-neutral-400 dark:bg-opacity-30;
+
+      .input-value {
+        @apply dark:text-[--primary-200];
+      }
+    }
+
+    &.primary-cell-highlight {
+      @apply bg-primary bg-opacity-60 dark:bg-primary dark:bg-opacity-100;
+
+      .candidates-container {
+        @apply text-primary-content dark:text-primary-content;
+      }
+    }
+
+    &.secondary-cell-highlight {
+      @apply bg-secondary bg-opacity-30 dark:bg-secondary dark:bg-opacity-80;
+    }
+
+    &.selected {
+      background-color: $selected-bgcolor;
+
+      &.invalid {
+        background-color: $selected-bgcolor;
+      }
+
+      &.primary-cell-highlight,
+      &.secondary-cell-highlight {
+        background-color: $selected-and-highlight-bgcolor;
+      }
+    }
+
+    &.invalid {
+      background-color: $invalid-cells-bgcolor;
+
+      .input-value {
+        @apply text-error;
       }
     }
 
