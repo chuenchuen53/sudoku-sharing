@@ -119,41 +119,42 @@ const highlightedCandidates = computed<Omit<Highlight, "isSecondaryPosition">[]>
 <style lang="scss" scoped>
 @import "element-plus/theme-chalk/src/common/var";
 
-$clue-color: #424242;
-$input-value-color: #1976d2;
-$candidate-color: #9e9e9e;
 $selected-bgcolor: var(--el-color-primary-light-5);
 $selected-and-highlight-bgcolor: #cee38c;
-$related-highlight-bgcolor: var(--el-color-primary-light-9);
-$element-highlight-bgcolor: #fbf719;
-$temp-cell-highlight-bgcolor: #fbf719;
-$temp-candidate-highlight-bgcolor: #fbf719;
 $invalid-cells-bgcolor: var(--el-color-danger-light-9);
-$invalid-cells-color: var(--el-color-danger);
-$large-border-width: 3px;
-$medium-border-width: 2px;
-$small-border-width: 1px;
-$cell-size: 50px;
-$cell-size-with-small-border: $cell-size + $small-border-width;
-$cell-size-with-medium-border: $cell-size + $medium-border-width;
+$grand-border-width: 3px;
+$main-border-width: 2px;
+$sub-border-width: 1px;
 
 .sudoku-view {
   --main-grid-color: #262626;
   --sub-grid-color: #52525b;
+  --cell-font-size: 25px;
+  --candidate-font-size: 8px;
+  --cell-size: calc((100vw - 64px) / 9);
+  --cell-size-with-sub-border: calc(var(--cell-size) + #{$sub-border-width});
+  --cell-size-with-main-border: calc(var(--cell-size) + #{$main-border-width});
+  --puzzle-size: calc(9 * var(--cell-size) + 2 * #{$grand-border-width} + 2 * #{$main-border-width} + 6 * #{$sub-border-width});
 
   @media (prefers-color-scheme: dark) {
     --main-grid-color: #a3a3a3;
     --sub-grid-color: #737373;
   }
 
+  @media (width >= 640px) {
+    --cell-size: 50px;
+    --cell-font-size: 30px;
+    --candidate-font-size: 10px;
+  }
+
   @apply border-base-content;
 
   display: flex;
   flex-direction: column;
-  border-width: $large-border-width;
+  border-width: $grand-border-width;
   border-style: solid;
-  width: calc(9 * #{$cell-size} + 2 * #{$large-border-width} + 2 * #{$medium-border-width} + 6 * #{$small-border-width});
-  height: calc(9 * #{$cell-size} + 2 * #{$large-border-width} + 2 * #{$medium-border-width} + 6 * #{$small-border-width});
+  width: var(--puzzle-size);
+  height: var(--puzzle-size);
 
   .sudoku-row {
     display: flex;
@@ -164,22 +165,21 @@ $cell-size-with-medium-border: $cell-size + $medium-border-width;
       display: flex;
       justify-content: center;
       align-items: center;
-      border-right: $small-border-width var(--sub-grid-color) solid;
-      border-bottom: $small-border-width var(--sub-grid-color) solid;
-      font-size: 30px;
-      width: $cell-size-with-small-border;
-      height: $cell-size-with-small-border;
+      border-right: $sub-border-width var(--sub-grid-color) solid;
+      border-bottom: $sub-border-width var(--sub-grid-color) solid;
+      width: var(--cell-size-with-sub-border);
+      height: var(--cell-size-with-sub-border);
       overflow: hidden;
 
       &:nth-child(9) {
         border-right: none;
-        width: $cell-size;
+        width: var(--cell-size);
       }
 
       &:nth-child(3),
       &:nth-child(6) {
-        border-right: $medium-border-width var(--main-grid-color) solid;
-        width: $cell-size-with-medium-border;
+        border-right: $main-border-width var(--main-grid-color) solid;
+        width: var(--cell-size-with-main-border);
       }
 
       .clue,
@@ -189,6 +189,8 @@ $cell-size-with-medium-border: $cell-size + $medium-border-width;
         display: flex;
         justify-content: center;
         align-items: center;
+        font-size: var(--cell-font-size);
+        line-height: 1;
       }
 
       .clue {
@@ -250,7 +252,8 @@ $cell-size-with-medium-border: $cell-size + $medium-border-width;
           display: flex;
           justify-content: center;
           align-items: center;
-          font-size: 10px;
+          font-size: var(--candidate-font-size);
+          line-height: 1;
           width: 100%;
           height: 100%;
           position: relative;
@@ -283,15 +286,15 @@ $cell-size-with-medium-border: $cell-size + $medium-border-width;
     &:nth-child(3),
     &:nth-child(6) {
       .sudoku-cell {
-        border-bottom: $medium-border-width var(--main-grid-color) solid;
-        height: $cell-size-with-medium-border;
+        border-bottom: $main-border-width var(--main-grid-color) solid;
+        height: var(--cell-size-with-main-border);
       }
     }
 
     &:nth-child(9) {
       .sudoku-cell {
         border-bottom: none;
-        height: $cell-size;
+        height: var(--cell-size);
       }
     }
   }
