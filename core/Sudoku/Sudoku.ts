@@ -151,6 +151,27 @@ export default class Sudoku {
     return ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
   }
 
+  static cloneGrid(grid: Grid): Grid {
+    const clone = ArrUtil.create2DArray<Cell>(9, 9, (rowIndex, columnIndex) => ({ rowIndex, columnIndex }));
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = 0; j < grid[i].length; j++) {
+        const { rowIndex, columnIndex, clue, inputValue, candidates } = grid[i][j];
+        clone[i][j] = {
+          rowIndex,
+          columnIndex,
+        };
+        if (clue) {
+          clone[i][j].clue = clue;
+        } else if (inputValue) {
+          clone[i][j].inputValue = inputValue;
+        } else if (candidates) {
+          clone[i][j].candidates = { ...candidates };
+        }
+      }
+    }
+    return clone;
+  }
+
   private static createGrid(clues: InputClues): Grid {
     if (clues.length !== 9 || clues.some((x) => x.length !== 9)) throw new Error("Invalid input clues");
     const grid: Grid = ArrUtil.create2DArray<Cell>(9, 9, (rowIndex, columnIndex) => ({ rowIndex, columnIndex }));

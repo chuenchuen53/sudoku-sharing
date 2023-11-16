@@ -15,11 +15,32 @@ import YWing from "./EliminationStrategy/YWing";
 import { FillStrategyType, type FillInputValueData } from "./FillStrategy/FillStrategy";
 import CSolveStats from "./SolveStats";
 import type FillStrategy from "./FillStrategy/FillStrategy";
-import type { Candidates, SudokuElement, VirtualLine, CandidateCell } from "./type";
+import type { Candidates, SudokuElement, VirtualLine, CandidateCell, Grid } from "./type";
+
+export interface BaseStep {
+  grid: Grid;
+}
+
+export interface FillStep extends BaseStep {
+  fill: {
+    strategy: FillStrategyType;
+    data: FillInputValueData[];
+  };
+}
+
+export interface EliminationStep extends BaseStep {
+  elimination: {
+    strategy: EliminationStrategyType;
+    data: EliminationData[];
+  };
+}
+
+export type Step = BaseStep | FillStep | EliminationStep;
 
 export default class SudokuSolver {
   public sudoku: Sudoku;
   public stats: CSolveStats = new CSolveStats();
+  public steps: Step[] = [];
   public fillStrategiesMap: Record<FillStrategyType, FillStrategy> = {
     [FillStrategyType.UNIQUE_MISSING]: UniqueMissing.getInstance(),
     [FillStrategyType.NAKED_SINGLE]: NakedSingle.getInstance(),
@@ -91,11 +112,12 @@ export default class SudokuSolver {
 
   replaceSudoku(sudoku: Sudoku): void {
     this.sudoku = sudoku;
-    this.resetStats();
+    this.resetStatsAndSteps();
   }
 
-  resetStats(): void {
+  resetStatsAndSteps(): void {
     this.stats.reset();
+    this.steps = [];
   }
 
   setBasicCandidates(): void {
@@ -119,6 +141,8 @@ export default class SudokuSolver {
         this.sudoku.setCandidates(i, j, candidatesTemplate);
       }
     }
+    const step: BaseStep = { grid: Sudoku.cloneGrid(this.sudoku.grid) };
+    this.steps.push(step);
   }
 
   computeCanFill(fillStrategyType: FillStrategyType): FillInputValueData[] {
@@ -128,6 +152,14 @@ export default class SudokuSolver {
   setValueFromFillStrategy(fillStrategyType: FillStrategyType): number {
     const result = this.computeCanFill(fillStrategyType);
     if (result.length === 0) return 0;
+    const step: FillStep = {
+      grid: Sudoku.cloneGrid(this.sudoku.grid),
+      fill: {
+        strategy: fillStrategyType,
+        data: result,
+      },
+    };
+    this.steps.push(step);
     this.sudoku.setInputValues(result);
     this.stats.addFilled(fillStrategyType, result.length);
     return result.length;
@@ -140,6 +172,15 @@ export default class SudokuSolver {
   removeCandidatesFromEliminationStrategy(eliminationStrategy: EliminationStrategyType): number {
     const eliminationData = this.computeCanEliminate(eliminationStrategy);
     const removals = EliminationStrategy.removalsFromEliminationData(eliminationData);
+    if (removals.length === 0) return 0;
+    const step: EliminationStep = {
+      grid: Sudoku.cloneGrid(this.sudoku.grid),
+      elimination: {
+        strategy: eliminationStrategy,
+        data: eliminationData,
+      },
+    };
+    this.steps.push(step);
     const count = this.sudoku.removeElementInCandidates(removals);
     this.stats.addElimination(eliminationStrategy, count);
     return count;
@@ -153,7 +194,9 @@ export default class SudokuSolver {
   }
 
   trySolve(): boolean {
-    if (this.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING)) return this.trySolve();
+    if (this.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING)) {
+      return this.sudoku.solved || this.trySolve();
+    }
 
     this.setBasicCandidates();
     if (this.trySolveByCandidates()) return this.trySolve();

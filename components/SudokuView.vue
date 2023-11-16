@@ -79,9 +79,12 @@ const relatedLinesCells = computed<Position[]>(() => {
 });
 
 const highlightedCells = computed<{ primary: Position[]; secondary: Position[] }>(() => {
-  const { eliminationDataArr } = props;
+  const { canFillDataArr, eliminationDataArr } = props;
   const primaryPositions: Position[] = [];
   const secondaryPositions: Position[] = [];
+  canFillDataArr.forEach((data) => {
+    if (data.highlightWholeCell) primaryPositions.push({ rowIndex: data.rowIndex, columnIndex: data.columnIndex });
+  });
   eliminationDataArr.forEach((data) => {
     if (data.highlights.length !== 0) {
       data.highlights.forEach((x) => {
@@ -102,7 +105,7 @@ const highlightedCandidates = computed<Omit<Highlight, "isSecondaryPosition">[]>
   canFillDataArr.forEach((data) => {
     const position = { rowIndex: data.rowIndex, columnIndex: data.columnIndex };
     const candidates = Sudoku.candidatesFactory(true, [data.value]);
-    highlighted.push({ position, candidates });
+    if (!data.highlightWholeCell) highlighted.push({ position, candidates });
   });
 
   eliminationDataArr.forEach((data) => {
@@ -212,6 +215,10 @@ $sub-border-width: 1px;
 
       &.primary-cell-highlight {
         @apply bg-primary bg-opacity-60 dark:bg-primary dark:bg-opacity-100;
+
+        .candidates-container {
+          @apply text-primary-content dark:text-primary-content;
+        }
       }
 
       &.secondary-cell-highlight {

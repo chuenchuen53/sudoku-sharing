@@ -14,5 +14,9 @@ export interface FillInputValueData extends InputValueData {
 }
 
 export default abstract class FillStrategy {
+  public static strategyName(strategy: FillStrategyType): string {
+    return strategy.toLowerCase().replaceAll("_", " ");
+  }
+
   public abstract canFill(sudoku: Sudoku): FillInputValueData[];
 }

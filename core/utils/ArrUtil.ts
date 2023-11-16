@@ -4,7 +4,7 @@ export default class ArrUtil {
   static create2DArray<T extends string | number | boolean | (object & { length?: never })>(
     rows: number,
     columns: number,
-    fn: (row: number, column: number) => T
+    fn: (row: number, column: number) => T,
   ): T[][] {
     const array: T[][] = new Array(rows);
     for (let i = 0; i < rows; i++) {

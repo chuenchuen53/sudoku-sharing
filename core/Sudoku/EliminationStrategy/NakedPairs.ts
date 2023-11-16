@@ -2,11 +2,15 @@ import Sudoku from "../Sudoku";
 import SudokuSolver from "../SudokuSolver";
 import { VirtualLineType, type VirtualLine } from "../type";
 import { SudokuLineUtil } from "../SudokuLine";
-import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
 import CalcUtil from "../../utils/CalcUtil";
+import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
 
 export default class NakedPairs extends EliminationStrategy {
   private static readonly instance = new NakedPairs();
+
+  private constructor() {
+    super();
+  }
 
   public static getInstance(): NakedPairs {
     return NakedPairs.instance;
@@ -51,14 +55,14 @@ export default class NakedPairs extends EliminationStrategy {
               rowIndex: x.rowIndex,
               columnIndex: x.columnIndex,
             },
-            candidates: x.candidates,
+            candidates: { ...x.candidates },
           },
           {
             position: {
               rowIndex: y.rowIndex,
               columnIndex: y.columnIndex,
             },
-            candidates: y.candidates,
+            candidates: { ...y.candidates },
           },
         ];
 
@@ -67,10 +71,6 @@ export default class NakedPairs extends EliminationStrategy {
     }
 
     return result;
-  }
-
-  private constructor() {
-    super();
   }
 
   public override canEliminate(sudoku: Sudoku): EliminationData[] {
