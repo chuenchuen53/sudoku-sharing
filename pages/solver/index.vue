@@ -20,16 +20,14 @@ import Sudoku from "../../core/Sudoku/Sudoku";
 import SudokuView from "../../components/SudokuView.vue";
 import SudokuInputButtons from "../../components/SudokuInputButtons.vue";
 import SudokuGridTextInput from "../../components/SudokuGridTextInput.vue";
-import { useSolverState } from "../../composables/useSolverState";
-import { useSolverSolutionState } from "../../composables/solverSolutionState";
+import { useSolverSolutionStore } from "../../stores/solverSolution";
 import type { Grid, Position, SudokuElement } from "../../core/Sudoku/type";
 
 const selectedPosition = ref<Position>({ rowIndex: 0, columnIndex: 0 });
 const inputGrid = ref<Grid>(Sudoku.createEmptyGrid());
 const invalidPositions = ref<Position[]>([]);
 
-const router = useRouter();
-const solutionPageState = useSolverSolutionState();
+const store = useSolverSolutionStore();
 
 const handleCellClick = (position: Position) => {
   selectedPosition.value = position;
@@ -58,13 +56,14 @@ const handleSolve = () => {
     alert("Invalid puzzle");
     return;
   }
-  const sudoku = Sudoku.sudokuFromGrid(inputGrid.value);
+  const grid: Grid = inputGrid.value.map((row) => row.map((x) => ({ rowIndex: x.rowIndex, columnIndex: x.columnIndex, clue: x.inputValue })));
+  const sudoku = Sudoku.sudokuFromGrid(grid);
   const sudokuSolver = new SudokuSolver(sudoku);
   sudokuSolver.trySolve();
-  solutionPageState.value = {
+  store.setData({
     puzzle: sudokuSolver.sudoku.grid,
     steps: sudokuSolver.getSteps(),
-  };
-  router.push("solver/solution");
+  });
+  navigateTo("/solver/solution");
 };
 </script>

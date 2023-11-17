@@ -7,21 +7,30 @@
       <li>Solution</li>
     </ul>
   </div>
-  <div v-if="pageState.puzzle && pageState.steps">
+  <div v-if="store.data">
     <div class="my-8">
       <div class="text-xl">Solve</div>
-      <SudokuView :grid="pageState.puzzle" :can-fill-data-arr="[]" :elimination-data-arr="[]" :invalid-positions="[]" />
+      <SudokuView :grid="store.data.puzzle" :can-fill-data-arr="[]" :elimination-data-arr="[]" :invalid-positions="[]" />
     </div>
     <div class="space-y-8">
-      <SudokuStep v-for="(step, index) in pageState.steps" :key="index" :step-num="index + 1" :step="step" />
+      <SudokuStep v-for="(step, index) in store.data.steps" :key="index" :step-num="index + 1" :step="step" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useSolverSolutionState } from "../../composables/solverSolutionState";
+import { useSolverSolutionStore } from "../../stores/solverSolution";
 import SudokuStep from "../../components/SudokuStep.vue";
 import SudokuView from "../../components/SudokuView.vue";
 
-const pageState = useSolverSolutionState();
+definePageMeta({
+  middleware: (_to, _from) => {
+    const store = useSolverSolutionStore();
+    if (store.data === null) {
+      return navigateTo("/solver");
+    }
+  },
+});
+
+const store = useSolverSolutionStore();
 </script>
