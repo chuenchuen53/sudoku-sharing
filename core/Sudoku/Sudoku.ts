@@ -49,6 +49,29 @@ export default class Sudoku {
     return this.isValid && this.grid.every((row) => row.every((cell) => cell.clue || cell.inputValue));
   }
 
+  static createEmptyGrid(): Grid {
+    return ArrUtil.create2DArray<Cell>(9, 9, (rowIndex, columnIndex) => ({ rowIndex, columnIndex }));
+  }
+
+  public static invalidCells(grid: Grid): Cell[] {
+    const nineLenArr = new Array(9).fill(true);
+    const rows: VirtualLine[] = nineLenArr.map((_, i) => grid[i]);
+    const columns: VirtualLine[] = nineLenArr.map((_, i) => grid.map((row) => row[i]));
+    const boxes: VirtualLine[] = nineLenArr.map((_, i) => {
+      const firstRowIndex = Sudoku.boxFirstLineIndex(i, VirtualLineType.ROW);
+      const firstColumnIndex = Sudoku.boxFirstLineIndex(i, VirtualLineType.COLUMN);
+      return nineLenArr.map((_, j) => grid[firstRowIndex + Math.floor(j / 3)][firstColumnIndex + (j % 3)]);
+    });
+
+    const fn = (vl: VirtualLine[]) =>
+      vl
+        .map((x) => Sudoku.checkVirtualLineHaveDuplicateValue(x, "inputValue"))
+        .map((x) => x.duplicatedCells)
+        .flat();
+
+    return Sudoku.removeDuplicatedPositions([...fn(rows), ...fn(columns), ...fn(boxes)]);
+  }
+
   static sudokuFromGrid(grid: Grid): Sudoku {
     const clues: InputClues = grid.map((row) => row.map((cell) => cell.clue ?? "0"));
     const sudoku = new Sudoku(clues);

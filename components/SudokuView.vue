@@ -47,11 +47,11 @@
 
 <script lang="ts" setup scoped>
 import { SudokuLineUtil, type SudokuLine } from "../core/Sudoku/SudokuLine";
+import Sudoku from "../core/Sudoku/Sudoku";
+import SudokuSolver from "../core/Sudoku/SudokuSolver";
 import type { Highlight, EliminationData } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import type { Grid, Position } from "../core/Sudoku/type";
 import type { FillInputValueData } from "../core/Sudoku/FillStrategy/FillStrategy";
-import Sudoku from "~/core/Sudoku/Sudoku";
-import SudokuSolver from "~/core/Sudoku/SudokuSolver";
 
 const props = defineProps<{
   grid: Grid;
@@ -125,7 +125,6 @@ const highlightedCandidates = computed<Omit<Highlight, "isSecondaryPosition">[]>
 <style lang="scss" scoped>
 @import "element-plus/theme-chalk/src/common/var";
 
-$selected-bgcolor: var(--el-color-primary-light-5);
 $selected-and-highlight-bgcolor: #cee38c;
 $invalid-cells-bgcolor: var(--el-color-danger-light-9);
 $grand-border-width: 3px;
@@ -322,10 +321,10 @@ $sub-border-width: 1px;
       }
 
       &.selected {
-        background-color: $selected-bgcolor;
+        @apply bg-primary bg-opacity-25 dark:bg-opacity-[35%];
 
         &.invalid {
-          background-color: $selected-bgcolor;
+          @apply bg-primary bg-opacity-25 dark:bg-opacity-[35%];
         }
 
         &.primary-cell-highlight,
@@ -335,7 +334,7 @@ $sub-border-width: 1px;
       }
 
       &.invalid {
-        background-color: $invalid-cells-bgcolor;
+        @apply bg-error bg-opacity-30;
 
         .input-value {
           @apply text-error;
