@@ -40,6 +40,7 @@
     "eslint-plugin-vue": "9.18.1",
     "jsdom": "^22.1.0",
     "nuxt": "^3.8.1",
+    "nuxt-headlessui": "^1.1.4",
     "postcss": "^8.4.31",
     "prettier": "3.1.0",
     "stylelint": "15.11.0",

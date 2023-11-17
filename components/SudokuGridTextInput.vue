@@ -4,7 +4,7 @@
     <textarea
       ref="textareaRef"
       v-model="inputText"
-      class="textarea textarea-bordered w-full resize-none"
+      class="textarea textarea-bordered w-full resize-none max-h-72"
       :class="errText && 'textarea-error'"
       placeholder="input text like 9024150000050... (with or without line break)"
     ></textarea>
@@ -17,7 +17,13 @@
 
 <script lang="ts" setup>
 import Sudoku from "../core/Sudoku/Sudoku";
-const { textarea: textareaRef, input: inputText } = useTextareaAutosize();
+const { textarea: textareaRef, input: inputText } = useTextareaAutosize({
+  onResize: () => {
+    if (textareaRef.value) {
+      textareaRef.value.style.overflow = textareaRef.value.scrollHeight > 288 ? "auto" : "hidden";
+    }
+  },
+});
 
 import type { Grid, SudokuElementWithZero } from "../core/Sudoku/type";
 
