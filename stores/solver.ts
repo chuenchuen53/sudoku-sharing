@@ -28,10 +28,26 @@ export const useSolverStore = defineStore("solver", () => {
     invalidPositions.value = Sudoku.invalidCells(inputGrid.value);
   };
 
+  const clearGrid = () => {
+    inputGrid.value = Sudoku.createEmptyGrid();
+    invalidPositions.value = [];
+  };
+
   const replaceGrid = (grid: Grid) => {
     inputGrid.value = grid;
     invalidPositions.value = Sudoku.invalidCells(inputGrid.value);
   };
 
-  return { loading, selectedPosition, inputGrid, invalidPositions, setLoading, setSelectedPosition, fillSelected, clearSelected, replaceGrid };
+  return {
+    loading,
+    selectedPosition,
+    inputGrid,
+    invalidPositions,
+    setLoading,
+    setSelectedPosition,
+    fillSelected,
+    clearSelected,
+    clearGrid,
+    replaceGrid,
+  };
 });
