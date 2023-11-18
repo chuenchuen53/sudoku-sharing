@@ -5,21 +5,21 @@
         <thead>
           <tr>
             <th>Strategy</th>
-            <th>Fill</th>
+            <th class="text-right">Fill</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <th>Unique Missing</th>
-            <td>{{ stats.filled.UNIQUE_MISSING }}</td>
+            <td class="text-right">{{ stats.filled.UNIQUE_MISSING }}</td>
           </tr>
           <tr>
             <th>Naked Single</th>
-            <td>{{ stats.filled.NAKED_SINGLE }}</td>
+            <td class="text-right">{{ stats.filled.NAKED_SINGLE }}</td>
           </tr>
           <tr>
             <th>Hidden Single</th>
-            <td>{{ stats.filled.HIDDEN_SINGLE }}</td>
+            <td class="text-right">{{ stats.filled.HIDDEN_SINGLE }}</td>
           </tr>
         </tbody>
       </table>
@@ -29,13 +29,13 @@
         <thead>
           <tr>
             <th>Strategy</th>
-            <th>Eliminated</th>
+            <th class="text-right">Eliminated</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="x in SudokuSolver.enabledEliminationStrategies" :key="x" :class="{ hidden: stats.elimination[x] === 0 }">
             <th>{{ EliminationStrategy.strategyName(x) }}</th>
-            <td>{{ stats.elimination[x] }}</td>
+            <td class="text-right">{{ stats.elimination[x] }}</td>
           </tr>
         </tbody>
       </table>
