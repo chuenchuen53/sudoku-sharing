@@ -66,6 +66,7 @@ export default class Sudoku {
         }
       }
     }
+    sudoku.validatePuzzle();
     return sudoku;
   }
 
@@ -313,27 +314,34 @@ export default class Sudoku {
     if (update) this.validatePuzzle();
   }
 
-  addElementInCandidates(inputValueDataArr: InputValueData[]): number {
-    let count = 0;
-
-    inputValueDataArr.forEach(({ rowIndex, columnIndex, value }) => {
-      const cell = this.grid[rowIndex][columnIndex];
-
-      if (cell.candidates) {
-        if (!cell.candidates[value]) {
-          cell.candidates[value] = true;
-          count++;
-        }
-      } else {
-        cell.candidates = Sudoku.candidatesFactory(true, [value]);
-        count++;
+  addElementInCandidates(rowIndex: number, columnIndex: number, value: SudokuElement): boolean {
+    const cell = this.grid[rowIndex][columnIndex];
+    if (cell.clue || cell.inputValue) return false;
+    if (cell.candidates) {
+      if (!cell.candidates[value]) {
+        cell.candidates[value] = true;
+        return true;
       }
-    });
+    } else {
+      cell.candidates = Sudoku.candidatesFactory(true, [value]);
+      return true;
+    }
 
-    return count;
+    return false;
   }
 
-  removeElementInCandidates(inputValueDataArr: InputValueData[]): number {
+  removeElementInCandidates(rowIndex: number, columnIndex: number, value: SudokuElement): boolean {
+    const cell = this.grid[rowIndex][columnIndex];
+    if (cell.clue || cell.inputValue) return false;
+    if (cell.candidates?.[value]) {
+      cell.candidates[value] = false;
+      return true;
+    }
+
+    return false;
+  }
+
+  batchRemoveElementInCandidates(inputValueDataArr: InputValueData[]): number {
     let count = 0;
 
     inputValueDataArr.forEach(({ rowIndex, columnIndex, value }) => {

@@ -8,8 +8,8 @@
 import SudokuSolver from "../core/Sudoku/SudokuSolver";
 import Sudoku from "../core/Sudoku/Sudoku";
 import { FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
-import SudokuView from "~/components/SudokuView.vue";
-import { EliminationStrategyType } from "~/core/Sudoku/EliminationStrategy/EliminationStrategy";
+import SudokuView from "../components/SudokuView.vue";
+import { EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 
 const sudoku = new Sudoku([
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -42,5 +42,3 @@ sudoku.setInputValue({ rowIndex: 7, columnIndex: 2, value: "9" }, false);
 
 sudokuSolver.trySolve();
 </script>
-
-<style></style>

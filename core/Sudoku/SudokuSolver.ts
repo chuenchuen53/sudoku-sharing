@@ -203,7 +203,7 @@ export default class SudokuSolver {
         },
       };
       this.steps.push(step);
-      this.sudoku.removeElementInCandidates(removals);
+      this.sudoku.batchRemoveElementInCandidates(removals);
     }
     return result.length;
   }
@@ -224,7 +224,7 @@ export default class SudokuSolver {
       },
     };
     this.steps.push(step);
-    const count = this.sudoku.removeElementInCandidates(removals);
+    const count = this.sudoku.batchRemoveElementInCandidates(removals);
     this.stats.addElimination(eliminationStrategy, count);
     return count;
   }

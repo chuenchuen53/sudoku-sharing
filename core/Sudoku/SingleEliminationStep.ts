@@ -22,7 +22,7 @@ export default class SingleEliminationStep {
           data: [x],
         },
       });
-      if (sudoku.removeElementInCandidates(removals) === 0) result.pop();
+      if (sudoku.batchRemoveElementInCandidates(removals) === 0) result.pop();
     }
 
     return result;

@@ -233,18 +233,18 @@ describe("sudoku basic", () => {
     const s1 = new Sudoku(p1);
     s1.setInputValue(TestUtil.inputValueDataFactory(2, 0, "1"), true);
 
-    const expectedDetail = [
-      {
-        rowIndex: 2,
-        columnIndex: 0,
-        inputValue: "1",
-      },
-      {
-        clue: "1",
-        columnIndex: 1,
-        rowIndex: 2,
-      },
-    ];
+    // const expectedDetail = [
+    //   {
+    //     rowIndex: 2,
+    //     columnIndex: 0,
+    //     inputValue: "1",
+    //   },
+    //   {
+    //     clue: "1",
+    //     columnIndex: 1,
+    //     rowIndex: 2,
+    //   },
+    // ];
 
     const expectedInvalidCells: Cell[] = [
       { rowIndex: 2, columnIndex: 0, inputValue: "1" },
@@ -1019,15 +1019,20 @@ describe("sudoku basic", () => {
   it("addElementInCandidates", () => {
     const s0 = new Sudoku(p0);
 
-    const input = TestUtil.inputValueDataArrFactory([
-      [0, 0, "1"],
-      [0, 0, "2"],
-      [0, 0, "3"],
-    ]);
-    expect(s0.addElementInCandidates(input)).toBe(3);
+    // const input = TestUtil.inputValueDataArrFactory([
+    //   [0, 0, "1"],
+    //   [0, 0, "2"],
+    //   [0, 0, "3"],
+    // ]);
+    // expect(s0.addElementInCandidates(input)).toBe(3);
+    expect(s0.addElementInCandidates(0, 0, "1")).toBe(true);
+    expect(s0.addElementInCandidates(0, 0, "2")).toBe(true);
+    expect(s0.addElementInCandidates(0, 0, "3")).toBe(true);
     expect(s0.grid[0][0].candidates).toStrictEqual(Sudoku.candidatesFactory(true, ["1", "2", "3"]));
 
-    expect(s0.addElementInCandidates(input)).toBe(0);
+    expect(s0.addElementInCandidates(0, 0, "1")).toBe(false);
+    expect(s0.addElementInCandidates(0, 0, "2")).toBe(false);
+    expect(s0.addElementInCandidates(0, 0, "3")).toBe(false);
   });
 
   it("removeElementInCandidates", () => {
@@ -1050,11 +1055,12 @@ describe("sudoku basic", () => {
       [0, 0, "9"],
     ]);
 
-    s0.addElementInCandidates(input);
-    expect(s0.removeElementInCandidates(remove)).toBe(2);
+    // s0.addElementInCandidates(input);
+    input.forEach((x) => s0.addElementInCandidates(x.rowIndex, x.columnIndex, x.value));
+    expect(s0.batchRemoveElementInCandidates(remove)).toBe(2);
     expect(s0.grid[0][0].candidates).toStrictEqual(Sudoku.candidatesFactory(true, ["2"]));
 
-    expect(s0.removeElementInCandidates(input)).toBe(1);
+    expect(s0.batchRemoveElementInCandidates(input)).toBe(1);
     expect(s0.grid[0][0].candidates).toStrictEqual(Sudoku.candidatesFactory(false));
   });
 });
