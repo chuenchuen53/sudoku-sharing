@@ -3,10 +3,24 @@ import Sudoku from "../core/Sudoku/Sudoku";
 import SudokuSolver from "../core/Sudoku/SudokuSolver";
 import type { Position, Grid, SudokuElement } from "../core/Sudoku/type";
 
-export const usePlayStore = defineStore("solver", () => {
+const tempGrid: Grid = (
+  [
+    ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
+    ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
+    ["0", "0", "8", "0", "0", "0", "4", "0", "9"],
+    ["9", "6", "2", "1", "0", "0", "0", "4", "0"],
+    ["8", "1", "0", "0", "0", "3", "0", "2", "0"],
+    ["0", "3", "7", "6", "5", "0", "8", "0", "1"],
+    ["5", "8", "0", "7", "0", "4", "9", "1", "3"],
+    ["1", "0", "0", "3", "0", "0", "0", "0", "0"],
+    ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
+  ] as const
+).map((row, rowIndex) => row.map((clue, columnIndex) => (clue !== "0" ? { rowIndex, columnIndex, clue } : { rowIndex, columnIndex })));
+
+export const usePlayStore = defineStore("play", () => {
   const loading = ref(false);
   const selectedPosition = shallowRef<Position>({ rowIndex: 0, columnIndex: 0 });
-  const inputGrid = ref<Grid>(Sudoku.createEmptyGrid());
+  const inputGrid = ref<Grid>(tempGrid);
   const invalidPositions = shallowRef<Position[]>([]);
   const candidatesMode = ref(false);
 
@@ -23,8 +37,10 @@ export const usePlayStore = defineStore("solver", () => {
 
   const fillSelected = (value: SudokuElement) => {
     const { rowIndex, columnIndex } = selectedPosition.value;
+    if (inputGrid.value[rowIndex][columnIndex].clue) return;
     inputGrid.value[rowIndex][columnIndex].inputValue = value;
     sudoku.setInputValue({ rowIndex, columnIndex, value }, true);
+    inputGrid.value[rowIndex][columnIndex].candidates = sudoku.grid[rowIndex][columnIndex].candidates;
     invalidPositions.value = sudoku.invalidCells;
   };
 

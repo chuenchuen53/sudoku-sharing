@@ -1,7 +1,17 @@
 <template>
-  <div>this is play page</div>
-  <div class="">hi</div>
-  <SudokuView :grid="sudoku.grid" :can-fill-data-arr="canFill" :elimination-data-arr="eliminationDataArr" :invalid-positions="[]" />
+  <div class="flex flex-col items-center w-full">
+    <SudokuView
+      :grid="inputGrid"
+      :can-fill-data-arr="[]"
+      :elimination-data-arr="[]"
+      :invalid-positions="invalidPositions"
+      :selected="selectedPosition"
+      :on-cell-click="setSelectedPosition"
+    />
+    <div class="flex flex-col lg:flex-row gap-8 relative pb-20 my-8">
+      <SudokuInputButtons :on-element-btn-click="fillSelected" :on-clear-btn-click="clearSelected" />
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -10,35 +20,54 @@ import Sudoku from "../core/Sudoku/Sudoku";
 import { FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
 import SudokuView from "../components/SudokuView.vue";
 import { EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import { usePlayStore } from "../stores/play";
 
-const sudoku = new Sudoku([
-  ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
-  ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
-  ["0", "0", "8", "0", "0", "0", "4", "0", "9"],
-  ["9", "6", "2", "1", "0", "0", "0", "4", "0"],
-  ["8", "1", "0", "0", "0", "3", "0", "2", "0"],
-  ["0", "3", "7", "6", "5", "0", "8", "0", "1"],
-  ["5", "8", "0", "7", "0", "4", "9", "1", "3"],
-  ["1", "0", "0", "3", "0", "0", "0", "0", "0"],
-  ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
-]);
+const playStore = usePlayStore();
+const { inputGrid, invalidPositions, selectedPosition } = storeToRefs(playStore);
+const { setSelectedPosition, fillSelected, clearSelected } = playStore;
 
-const sudokuSolver = new SudokuSolver(sudoku);
-sudokuSolver.setBasicCandidates();
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (document.activeElement?.tagName === "TEXTAREA") return;
 
-sudoku.setInputValue({ rowIndex: 0, columnIndex: 2, value: "1" }, false);
-sudoku.setInputValue({ rowIndex: 0, columnIndex: 7, value: "3" }, false);
+  if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Backspace", "Delete"].includes(e.key)) {
+    e.preventDefault();
+  }
+  switch (e.key) {
+    case "ArrowUp":
+      setSelectedPosition(SudokuInputUtil.newSelectedPosition(e.ctrlKey ? -8 : -1, 0, selectedPosition.value));
+      break;
+    case "ArrowDown":
+      setSelectedPosition(SudokuInputUtil.newSelectedPosition(e.ctrlKey ? 8 : 1, 0, selectedPosition.value));
+      break;
+    case "ArrowLeft":
+      setSelectedPosition(SudokuInputUtil.newSelectedPosition(0, e.ctrlKey ? -8 : -1, selectedPosition.value));
+      break;
+    case "ArrowRight":
+      setSelectedPosition(SudokuInputUtil.newSelectedPosition(0, e.ctrlKey ? 8 : 1, selectedPosition.value));
+      break;
+    case "1":
+    case "2":
+    case "3":
+    case "4":
+    case "5":
+    case "6":
+    case "7":
+    case "8":
+    case "9":
+      fillSelected(e.key);
+      break;
+    case "Backspace":
+    case "Delete":
+      clearSelected();
+      break;
+  }
+};
 
-const canFill0 = sudokuSolver.computeCanFill(FillStrategyType.UNIQUE_MISSING);
-const canFill1 = sudokuSolver.computeCanFill(FillStrategyType.NAKED_SINGLE);
-const canFill = [...canFill0, ...canFill1];
+onMounted(() => {
+  window.addEventListener("keydown", handleKeyDown);
+});
 
-const eliminationDataArr0 = sudokuSolver.computeCanEliminate(EliminationStrategyType.NAKED_PAIRS);
-const eliminationDataArr1 = sudokuSolver.computeCanEliminate(EliminationStrategyType.Y_WING);
-
-const eliminationDataArr = [...eliminationDataArr0, ...eliminationDataArr1];
-
-sudoku.setInputValue({ rowIndex: 7, columnIndex: 2, value: "9" }, false);
-
-sudokuSolver.trySolve();
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeyDown);
+});
 </script>
