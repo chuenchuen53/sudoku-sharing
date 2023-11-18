@@ -1,25 +1,28 @@
 <template>
   <div>
-    <div v-if="'final' in step" class="text-lg">Solved</div>
+    <div v-if="'final' in step" class="text-lg mb-2">Solved</div>
     <div v-else class="text-lg">Step {{ stepNum }}</div>
-    <div v-if="'fillCandidates' in step">
-      <div>Fill in candidates</div>
-      <SudokuView :grid="step.grid" :can-fill-data-arr="[]" :elimination-data-arr="[]" :invalid-positions="[]" />
-    </div>
-    <div v-else-if="'fill' in step">
-      <div>Fill by {{ FillStrategy.strategyName(step.fill.strategy) }}</div>
-      <SudokuView :grid="step.grid" :can-fill-data-arr="step.fill.data" :elimination-data-arr="[]" :invalid-positions="[]" />
-    </div>
-    <div v-else-if="'afterFill' in step">
-      <div>Update candidates after fill</div>
-      <SudokuView :grid="step.grid" :can-fill-data-arr="[]" :elimination-data-arr="[step.afterFill.data]" :invalid-positions="[]" />
-    </div>
-    <div v-else-if="'elimination' in step">
-      <div>Eliminate by {{ EliminationStrategy.strategyName(step.elimination.strategy) }}</div>
-      <SudokuView :grid="step.grid" :can-fill-data-arr="[]" :elimination-data-arr="step.elimination.data" :invalid-positions="[]" />
-    </div>
-    <div v-else-if="'final' in step">
-      <SudokuView :grid="step.grid" :can-fill-data-arr="[]" :elimination-data-arr="[]" :invalid-positions="[]" />
+
+    <div class="[&>div>p]:mb-2">
+      <div v-if="'fillCandidates' in step">
+        <p>Fill in candidates</p>
+        <SudokuView :grid="step.grid" :can-fill-data-arr="[]" :elimination-data-arr="[]" :invalid-positions="[]" />
+      </div>
+      <div v-else-if="'fill' in step">
+        <p>Fill by {{ FillStrategy.strategyName(step.fill.strategy) }}</p>
+        <SudokuView :grid="step.grid" :can-fill-data-arr="step.fill.data" :elimination-data-arr="[]" :invalid-positions="[]" />
+      </div>
+      <div v-else-if="'afterFill' in step">
+        <p>Update candidates after fill</p>
+        <SudokuView :grid="step.grid" :can-fill-data-arr="[]" :elimination-data-arr="[step.afterFill.data]" :invalid-positions="[]" />
+      </div>
+      <div v-else-if="'elimination' in step">
+        <p>Eliminate by {{ EliminationStrategy.strategyName(step.elimination.strategy) }}</p>
+        <SudokuView :grid="step.grid" :can-fill-data-arr="[]" :elimination-data-arr="step.elimination.data" :invalid-positions="[]" />
+      </div>
+      <div v-else-if="'final' in step">
+        <SudokuView :grid="step.grid" :can-fill-data-arr="[]" :elimination-data-arr="[]" :invalid-positions="[]" />
+      </div>
     </div>
   </div>
 </template>

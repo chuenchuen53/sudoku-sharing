@@ -13,7 +13,7 @@ import UniqueMissing from "./FillStrategy/UniqueMissing";
 import Sudoku from "./Sudoku";
 import YWing from "./EliminationStrategy/YWing";
 import { FillStrategyType, type FillInputValueData } from "./FillStrategy/FillStrategy";
-import CSolveStats from "./SolveStats";
+import CSolveStats, { type Stats } from "./SolveStats";
 import FillStrategy from "./FillStrategy/FillStrategy";
 import SingleEliminationStep from "./SingleEliminationStep";
 import type { Candidates, SudokuElement, VirtualLine, CandidateCell, Grid } from "./type";
@@ -53,6 +53,18 @@ export interface FinalStep extends BaseStep {
 export type Step = FillCandidatesStep | FillStep | EliminationAfterFillStep | EliminationStep | FinalStep;
 
 export default class SudokuSolver {
+  public static enabledEliminationStrategies: EliminationStrategyType[] = [
+    EliminationStrategyType.LOCKED_CANDIDATES,
+    EliminationStrategyType.NAKED_PAIRS,
+    EliminationStrategyType.HIDDEN_PAIRS,
+    EliminationStrategyType.X_WING,
+    EliminationStrategyType.Y_WING,
+    EliminationStrategyType.NAKED_TRIPLETS,
+    EliminationStrategyType.HIDDEN_TRIPLETS,
+    EliminationStrategyType.NAKED_QUADS,
+    EliminationStrategyType.HIDDEN_QUADS,
+  ];
+
   public sudoku: Sudoku;
   public stats: CSolveStats = new CSolveStats();
   public steps: Step[] = [];
@@ -228,6 +240,10 @@ export default class SudokuSolver {
       }
     }
     return result;
+  }
+
+  getStats(): Stats {
+    return this.stats.getStats();
   }
 
   tryFillAfterSetCandidates(): boolean {

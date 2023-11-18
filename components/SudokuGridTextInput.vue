@@ -1,10 +1,10 @@
 <template>
-  <div>
-    <div class="text-lg">Input puzzle by text</div>
+  <div class="w-full">
+    <div class="text-lg mb-4">Input puzzle by text</div>
     <textarea
       ref="textareaRef"
       v-model="inputText"
-      class="textarea textarea-bordered w-full resize-none max-h-72"
+      class="textarea textarea-bordered w-full resize-none max-h-72 mb-2"
       :class="errText && 'textarea-error'"
       placeholder="input text like 9024150000050... (with or without line break)"
     ></textarea>

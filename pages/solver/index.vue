@@ -1,20 +1,29 @@
 <template>
-  <div class="space-y-8">
-    <SudokuView
-      :grid="inputGrid"
-      :can-fill-data-arr="[]"
-      :elimination-data-arr="[]"
-      :invalid-positions="invalidPositions"
-      :selected="selectedPosition"
-      :on-cell-click="setSelectedPosition"
-    />
-    <SudokuInputButtons :on-element-btn-click="fillSelected" :on-clear-btn-click="clearSelected" />
-    <button @click="clearGrid" class="btn">Clear all</button>
-    <SudokuGridTextInput :on-input="replaceGrid" />
-    <button @click="handleSolve" class="btn btn-primary w-full" :disabled="loading">
-      Solve
-      <span v-if="loading" class="loading loading-spinner loading-sm"></span>
-    </button>
+  <div class="flex flex-col items-center space-y-8 w-full">
+    <div class="flex flex-col lg:flex-row gap-8 relative pb-20">
+      <div>
+        <SudokuView
+          :grid="inputGrid"
+          :can-fill-data-arr="[]"
+          :elimination-data-arr="[]"
+          :invalid-positions="invalidPositions"
+          :selected="selectedPosition"
+          :on-cell-click="setSelectedPosition"
+        />
+        <button @click="handleSolve" class="absolute bottom-0 w-full btn btn-primary lg:static lg:inline-block lg:w-fit lg:mt-4" :disabled="loading">
+          Solve
+          <span v-if="loading" class="loading loading-spinner loading-sm"></span>
+        </button>
+      </div>
+      <div class="max-w-lg w-full space-y-8">
+        <SudokuInputButtons :on-element-btn-click="fillSelected" :on-clear-btn-click="clearSelected" />
+        <div class="flex gap-2 justify-center">
+          <button class="btn">Undo</button>
+          <button @click="clearGrid" class="btn">Clear all</button>
+        </div>
+        <SudokuGridTextInput :on-input="replaceGrid" />
+      </div>
+    </div>
 
     <div v-if="showErrToastTimer !== null" class="toast toast-top toast-center">
       <div class="alert alert-error">
@@ -51,16 +60,16 @@ const handleKeyDown = (e: KeyboardEvent) => {
   }
   switch (e.key) {
     case "ArrowUp":
-      setSelectedPosition(SudokuInputUtil.newSelectedPosition(-1, 0, selectedPosition.value));
+      setSelectedPosition(SudokuInputUtil.newSelectedPosition(e.ctrlKey ? -8 : -1, 0, selectedPosition.value));
       break;
     case "ArrowDown":
-      setSelectedPosition(SudokuInputUtil.newSelectedPosition(1, 0, selectedPosition.value));
+      setSelectedPosition(SudokuInputUtil.newSelectedPosition(e.ctrlKey ? 8 : 1, 0, selectedPosition.value));
       break;
     case "ArrowLeft":
-      setSelectedPosition(SudokuInputUtil.newSelectedPosition(0, -1, selectedPosition.value));
+      setSelectedPosition(SudokuInputUtil.newSelectedPosition(0, e.ctrlKey ? -8 : -1, selectedPosition.value));
       break;
     case "ArrowRight":
-      setSelectedPosition(SudokuInputUtil.newSelectedPosition(0, 1, selectedPosition.value));
+      setSelectedPosition(SudokuInputUtil.newSelectedPosition(0, e.ctrlKey ? 8 : 1, selectedPosition.value));
       break;
     case "1":
     case "2":
@@ -106,6 +115,7 @@ const handleSolve = () => {
     solverSolutionStore.setData({
       puzzle: grid,
       steps: sudokuSolver.getSteps(),
+      stats: sudokuSolver.getStats(),
     });
     setLoading(false);
     navigateTo("/solver/solution");

@@ -10,7 +10,7 @@ export interface Stats {
 }
 
 export default class CSolveStats {
-  public stats: Stats = CSolveStats.initialStats();
+  private stats: Stats = CSolveStats.initialStats();
 
   private static initialStats(): Stats {
     return {
@@ -31,6 +31,10 @@ export default class CSolveStats {
         [EliminationStrategyType.Y_WING]: 0,
       },
     };
+  }
+
+  public getStats(): Stats {
+    return JSON.parse(JSON.stringify(this.stats));
   }
 
   public reset(): void {
