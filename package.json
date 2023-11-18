@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
-    "element-plus": "2.4.2",
     "lodash": "4.17.21",
     "normalize.css": "^8.0.1",
     "pinia": "2.1.7",
@@ -24,7 +23,6 @@
     "typescript": "^5.2.2"
   },
   "devDependencies": {
-    "@element-plus/nuxt": "^1.0.6",
     "@nuxt/devtools": "^1.0.2",
     "@rushstack/eslint-patch": "1.5.1",
     "@types/lodash": "4.14.201",
@@ -40,7 +38,6 @@
     "eslint-plugin-vue": "9.18.1",
     "jsdom": "^22.1.0",
     "nuxt": "^3.8.1",
-    "nuxt-headlessui": "^1.1.4",
     "postcss": "^8.4.31",
     "prettier": "3.1.0",
     "stylelint": "15.11.0",

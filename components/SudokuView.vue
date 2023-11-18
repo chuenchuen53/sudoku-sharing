@@ -123,10 +123,7 @@ const highlightedCandidates = computed<Omit<Highlight, "isSecondaryPosition">[]>
 </script>
 
 <style lang="scss" scoped>
-@import "element-plus/theme-chalk/src/common/var";
-
 $selected-and-highlight-bgcolor: #cee38c;
-$invalid-cells-bgcolor: var(--el-color-danger-light-9);
 $grand-border-width: 3px;
 $main-border-width: 2px;
 $sub-border-width: 1px;
