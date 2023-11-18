@@ -1,24 +1,11 @@
 import ArrUtil from "../utils/ArrUtil";
 import { VirtualLineType } from "./type";
-import type {
-  SudokuElement,
-  Candidates,
-  Cell,
-  InputValueData,
-  Grid,
-  VirtualLine,
-  InputClues,
-  RowColumn,
-  CheckVirtualLineDuplicateResult,
-  ValidateDetail,
-  Position,
-} from "./type";
+import type { SudokuElement, Candidates, Cell, InputValueData, Grid, VirtualLine, InputClues, RowColumn, Position } from "./type";
 
 export default class Sudoku {
   public grid: Grid;
   public numberOfClues: number;
-  public isValid: boolean;
-  public validateDetail: ValidateDetail;
+  public invalidCells: Cell[];
   private rows: readonly VirtualLine[];
   private columns: readonly VirtualLine[];
   private boxes: readonly VirtualLine[];
@@ -36,16 +23,15 @@ export default class Sudoku {
         return nineLenArr.map((_, j) => this.grid[firstRowIndex + Math.floor(j / 3)][firstColumnIndex + (j % 3)]);
       }),
     );
+    this.invalidCells = Sudoku.invalidCells(this.grid);
+  }
 
-    const { isValid, validateDetail } = this.validatePuzzle("clue");
-    this.isValid = isValid;
-    this.validateDetail = validateDetail;
+  get isValid(): boolean {
+    return this.invalidCells.length === 0;
   }
 
   get solved(): boolean {
-    const { isValid, validateDetail } = this.validatePuzzle("inputValue");
-    this.isValid = isValid;
-    this.validateDetail = validateDetail;
+    this.invalidCells = Sudoku.invalidCells(this.grid);
     return this.isValid && this.grid.every((row) => row.every((cell) => cell.clue || cell.inputValue));
   }
 
@@ -63,12 +49,7 @@ export default class Sudoku {
       return nineLenArr.map((_, j) => grid[firstRowIndex + Math.floor(j / 3)][firstColumnIndex + (j % 3)]);
     });
 
-    const fn = (vl: VirtualLine[]) =>
-      vl
-        .map((x) => Sudoku.checkVirtualLineHaveDuplicateValue(x, "inputValue"))
-        .map((x) => x.duplicatedCells)
-        .flat();
-
+    const fn = (vl: VirtualLine[]) => vl.map((x) => Sudoku.duplicatedValueInVirtualLine(x, "inputValue")).flat();
     return Sudoku.removeDuplicatedPositions([...fn(rows), ...fn(columns), ...fn(boxes)]);
   }
 
@@ -175,15 +156,11 @@ export default class Sudoku {
     return Object.values(candidates).reduce((acc, cur) => (cur ? acc + 1 : acc), 0);
   }
 
-  static checkVirtualLineHaveDuplicateValue(
-    virtualLine: VirtualLine,
-    key: Extract<keyof Cell, "clue" | "inputValue">,
-  ): CheckVirtualLineDuplicateResult {
+  static duplicatedValueInVirtualLine(virtualLine: VirtualLine, key: Extract<keyof Cell, "clue" | "inputValue">): Cell[] {
     const duplicatedCells: Cell[] = [];
     const values = key === "clue" ? virtualLine.map((x) => x.clue) : virtualLine.map((x) => x.clue ?? x.inputValue);
     values.forEach((x, ix, arr) => x && arr.some((y, iy) => ix !== iy && x === y && duplicatedCells.push(virtualLine[ix])));
-    const haveDuplicate = duplicatedCells.length > 0;
-    return { haveDuplicate, duplicatedCells };
+    return duplicatedCells;
   }
 
   static allElements(): SudokuElement[] {
@@ -318,22 +295,14 @@ export default class Sudoku {
     cell.inputValue = value;
     if (cell.candidates) delete cell.candidates;
 
-    if (updateValidateInfo) {
-      const { isValid, validateDetail } = this.validatePuzzle("inputValue");
-      this.isValid = isValid;
-      this.validateDetail = validateDetail;
-    }
+    if (updateValidateInfo) this.validatePuzzle();
 
     return true;
   }
 
   setInputValues(data: InputValueData[]): void {
     const haveChanged: boolean[] = data.map((x) => this.setInputValue(x, false));
-    if (haveChanged.filter((x) => x).length) {
-      const { isValid, validateDetail } = this.validatePuzzle("inputValue");
-      this.isValid = isValid;
-      this.validateDetail = validateDetail;
-    }
+    if (haveChanged.filter((x) => x).length) this.validatePuzzle();
   }
 
   removeInputValue({ rowIndex, columnIndex }: { rowIndex: number; columnIndex: number }, update: boolean): void {
@@ -341,11 +310,7 @@ export default class Sudoku {
       delete this.grid[rowIndex][columnIndex].inputValue;
     }
 
-    if (update) {
-      const { isValid, validateDetail } = this.validatePuzzle("inputValue");
-      this.isValid = isValid;
-      this.validateDetail = validateDetail;
-    }
+    if (update) this.validatePuzzle();
   }
 
   addElementInCandidates(inputValueDataArr: InputValueData[]): number {
@@ -390,20 +355,7 @@ export default class Sudoku {
     }
   }
 
-  validatePuzzle(type: Extract<keyof Cell, "clue" | "inputValue">): {
-    isValid: boolean;
-    validateDetail: ValidateDetail;
-  } {
-    const rowDetail = this.rows.map((x) => Sudoku.checkVirtualLineHaveDuplicateValue(x, type));
-    const columnDetail = this.columns.map((x) => Sudoku.checkVirtualLineHaveDuplicateValue(x, type));
-    const boxDetail = this.boxes.map((x) => Sudoku.checkVirtualLineHaveDuplicateValue(x, type));
-    const validateDetail: ValidateDetail = {
-      [VirtualLineType.ROW]: rowDetail,
-      [VirtualLineType.COLUMN]: columnDetail,
-      [VirtualLineType.BOX]: boxDetail,
-    };
-    const isValid = !rowDetail.some((x) => x.haveDuplicate) && !columnDetail.some((x) => x.haveDuplicate) && !boxDetail.some((x) => x.haveDuplicate);
-
-    return { isValid, validateDetail };
+  validatePuzzle(): void {
+    this.invalidCells = Sudoku.invalidCells(this.grid);
   }
 }

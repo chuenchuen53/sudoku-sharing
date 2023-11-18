@@ -64,13 +64,6 @@ export interface SolveStats {
 export type SudokuElementWithZero = SudokuElement | "0";
 export type InputClues = SudokuElementWithZero[][];
 
-export interface CheckVirtualLineDuplicateResult {
-  haveDuplicate: boolean;
-  duplicatedCells: Cell[];
-}
-
-export type ValidateDetail = Record<VirtualLineType, CheckVirtualLineDuplicateResult[]>;
-
 export interface UniqueMissingResult {
   virtualLine: VirtualLine;
   uniqueCandidate: SudokuElement;
