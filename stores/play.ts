@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import Sudoku from "../core/Sudoku/Sudoku";
 import SudokuSolver from "../core/Sudoku/SudokuSolver";
 import type { Position, Grid, SudokuElement } from "../core/Sudoku/type";
+import type { FillInputValueData, FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
 
 const tempGrid: Grid = (
   [
@@ -23,6 +24,8 @@ export const usePlayStore = defineStore("play", () => {
   const inputGrid = ref<Grid>(tempGrid);
   const invalidPositions = shallowRef<Position[]>([]);
   const candidatesMode = ref(false);
+  const fillInputValueData = ref<FillInputValueData[]>([]);
+  const canFillData = ref<FillInputValueData | null>(null);
 
   let sudoku: Sudoku = Sudoku.sudokuFromGrid(inputGrid.value);
   let sudokuSolver: SudokuSolver = new SudokuSolver(sudoku);
@@ -90,11 +93,34 @@ export const usePlayStore = defineStore("play", () => {
     candidatesMode.value = !candidatesMode.value;
   };
 
+  const fillBasicCandidates = () => {
+    sudokuSolver.setBasicCandidates();
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        if (sudoku.grid[i][j].candidates) {
+          inputGrid.value[i][j].candidates = { ...sudoku.grid[i][j].candidates! };
+        }
+      }
+    }
+  };
+
+  const computeFillInputValueData = (strategy: FillStrategyType) => {
+    const data = sudokuSolver.computeCanFill(strategy);
+    fillInputValueData.value = data;
+  };
+
+  const setCanFillData = (data: FillInputValueData | null) => {
+    canFillData.value = data;
+  };
+
   return {
     loading,
     selectedPosition,
     inputGrid,
     invalidPositions,
+    candidatesMode,
+    fillInputValueData,
+    canFillData,
     setLoading,
     setSelectedPosition,
     fillSelected,
@@ -102,5 +128,8 @@ export const usePlayStore = defineStore("play", () => {
     replaceGrid,
     toggleCandidateInSelectedCell,
     toggleCandidatesMode,
+    fillBasicCandidates,
+    computeFillInputValueData,
+    setCanFillData,
   };
 });

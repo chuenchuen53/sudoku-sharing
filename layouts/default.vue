@@ -1,6 +1,6 @@
 <template>
   <div id="main-layout-container">
-    <header id="main-layout-header" :class="y === 0 && 'reach-top'">
+    <header id="main-layout-header" :class="y <= 0 && 'reach-top'">
       <div class="navbar">
         <details ref="detailsRef" class="dropdown">
           <summary class="btn btn-ghost sm:hidden">

@@ -2,7 +2,7 @@
   <div class="flex flex-col items-center w-full">
     <SudokuView
       :grid="inputGrid"
-      :can-fill-data-arr="[]"
+      :can-fill-data-arr="canFillData ? [canFillData] : []"
       :elimination-data-arr="[]"
       :invalid-positions="invalidPositions"
       :selected="selectedPosition"
@@ -10,6 +10,30 @@
     />
     <div class="flex flex-col lg:flex-row gap-8 relative pb-20 my-8">
       <SudokuInputButtons :on-element-btn-click="fillSelected" :on-clear-btn-click="clearSelected" />
+      <div>
+        <button @click="toggleCandidatesMode" class="btn btn-square relative">
+          Note
+          <div
+            class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 badge badge-sm"
+            :class="{
+              'badge-primary': candidatesMode,
+              'badge-neutral': !candidatesMode,
+            }"
+          >
+            {{ candidatesMode ? "ON" : "OFF" }}
+          </div>
+        </button>
+        <button @click="fillBasicCandidates" class="btn">Fill Candidates</button>
+      </div>
+    </div>
+    <div class="fixed top-24 right-6 flex flex-col">
+      <div>hint</div>
+      <button @click="() => computeFillInputValueData(FillStrategyType.UNIQUE_MISSING)" class="btn">Unique Missing</button>
+      <button @click="() => computeFillInputValueData(FillStrategyType.NAKED_SINGLE)" class="btn">Naked Single</button>
+      <button @click="() => computeFillInputValueData(FillStrategyType.HIDDEN_SINGLE)" class="btn">Hidden Single</button>
+      <div v-for="(x, index) in fillInputValueData" :key="index">
+        <button @click="() => setCanFillData(x)" class="btn">{{ FillStrategy.descriptionOfFillInputValueData(x) }}</button>
+      </div>
     </div>
   </div>
 </template>
@@ -17,14 +41,23 @@
 <script lang="ts" setup>
 import SudokuSolver from "../core/Sudoku/SudokuSolver";
 import Sudoku from "../core/Sudoku/Sudoku";
-import { FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
+import FillStrategy, { FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
 import SudokuView from "../components/SudokuView.vue";
 import { EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import { usePlayStore } from "../stores/play";
 
 const playStore = usePlayStore();
-const { inputGrid, invalidPositions, selectedPosition } = storeToRefs(playStore);
-const { setSelectedPosition, fillSelected, clearSelected } = playStore;
+const { candidatesMode, inputGrid, invalidPositions, selectedPosition, fillInputValueData, canFillData } = storeToRefs(playStore);
+const {
+  setSelectedPosition,
+  fillSelected,
+  clearSelected,
+  toggleCandidatesMode,
+  toggleCandidateInSelectedCell,
+  fillBasicCandidates,
+  computeFillInputValueData,
+  setCanFillData,
+} = playStore;
 
 const handleKeyDown = (e: KeyboardEvent) => {
   if (document.activeElement?.tagName === "TEXTAREA") return;
@@ -54,11 +87,19 @@ const handleKeyDown = (e: KeyboardEvent) => {
     case "7":
     case "8":
     case "9":
-      fillSelected(e.key);
+      if (candidatesMode.value) {
+        toggleCandidateInSelectedCell(e.key);
+      } else {
+        fillSelected(e.key);
+      }
       break;
     case "Backspace":
     case "Delete":
+      if (candidatesMode.value) break;
       clearSelected();
+      break;
+    case "n":
+      toggleCandidatesMode();
       break;
   }
 };
