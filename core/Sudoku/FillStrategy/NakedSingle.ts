@@ -34,6 +34,12 @@ export default class NakedSingle extends FillStrategy {
     return result;
   }
 
+  public override descriptionOfFillInputValueData(data: FillInputValueData): string {
+    const { rowIndex, columnIndex, value } = data;
+
+    return `Naked Single: ${value} in r${rowIndex + 1}c${columnIndex + 1}`;
+  }
+
   public override canFill(sudoku: Sudoku): FillInputValueData[] {
     return NakedSingle.nakedSingles(sudoku);
   }

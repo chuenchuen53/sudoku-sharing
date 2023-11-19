@@ -43,14 +43,7 @@ export default abstract class FillStrategy {
     return { removals, eliminations };
   }
 
-  public static descriptionOfFillInputValueData(data: FillInputValueData): string {
-    const { rowIndex, columnIndex, value, relatedLine } = data;
-    const row = rowIndex + 1;
-    const column = columnIndex + 1;
-    const lineTypeAndIndex = relatedLine ? SudokuLineUtil.lineTypeAndIndex(relatedLine) : null;
-    const line = lineTypeAndIndex ? `${lineTypeAndIndex.virtualLineType.toLowerCase()} ${lineTypeAndIndex.lineIndex + 1}: ` : "";
-    return `${line} r${row}c${column} = ${value}`;
-  }
-
   public abstract canFill(sudoku: Sudoku): FillInputValueData[];
+
+  public abstract descriptionOfFillInputValueData(data: FillInputValueData): string;
 }

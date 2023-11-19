@@ -123,7 +123,6 @@ const highlightedCandidates = computed<Omit<Highlight, "isSecondaryPosition">[]>
 </script>
 
 <style lang="scss" scoped>
-$selected-and-highlight-bgcolor: #cee38c;
 $grand-border-width: 3px;
 $main-border-width: 2px;
 $sub-border-width: 1px;
@@ -326,7 +325,7 @@ $sub-border-width: 1px;
 
         &.primary-cell-highlight,
         &.secondary-cell-highlight {
-          background-color: $selected-and-highlight-bgcolor;
+          @apply bg-[--primary-600] dark:bg-[--primary-200];
         }
       }
 

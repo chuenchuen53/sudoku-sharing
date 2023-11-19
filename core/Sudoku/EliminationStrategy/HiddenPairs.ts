@@ -1,4 +1,6 @@
 import { VirtualLineType, type VirtualLine } from "../type";
+import { SudokuLineUtil } from "../SudokuLine";
+import SudokuSolver from "../SudokuSolver";
 import HiddenMultiple from "./HiddenMultiple";
 import type Sudoku from "../Sudoku";
 import type { EliminationData } from "./EliminationStrategy";
@@ -24,6 +26,17 @@ export default class HiddenPairs extends HiddenMultiple {
     const columnResult = HiddenPairs.hiddenPairsFromVirtualLines(sudoku.getAllColumns(), VirtualLineType.COLUMN);
     const boxResult = HiddenPairs.hiddenPairsFromVirtualLines(sudoku.getAllBoxes(), VirtualLineType.BOX);
     return [...rowResult, ...columnResult, ...boxResult];
+  }
+
+  public override descriptionOfEliminationData(data: EliminationData): string {
+    const { relatedLines, highlights } = data;
+    const line = SudokuLineUtil.lineNameForDisplay(relatedLines[0]);
+    const candidatesArr = highlights
+      .map((x) => SudokuSolver.getCandidatesArr(x.candidates))
+      .flat()
+      .filter((x, i, arr) => arr.indexOf(x) === i)
+      .sort();
+    return `Hidden Pairs: (${candidatesArr.join(", ")}) in ${line}`;
   }
 
   public override canEliminate(sudoku: Sudoku): EliminationData[] {

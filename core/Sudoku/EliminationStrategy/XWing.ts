@@ -1,11 +1,17 @@
 import Sudoku from "../Sudoku";
 import { VirtualLineType, type CandidateCell, type RowColumn, type VirtualLine } from "../type";
-import { SudokuLineUtil, type SudokuLine } from "../SudokuLine";
-import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
+import { SudokuLineUtil } from "../SudokuLine";
 import CalcUtil from "../../utils/CalcUtil";
+import SudokuSolver from "../SudokuSolver";
+import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
+import type { SudokuLine } from "../SudokuLine";
 
 export default class XWing extends EliminationStrategy {
   private static readonly instance = new XWing();
+
+  private constructor() {
+    super();
+  }
 
   public static getInstance(): XWing {
     return XWing.instance;
@@ -103,11 +109,18 @@ export default class XWing extends EliminationStrategy {
     return result;
   }
 
-  private constructor() {
-    super();
-  }
-
   public override canEliminate(sudoku: Sudoku): EliminationData[] {
     return XWing.xWingFromSudoku(sudoku);
+  }
+
+  public descriptionOfEliminationData(data: EliminationData): string {
+    const { relatedLines, highlights } = data;
+    const element = SudokuSolver.getCandidatesArr(highlights[0].candidates)[0];
+    const line1 = SudokuLineUtil.lineNameForDisplay(relatedLines[0]);
+    const line2 = SudokuLineUtil.lineNameForDisplay(relatedLines[1]);
+    const perpendicularLine1 = SudokuLineUtil.lineNameForDisplay(relatedLines[2]);
+    const perpendicularLine2 = SudokuLineUtil.lineNameForDisplay(relatedLines[3]);
+    const perpendicularLineType = SudokuLineUtil.lineTypeAndIndex(relatedLines[2]).virtualLineType.toLowerCase();
+    return `X-Wing: ${element} in ${line1}, ${line2} are in same ${perpendicularLineType} (${perpendicularLine1}, ${perpendicularLine2})`;
   }
 }

@@ -53,6 +53,11 @@ export interface FinalStep extends BaseStep {
 export type Step = FillCandidatesStep | FillStep | EliminationAfterFillStep | EliminationStep | FinalStep;
 
 export default class SudokuSolver {
+  public static enabledFillStrategies: FillStrategyType[] = [
+    FillStrategyType.UNIQUE_MISSING,
+    FillStrategyType.NAKED_SINGLE,
+    FillStrategyType.HIDDEN_SINGLE,
+  ];
   public static enabledEliminationStrategies: EliminationStrategyType[] = [
     EliminationStrategyType.LOCKED_CANDIDATES,
     EliminationStrategyType.NAKED_PAIRS,
@@ -176,6 +181,11 @@ export default class SudokuSolver {
     return this.fillStrategiesMap[fillStrategyType].canFill(this.sudoku);
   }
 
+  computeCanFillAndDescription(fillStrategyType: FillStrategyType): { data: FillInputValueData; description: string }[] {
+    const data = this.fillStrategiesMap[fillStrategyType].canFill(this.sudoku);
+    return data.map((x) => ({ data: x, description: this.fillStrategiesMap[fillStrategyType].descriptionOfFillInputValueData(x) }));
+  }
+
   setValueFromFillStrategy(fillStrategyType: FillStrategyType): number {
     const result = this.computeCanFill(fillStrategyType);
     if (result.length === 0) return 0;
@@ -210,6 +220,11 @@ export default class SudokuSolver {
 
   computeCanEliminate(eliminationStrategy: EliminationStrategyType): EliminationData[] {
     return this.eliminationStrategiesMap[eliminationStrategy].canEliminate(this.sudoku);
+  }
+
+  computeCanEliminateAndDescription(eliminationStrategy: EliminationStrategyType): { data: EliminationData; description: string }[] {
+    const data = this.eliminationStrategiesMap[eliminationStrategy].canEliminate(this.sudoku);
+    return data.map((x) => ({ data: x, description: this.eliminationStrategiesMap[eliminationStrategy].descriptionOfEliminationData(x) }));
   }
 
   removeCandidatesFromEliminationStrategy(eliminationStrategy: EliminationStrategyType): number {

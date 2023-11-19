@@ -53,6 +53,12 @@ export default class UniqueMissing extends FillStrategy {
     return combined.filter((x, ix) => combined.findIndex((y) => Sudoku.isSamePos(x, y)) === ix);
   }
 
+  public override descriptionOfFillInputValueData(data: FillInputValueData): string {
+    const { value, relatedLine } = data;
+    const line = SudokuLineUtil.lineNameForDisplay(relatedLine!);
+    return `Unique Missing: ${value} in ${line}`;
+  }
+
   public override canFill(sudoku: Sudoku): FillInputValueData[] {
     return UniqueMissing.uniqueMissing(sudoku);
   }

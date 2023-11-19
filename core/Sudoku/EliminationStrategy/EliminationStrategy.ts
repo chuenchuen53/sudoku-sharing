@@ -1,5 +1,5 @@
 import Sudoku from "../Sudoku";
-import type { SudokuLine } from "../SudokuLine";
+import { type SudokuLine } from "../SudokuLine";
 import type { Candidates, InputValueData, Position, SudokuElement } from "../type";
 
 export interface Elimination extends Position {
@@ -31,6 +31,8 @@ export default abstract class EliminationStrategy {
   }
 
   public abstract canEliminate(sudoku: Sudoku): EliminationData[];
+
+  public abstract descriptionOfEliminationData(data: EliminationData): string;
 }
 
 export enum EliminationStrategyType {

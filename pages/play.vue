@@ -3,7 +3,7 @@
     <SudokuView
       :grid="inputGrid"
       :can-fill-data-arr="canFillData ? [canFillData] : []"
-      :elimination-data-arr="[]"
+      :elimination-data-arr="canEliminateData ? [canEliminateData] : []"
       :invalid-positions="invalidPositions"
       :selected="selectedPosition"
       :on-cell-click="setSelectedPosition"
@@ -28,11 +28,23 @@
     </div>
     <div class="fixed top-24 right-6 flex flex-col">
       <div>hint</div>
-      <button @click="() => computeFillInputValueData(FillStrategyType.UNIQUE_MISSING)" class="btn">Unique Missing</button>
-      <button @click="() => computeFillInputValueData(FillStrategyType.NAKED_SINGLE)" class="btn">Naked Single</button>
-      <button @click="() => computeFillInputValueData(FillStrategyType.HIDDEN_SINGLE)" class="btn">Hidden Single</button>
+      <button v-for="(x, index) in SudokuSolver.enabledFillStrategies" :key="index" @click="() => computeFillInputValueData(x)" class="btn">
+        {{ FillStrategy.strategyName(x) }}
+      </button>
       <div v-for="(x, index) in fillInputValueData" :key="index">
-        <button @click="() => setCanFillData(x)" class="btn">{{ FillStrategy.descriptionOfFillInputValueData(x) }}</button>
+        <button @click="() => setCanFillData(x.data)" class="btn">{{ x.description }}</button>
+      </div>
+    </div>
+    <div class="fixed top-24 left-6 flex flex-col">
+      <button v-for="(x, index) in SudokuSolver.enabledEliminationStrategies" :key="index" @click="() => computeEliminateData(x)" class="btn">
+        {{ EliminationStrategy.strategyName(x) }}
+      </button>
+      <div v-if="eliminateData">
+        <div v-for="(x, index) in eliminateData" :key="index">
+          <button @click="() => setCanEliminateData(x.data)" class="btn">
+            {{ x.description }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -43,11 +55,12 @@ import SudokuSolver from "../core/Sudoku/SudokuSolver";
 import Sudoku from "../core/Sudoku/Sudoku";
 import FillStrategy, { FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
 import SudokuView from "../components/SudokuView.vue";
-import { EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy, { EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import { usePlayStore } from "../stores/play";
 
 const playStore = usePlayStore();
-const { candidatesMode, inputGrid, invalidPositions, selectedPosition, fillInputValueData, canFillData } = storeToRefs(playStore);
+const { candidatesMode, inputGrid, invalidPositions, selectedPosition, fillInputValueData, canFillData, eliminateData, canEliminateData } =
+  storeToRefs(playStore);
 const {
   setSelectedPosition,
   fillSelected,
@@ -57,6 +70,8 @@ const {
   fillBasicCandidates,
   computeFillInputValueData,
   setCanFillData,
+  computeEliminateData,
+  setCanEliminateData,
 } = playStore;
 
 const handleKeyDown = (e: KeyboardEvent) => {

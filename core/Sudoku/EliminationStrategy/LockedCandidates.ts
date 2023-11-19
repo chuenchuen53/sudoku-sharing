@@ -7,6 +7,10 @@ import EliminationStrategy, { type Elimination, type EliminationData, type Highl
 export default class LockedCandidates extends EliminationStrategy {
   private static readonly instance = new LockedCandidates();
 
+  private constructor() {
+    super();
+  }
+
   public static getInstance(): LockedCandidates {
     return LockedCandidates.instance;
   }
@@ -112,11 +116,16 @@ export default class LockedCandidates extends EliminationStrategy {
     return [...rowLockInBox, ...columnLockInBox, ...boxLockInRow, ...boxLockInColumn];
   }
 
-  private constructor() {
-    super();
-  }
-
   public override canEliminate(sudoku: Sudoku): EliminationData[] {
     return LockedCandidates.getRemovalDueToLockedCandidates(sudoku);
+  }
+
+  public override descriptionOfEliminationData(data: EliminationData): string {
+    const { relatedLines, highlights } = data;
+    const lockedVirtualLine = SudokuLineUtil.lineNameForDisplay(relatedLines[1]);
+    const lockedCandidate = SudokuSolver.getCandidatesArr(highlights[0].candidates)[0];
+    const sameVirtualLine = SudokuLineUtil.lineNameForDisplay(relatedLines[0]);
+
+    return `Locked Candidates: in ${lockedVirtualLine}, all ${lockedCandidate} are in ${sameVirtualLine}`;
   }
 }

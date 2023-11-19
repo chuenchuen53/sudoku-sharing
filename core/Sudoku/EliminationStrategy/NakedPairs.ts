@@ -76,4 +76,11 @@ export default class NakedPairs extends EliminationStrategy {
   public override canEliminate(sudoku: Sudoku): EliminationData[] {
     return NakedPairs.removalDueToNakedPairs(sudoku);
   }
+
+  public override descriptionOfEliminationData(data: EliminationData): string {
+    const { relatedLines, highlights } = data;
+    const nakedPair = SudokuSolver.getCandidatesArr(highlights[0].candidates).join(", ");
+    const nakedVirtualLine = SudokuLineUtil.lineNameForDisplay(relatedLines[0]);
+    return `Naked pair: (${nakedPair}) in ${nakedVirtualLine}`;
+  }
 }

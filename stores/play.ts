@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import Sudoku from "../core/Sudoku/Sudoku";
 import SudokuSolver from "../core/Sudoku/SudokuSolver";
+import type { EliminationData, EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import type { Position, Grid, SudokuElement } from "../core/Sudoku/type";
 import type { FillInputValueData, FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
 
@@ -24,8 +25,10 @@ export const usePlayStore = defineStore("play", () => {
   const inputGrid = ref<Grid>(tempGrid);
   const invalidPositions = shallowRef<Position[]>([]);
   const candidatesMode = ref(false);
-  const fillInputValueData = ref<FillInputValueData[]>([]);
+  const fillInputValueData = ref<{ data: FillInputValueData; description: string }[]>([]);
   const canFillData = ref<FillInputValueData | null>(null);
+  const eliminateData = ref<{ data: EliminationData; description: string }[]>([]);
+  const canEliminateData = ref<EliminationData | null>(null);
 
   let sudoku: Sudoku = Sudoku.sudokuFromGrid(inputGrid.value);
   let sudokuSolver: SudokuSolver = new SudokuSolver(sudoku);
@@ -105,12 +108,21 @@ export const usePlayStore = defineStore("play", () => {
   };
 
   const computeFillInputValueData = (strategy: FillStrategyType) => {
-    const data = sudokuSolver.computeCanFill(strategy);
+    const data = sudokuSolver.computeCanFillAndDescription(strategy);
     fillInputValueData.value = data;
   };
 
   const setCanFillData = (data: FillInputValueData | null) => {
     canFillData.value = data;
+  };
+
+  const computeEliminateData = (strategy: EliminationStrategyType) => {
+    const result = sudokuSolver.computeCanEliminateAndDescription(strategy);
+    eliminateData.value = result;
+  };
+
+  const setCanEliminateData = (data: EliminationData | null) => {
+    canEliminateData.value = data;
   };
 
   return {
@@ -121,6 +133,8 @@ export const usePlayStore = defineStore("play", () => {
     candidatesMode,
     fillInputValueData,
     canFillData,
+    eliminateData,
+    canEliminateData,
     setLoading,
     setSelectedPosition,
     fillSelected,
@@ -131,5 +145,7 @@ export const usePlayStore = defineStore("play", () => {
     fillBasicCandidates,
     computeFillInputValueData,
     setCanFillData,
+    computeEliminateData,
+    setCanEliminateData,
   };
 });

@@ -242,4 +242,9 @@ export class SudokuLineUtil {
     }
     return positions;
   }
+
+  public static lineNameForDisplay(line: SudokuLine): string {
+    const { virtualLineType, lineIndex } = SudokuLineUtil.lineTypeAndIndex(line);
+    return `${virtualLineType.toLowerCase()} ${lineIndex + 1}`;
+  }
 }

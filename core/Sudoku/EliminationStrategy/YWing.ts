@@ -7,6 +7,10 @@ import type { CandidateCell, Cell, Pincer, SudokuElement, VirtualLine } from "..
 export default class YWing extends EliminationStrategy {
   private static readonly instance = new YWing();
 
+  private constructor() {
+    super();
+  }
+
   public static getInstance(): YWing {
     return YWing.instance;
   }
@@ -100,8 +104,14 @@ export default class YWing extends EliminationStrategy {
     return CalcUtil.cartesianProduct(a, b).filter(([x, y]) => YWing.isYWingPattern(x, y));
   }
 
-  private constructor() {
-    super();
+  public override descriptionOfEliminationData(data: EliminationData): string {
+    const { highlights } = data;
+    const pivot = highlights[0].position;
+    const pincer1 = highlights[1].position;
+    const pincer2 = highlights[2].position;
+    return `Y-Wing: pivot r${pivot.rowIndex + 1}c${pivot.columnIndex + 1}, pincers r${pincer1.rowIndex + 1}c${pincer1.columnIndex + 1} and r${
+      pincer2.rowIndex + 1
+    }c${pincer2.columnIndex + 1}`;
   }
 
   public override canEliminate(sudoku: Sudoku): EliminationData[] {
