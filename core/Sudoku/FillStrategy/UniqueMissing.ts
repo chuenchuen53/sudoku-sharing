@@ -29,8 +29,8 @@ export default class UniqueMissing extends FillStrategy {
       const missing = missingArr[i];
       const uniqueCandidate = UniqueMissing.uniqueCandidate(missing);
       if (uniqueCandidate) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const cell = virtualLine.find((x) => !x.clue && !x.inputValue)!;
+        const cell = virtualLine.find((x) => !x.clue && !x.inputValue);
+        if (!cell) continue; // only happen when sudoku is invalid
         result.push({
           rowIndex: cell.rowIndex,
           columnIndex: cell.columnIndex,
