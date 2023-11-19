@@ -2,8 +2,8 @@
   <div class="w-full">
     <div class="flex justify-between">
       <div class="text-lg mb-4">Input puzzle by text</div>
-      <div class="dropdown dropdown-end">
-        <label tabindex="0" class="btn btn-circle btn-ghost btn-xs text-primary">
+      <details ref="detailsRef" class="dropdown dropdown-end">
+        <summary class="btn btn-circle btn-ghost btn-xs text-primary">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-4 h-4 stroke-current">
             <path
               stroke-linecap="round"
@@ -12,8 +12,8 @@
               d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             ></path>
           </svg>
-        </label>
-        <div tabindex="0" class="card compact dropdown-content z-[1] shadow bg-base-100 rounded-box w-64">
+        </summary>
+        <div class="card compact dropdown-content z-[1] shadow bg-base-100 rounded-box w-64">
           <div class="card-body">
             <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-32 space-y-2">
               <li v-for="(x, index) in samplePuzzles" :key="index">
@@ -22,7 +22,7 @@
             </ul>
           </div>
         </div>
-      </div>
+      </details>
     </div>
     <textarea
       ref="textareaRef"
@@ -54,6 +54,7 @@ const { textarea: textareaRef, input: inputText } = useTextareaAutosize({
   },
 });
 
+const detailsRef = ref<HTMLDetailsElement | null>(null);
 const errText = ref("");
 
 const samplePuzzles = [
@@ -65,7 +66,7 @@ const samplePuzzles = [
 
 const fillSample = (sample: string) => {
   inputText.value = sample;
-  textareaRef.value?.focus();
+  if (detailsRef.value) detailsRef.value.removeAttribute("open");
 };
 
 const handleSubmit = () => {
