@@ -1,7 +1,7 @@
 import { expect, describe, it } from "vitest";
 import Backtracking from "../../core/Sudoku/Backtracking";
-import samplePuzzles from "../../src/samplePuzzle";
-import samplePuzzlesSolution from "../../src/samplePuzzleSolution";
+import samplePuzzles from "../sample/samplePuzzle";
+import samplePuzzlesSolution from "../sample/samplePuzzleSolution";
 
 describe("solver", () => {
   it("Backtracking constructor test 1", () => {
