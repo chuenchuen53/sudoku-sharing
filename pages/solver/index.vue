@@ -1,31 +1,37 @@
+\
 <template>
-  <div class="flex flex-col items-center space-y-8 w-full">
-    <div class="flex flex-col lg:flex-row gap-8 relative pb-20">
-      <div>
-        <SudokuView
-          :grid="inputGrid"
-          :can-fill-data-arr="[]"
-          :elimination-data-arr="[]"
-          :invalid-positions="invalidPositions"
-          :selected="selectedPosition"
-          :on-cell-click="setSelectedPosition"
-        />
-        <button @click="handleSolve" class="absolute bottom-0 w-full btn btn-primary lg:static lg:inline-block lg:w-fit lg:mt-4" :disabled="loading">
+  <div class="flex justify-center">
+    <div class="flex flex-col w-full lg:flex-row gap-8 relative pb-6 items-center lg:pb-24 justify-center lg:items-start lg:w-fit">
+      <SudokuView
+        :grid="inputGrid"
+        :can-fill-data-arr="[]"
+        :elimination-data-arr="[]"
+        :invalid-positions="invalidPositions"
+        :selected="selectedPosition"
+        :on-cell-click="setSelectedPosition"
+      />
+      <div class="max-w-[466px] w-full space-y-4 lg:max-w-sm">
+        <SudokuInputButtons :on-element-btn-click="fillSelected" :on-clear-btn-click="clearSelected" />
+        <div class="flex gap-2 justify-center">
+          <button class="btn w-[135px] sm:btn-lg sm:w-[150px] lg:btn-md lg:w-[135px]">
+            Undo
+            <IconRedo class="text-2xl" />
+          </button>
+          <button @click="clearGrid" class="btn w-[135px] sm:btn-lg sm:w-[150px] lg:btn-md lg:w-[135px]">
+            Clear all
+            <IconEraser class="text-2xl" />
+          </button>
+        </div>
+        <SudokuGridTextInput :on-input="replaceGrid" />
+        <br />
+        <button @click="handleSolve" class="w-full btn btn-primary lg:w-fit lg:absolute lg:top-[490px] lg:!mt-0 lg:left-0" :disabled="loading">
           Solve
           <span v-if="loading" class="loading loading-spinner loading-sm"></span>
         </button>
       </div>
-      <div class="max-w-lg w-full space-y-8">
-        <SudokuInputButtons :on-element-btn-click="fillSelected" :on-clear-btn-click="clearSelected" />
-        <div class="flex gap-2 justify-center">
-          <button class="btn">Undo</button>
-          <button @click="clearGrid" class="btn">Clear all</button>
-        </div>
-        <SudokuGridTextInput :on-input="replaceGrid" />
-      </div>
     </div>
 
-    <div v-if="showErrToastTimer !== null" class="toast toast-top toast-center">
+    <div v-if="showErrToastTimer !== null" class="toast toast-top toast-center mt-16">
       <div class="alert alert-error">
         <span>Invalid puzzle</span>
       </div>
@@ -43,6 +49,8 @@ import { useSolverStore } from "../../stores/solver";
 import { useSolverSolutionStore } from "../../stores/solverSolution";
 import SudokuInputUtil from "../../utils/SudokuInputUtil";
 import type { Grid } from "../../core/Sudoku/type";
+import IconRedo from "~/components/Icons/IconRedo.vue";
+import IconEraser from "~/components/Icons/IconEraser.vue";
 
 const solverStore = useSolverStore();
 const solverSolutionStore = useSolverSolutionStore();
@@ -98,7 +106,7 @@ onUnmounted(() => {
 });
 
 const handleSolve = () => {
-  if (Sudoku.invalidCells(inputGrid.value).length > 0) {
+  if (Sudoku.invalidCells(inputGrid.value).length > 0 || inputGrid.value.flatMap((x) => x).filter((x) => x.inputValue).length < 17) {
     if (showErrToastTimer.value) window.clearTimeout(showErrToastTimer.value);
     showErrToastTimer.value = window.setTimeout(() => {
       showErrToastTimer.value = null;
