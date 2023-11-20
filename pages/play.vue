@@ -11,8 +11,9 @@
     <div class="flex flex-col lg:flex-row gap-8 relative pb-20 my-8">
       <SudokuInputButtons :on-element-btn-click="fillSelected" :on-clear-btn-click="clearSelected" />
       <div>
-        <button @click="toggleCandidatesMode" class="btn btn-square relative">
+        <button @click="toggleCandidatesMode" class="btn relative">
           Note
+          <IconPencil class="text-xl" />
           <div
             class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 badge badge-sm"
             :class="{
@@ -57,6 +58,7 @@ import FillStrategy, { FillStrategyType } from "../core/Sudoku/FillStrategy/Fill
 import SudokuView from "../components/SudokuView.vue";
 import EliminationStrategy, { EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import { usePlayStore } from "../stores/play";
+import IconPencil from "~/components/Icons/IconPencil.vue";
 
 const playStore = usePlayStore();
 const { candidatesMode, inputGrid, invalidPositions, selectedPosition, fillInputValueData, canFillData, eliminateData, canEliminateData } =
