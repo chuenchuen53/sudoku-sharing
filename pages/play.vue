@@ -8,14 +8,18 @@
       :selected="selectedPosition"
       :on-cell-click="setSelectedPosition"
     />
-    <div class="flex flex-col lg:flex-row gap-8 relative pb-20 my-8">
+    <div class="flex flex-col lg:flex-row gap-4 relative pb-20 my-4 max-x-[466px]">
       <SudokuInputButtons :on-element-btn-click="fillSelected" :on-clear-btn-click="clearSelected" />
-      <div>
-        <button @click="toggleCandidatesMode" class="btn relative">
+      <div class="flex gap-2 justify-center">
+        <button class="btn w-[135px] sm:btn-lg sm:w-[150px] lg:btn-md lg:w-[135px]">
+          Undo
+          <IconRedo class="text-2xl" />
+        </button>
+        <button @click="toggleCandidatesMode" class="btn w-[135px] sm:btn-lg sm:w-[150px] lg:btn-md lg:w-[135px] indicator">
           Note
           <IconPencil class="text-xl" />
           <div
-            class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 badge badge-sm"
+            class="indicator-item badge badge-sm"
             :class="{
               'badge-primary': candidatesMode,
               'badge-neutral': !candidatesMode,
@@ -24,27 +28,56 @@
             {{ candidatesMode ? "ON" : "OFF" }}
           </div>
         </button>
-        <button @click="fillBasicCandidates" class="btn">Fill Candidates</button>
       </div>
-    </div>
-    <div class="fixed top-24 right-6 flex flex-col">
-      <div>hint</div>
-      <button v-for="(x, index) in SudokuSolver.enabledFillStrategies" :key="index" @click="() => computeFillInputValueData(x)" class="btn">
-        {{ FillStrategy.strategyName(x) }}
-      </button>
-      <div v-for="(x, index) in fillInputValueData" :key="index">
-        <button @click="() => setCanFillData(x.data)" class="btn">{{ x.description }}</button>
+      <div class="divider"></div>
+      <div class="flex justify-center gap-2">
+        <button @click="fillBasicCandidates" class="btn">
+          Help Fill Notes
+          <IconPencil class="text-xl" />
+        </button>
+        <details ref="detailsRef" class="dropdown dropdown-end">
+          <summary class="btn">
+            Hint
+            <IconLightBulb class="text-xl text-warning" />
+          </summary>
+          <div class="mt-2 p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-[300px]">
+            <div class="flex gap-4">
+              <div class="flex flex-col gap-2">
+                <button
+                  v-for="(x, index) in SudokuSolver.enabledFillStrategies"
+                  :key="index"
+                  @click="() => handleFillStrategyHintClick(x)"
+                  class="btn btn-sm whitespace-nowrap"
+                >
+                  {{ FillStrategy.strategyName(x) }}
+                </button>
+              </div>
+              <div class="flex flex-col gap-2">
+                <button
+                  v-for="(x, index) in SudokuSolver.enabledEliminationStrategies"
+                  :key="index"
+                  @click="() => handleEliminateStrategyHintClick(x)"
+                  class="btn btn-sm whitespace-nowrap"
+                >
+                  {{ EliminationStrategy.strategyName(x) }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </details>
       </div>
-    </div>
-    <div class="fixed top-24 left-6 flex flex-col">
-      <button v-for="(x, index) in SudokuSolver.enabledEliminationStrategies" :key="index" @click="() => computeEliminateData(x)" class="btn">
-        {{ EliminationStrategy.strategyName(x) }}
-      </button>
-      <div v-if="eliminateData">
-        <div v-for="(x, index) in eliminateData" :key="index">
-          <button @click="() => setCanEliminateData(x.data)" class="btn">
-            {{ x.description }}
-          </button>
+      <div class="card bg-base-200 shadow-xl">
+        <div class="card-body">
+          <div v-for="(x, index) in fillInputValueData" :key="index">
+            <button @click="() => setCanFillData(x.data)" class="btn">{{ x.description }}</button>
+          </div>
+          <div v-if="eliminateData">
+            <div v-for="(x, index) in eliminateData" :key="index">
+              <button @click="() => setCanEliminateData(x.data)" class="btn">
+                {{ x.description }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -53,12 +86,15 @@
 
 <script lang="ts" setup>
 import SudokuSolver from "../core/Sudoku/SudokuSolver";
-import Sudoku from "../core/Sudoku/Sudoku";
-import FillStrategy, { FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
+import FillStrategy from "../core/Sudoku/FillStrategy/FillStrategy";
 import SudokuView from "../components/SudokuView.vue";
-import EliminationStrategy, { EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import { usePlayStore } from "../stores/play";
+import type { EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import type { FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
 import IconPencil from "~/components/Icons/IconPencil.vue";
+import IconRedo from "~/components/Icons/IconRedo.vue";
+import IconLightBulb from "~/components/Icons/IconLightBulb.vue";
 
 const playStore = usePlayStore();
 const { candidatesMode, inputGrid, invalidPositions, selectedPosition, fillInputValueData, canFillData, eliminateData, canEliminateData } =
@@ -75,6 +111,8 @@ const {
   computeEliminateData,
   setCanEliminateData,
 } = playStore;
+
+const detailsRef = ref<HTMLDetailsElement | null>(null);
 
 const handleKeyDown = (e: KeyboardEvent) => {
   if (document.activeElement?.tagName === "TEXTAREA") return;
@@ -128,4 +166,14 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("keydown", handleKeyDown);
 });
+
+const handleFillStrategyHintClick = (x: FillStrategyType) => {
+  computeFillInputValueData(x);
+  if (detailsRef.value) detailsRef.value.open = false;
+};
+
+const handleEliminateStrategyHintClick = (x: EliminationStrategyType) => {
+  computeEliminateData(x);
+  if (detailsRef.value) detailsRef.value.open = false;
+};
 </script>
