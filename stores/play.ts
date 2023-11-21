@@ -25,8 +25,10 @@ export const usePlayStore = defineStore("play", () => {
   const inputGrid = ref<Grid>(tempGrid);
   const invalidPositions = shallowRef<Position[]>([]);
   const candidatesMode = ref(false);
+  const currentFillStrategy = ref<FillStrategyType | null>(null);
   const fillInputValueData = ref<{ data: FillInputValueData; description: string }[]>([]);
   const canFillData = ref<FillInputValueData | null>(null);
+  const currentEliminationStrategy = ref<EliminationStrategyType | null>(null);
   const eliminateData = ref<{ data: EliminationData; description: string }[]>([]);
   const canEliminateData = ref<EliminationData | null>(null);
 
@@ -110,6 +112,9 @@ export const usePlayStore = defineStore("play", () => {
   const computeFillInputValueData = (strategy: FillStrategyType) => {
     const data = sudokuSolver.computeCanFillAndDescription(strategy);
     fillInputValueData.value = data;
+    currentFillStrategy.value = strategy;
+    currentEliminationStrategy.value = null;
+    eliminateData.value = [];
   };
 
   const setCanFillData = (data: FillInputValueData | null) => {
@@ -119,6 +124,9 @@ export const usePlayStore = defineStore("play", () => {
   const computeEliminateData = (strategy: EliminationStrategyType) => {
     const result = sudokuSolver.computeCanEliminateAndDescription(strategy);
     eliminateData.value = result;
+    currentEliminationStrategy.value = strategy;
+    currentFillStrategy.value = null;
+    fillInputValueData.value = [];
   };
 
   const setCanEliminateData = (data: EliminationData | null) => {
@@ -135,6 +143,8 @@ export const usePlayStore = defineStore("play", () => {
     canFillData,
     eliminateData,
     canEliminateData,
+    currentFillStrategy,
+    currentEliminationStrategy,
     setLoading,
     setSelectedPosition,
     fillSelected,
