@@ -9,7 +9,7 @@
       :on-cell-click="setSelectedPosition"
     />
     <div class="flex flex-col lg:flex-row gap-4 relative pb-20 my-4 max-x-[466px]">
-      <SudokuInputButtons :on-element-btn-click="fillSelected" :on-clear-btn-click="clearSelected" />
+      <SudokuInputButtons :on-element-btn-click="handleElementBtnClick" :on-clear-btn-click="handleClearBtnClick" />
       <div class="flex gap-2 justify-center">
         <button class="btn w-[135px] sm:btn-lg sm:w-[150px] lg:btn-md lg:w-[135px]">
           Undo
@@ -92,6 +92,7 @@ import EliminationStrategy from "../core/Sudoku/EliminationStrategy/EliminationS
 import { usePlayStore } from "../stores/play";
 import type { EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import type { FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
+import type { SudokuElement } from "~/core/Sudoku/type";
 import IconPencil from "~/components/Icons/IconPencil.vue";
 import IconRedo from "~/components/Icons/IconRedo.vue";
 import IconLightBulb from "~/components/Icons/IconLightBulb.vue";
@@ -175,5 +176,18 @@ const handleFillStrategyHintClick = (x: FillStrategyType) => {
 const handleEliminateStrategyHintClick = (x: EliminationStrategyType) => {
   computeEliminateData(x);
   if (detailsRef.value) detailsRef.value.open = false;
+};
+
+const handleElementBtnClick = (x: SudokuElement) => {
+  if (candidatesMode.value) {
+    toggleCandidateInSelectedCell(x);
+  } else {
+    fillSelected(x);
+  }
+};
+
+const handleClearBtnClick = () => {
+  if (candidatesMode.value) return;
+  clearSelected();
 };
 </script>
