@@ -119,6 +119,7 @@ export const usePlayStore = defineStore("play", () => {
 
   const setCanFillData = (data: FillInputValueData | null) => {
     canFillData.value = data;
+    canEliminateData.value = null;
   };
 
   const computeEliminateData = (strategy: EliminationStrategyType) => {
@@ -130,6 +131,7 @@ export const usePlayStore = defineStore("play", () => {
   };
 
   const setCanEliminateData = (data: EliminationData | null) => {
+    canFillData.value = null;
     canEliminateData.value = data;
   };
 
