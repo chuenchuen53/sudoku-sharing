@@ -312,7 +312,7 @@ $sub-border-width: 1px;
         @apply bg-secondary bg-opacity-30 dark:bg-secondary dark:bg-opacity-80;
 
         .candidates-container {
-          @apply text-secondary-content dark:text-secondary-content;
+          @apply text-black dark:text-secondary-content;
         }
       }
 

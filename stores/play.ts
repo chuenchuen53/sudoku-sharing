@@ -135,6 +135,16 @@ export const usePlayStore = defineStore("play", () => {
     canEliminateData.value = data;
   };
 
+  const clearFillInputValueDataAndEliminateData = () => {
+    console.log("here");
+    currentFillStrategy.value = null;
+    fillInputValueData.value = [];
+    canFillData.value = null;
+    currentEliminationStrategy.value = null;
+    eliminateData.value = [];
+    canEliminateData.value = null;
+  };
+
   return {
     loading,
     selectedPosition,
@@ -159,5 +169,6 @@ export const usePlayStore = defineStore("play", () => {
     setCanFillData,
     computeEliminateData,
     setCanEliminateData,
+    clearFillInputValueDataAndEliminateData,
   };
 });

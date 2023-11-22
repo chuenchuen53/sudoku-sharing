@@ -29,105 +29,23 @@
           </div>
         </button>
       </div>
-
-      <div class="flex justify-center gap-2">
-        <details ref="detailsRef" class="dropdown dropdown-end fixed top-3 z-[1001] right-6">
-          <summary class="btn">
-            Hint
-            <IconLightBulb class="text-xl text-warning" />
-          </summary>
-          <div
-            class="p-6 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-[330px] h-[calc(100vh-76px)] overflow-x-hidden overflow-y-auto overscroll-none"
-          >
-            <div>
-              <button @click="handleFillBasicCandidates" class="btn btn-sm">
-                Help Fill Notes
-                <IconPencil class="text-xl" />
-              </button>
-
-              <div class="divider"></div>
-
-              <div class="flex gap-4">
-                <div class="flex flex-col gap-2">
-                  <button
-                    v-for="(x, index) in SudokuSolver.enabledFillStrategies"
-                    :key="index"
-                    @click="() => handleFillStrategyHintClick(x)"
-                    class="btn btn-sm whitespace-nowrap"
-                  >
-                    {{ FillStrategy.strategyName(x) }}
-                  </button>
-                </div>
-                <div class="flex flex-col gap-2">
-                  <button
-                    v-for="(x, index) in SudokuSolver.enabledEliminationStrategies"
-                    :key="index"
-                    @click="() => handleEliminateStrategyHintClick(x)"
-                    class="btn btn-sm whitespace-nowrap"
-                  >
-                    {{ EliminationStrategy.strategyName(x) }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="divider"></div>
-
-              <HintResponse
-                :fill-strategy="currentFillStrategy"
-                :fill-input-value-data="fillInputValueData"
-                :on-fill-data-click="handleFillDataClick"
-                :elimination-strategy="currentEliminationStrategy"
-                :elimination-data="eliminateData"
-                :on-elimination-data-click="handleEliminateDataClick"
-              />
-            </div>
-          </div>
-        </details>
-      </div>
     </div>
+
+    <HintDrawer />
   </div>
 </template>
 
 <script lang="ts" setup>
-import SudokuSolver from "../core/Sudoku/SudokuSolver";
-import FillStrategy from "../core/Sudoku/FillStrategy/FillStrategy";
 import SudokuView from "../components/SudokuView.vue";
-import EliminationStrategy from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import { usePlayStore } from "../stores/play";
-import type { EliminationData, EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
-import type { FillInputValueData, FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
 import type { SudokuElement } from "~/core/Sudoku/type";
 import IconPencil from "~/components/Icons/IconPencil.vue";
 import IconRedo from "~/components/Icons/IconRedo.vue";
-import IconLightBulb from "~/components/Icons/IconLightBulb.vue";
+import HintDrawer from "~/components/HintDrawer.vue";
 
 const playStore = usePlayStore();
-const {
-  candidatesMode,
-  inputGrid,
-  invalidPositions,
-  selectedPosition,
-  fillInputValueData,
-  canFillData,
-  eliminateData,
-  canEliminateData,
-  currentFillStrategy,
-  currentEliminationStrategy,
-} = storeToRefs(playStore);
-const {
-  setSelectedPosition,
-  fillSelected,
-  clearSelected,
-  toggleCandidatesMode,
-  toggleCandidateInSelectedCell,
-  fillBasicCandidates,
-  computeFillInputValueData,
-  setCanFillData,
-  computeEliminateData,
-  setCanEliminateData,
-} = playStore;
-
-const detailsRef = ref<HTMLDetailsElement | null>(null);
+const { candidatesMode, inputGrid, invalidPositions, selectedPosition, canFillData, canEliminateData } = storeToRefs(playStore);
+const { setSelectedPosition, fillSelected, clearSelected, toggleCandidatesMode, toggleCandidateInSelectedCell } = playStore;
 
 const handleKeyDown = (e: KeyboardEvent) => {
   if (document.activeElement?.tagName === "TEXTAREA") return;
@@ -182,19 +100,6 @@ onUnmounted(() => {
   window.removeEventListener("keydown", handleKeyDown);
 });
 
-const handleFillBasicCandidates = () => {
-  fillBasicCandidates();
-  if (detailsRef.value) detailsRef.value.open = false;
-};
-
-const handleFillStrategyHintClick = (x: FillStrategyType) => {
-  computeFillInputValueData(x);
-};
-
-const handleEliminateStrategyHintClick = (x: EliminationStrategyType) => {
-  computeEliminateData(x);
-};
-
 const handleElementBtnClick = (x: SudokuElement) => {
   if (candidatesMode.value) {
     toggleCandidateInSelectedCell(x);
@@ -206,15 +111,5 @@ const handleElementBtnClick = (x: SudokuElement) => {
 const handleClearBtnClick = () => {
   if (candidatesMode.value) return;
   clearSelected();
-};
-
-const handleFillDataClick = (data: FillInputValueData) => {
-  setCanFillData(data);
-  if (detailsRef.value) detailsRef.value.open = false;
-};
-
-const handleEliminateDataClick = (data: EliminationData) => {
-  setCanEliminateData(data);
-  if (detailsRef.value) detailsRef.value.open = false;
 };
 </script>
