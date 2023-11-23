@@ -8,7 +8,7 @@
           that can be found?
         </div>
       </div>
-      <div v-if="fillInputValueData.length > 0">
+      <div v-if="fillInputValueData.length > 0" class="delay-appear">
         <div class="chat chat-start">
           <div class="chat-bubble chat-bubble-accent">
             The following {{ fillInputValueData.length > 1 ? "cell" : "cells" }} can be filled by
@@ -25,7 +25,7 @@
           </div>
         </div>
       </div>
-      <div v-else class="chat chat-start">
+      <div v-else class="chat chat-start delay-appear">
         <div class="chat-bubble chat-bubble-accent">
           No cell can be filled with
           <span>{{ FillStrategy.strategyName(fillStrategy) }}</span>
@@ -41,7 +41,7 @@
           that can be found?
         </div>
       </div>
-      <div v-if="eliminationData.length > 0">
+      <div v-if="eliminationData.length > 0" class="delay-appear">
         <div class="chat chat-start">
           <div class="chat-bubble chat-bubble-accent">
             The following pattern are
@@ -56,7 +56,7 @@
           </div>
         </div>
       </div>
-      <div v-else class="chat chat-start">
+      <div v-else class="chat chat-start delay-appear">
         <div class="chat-bubble chat-bubble-accent">
           No pattern can be found by
           <span>{{ EliminationStrategy.strategyName(eliminationStrategy) }}</span>
@@ -80,7 +80,7 @@ import type { FillInputValueData, FillStrategyType } from "~/core/Sudoku/FillStr
 import EliminationStrategy from "~/core/Sudoku/EliminationStrategy/EliminationStrategy";
 import FillStrategy from "~/core/Sudoku/FillStrategy/FillStrategy";
 
-const props = defineProps<{
+defineProps<{
   fillStrategy: FillStrategyType | null;
   fillInputValueData: { description: string; data: FillInputValueData }[];
   eliminationStrategy: EliminationStrategyType | null;
@@ -89,3 +89,23 @@ const props = defineProps<{
   onEliminationDataClick: (data: EliminationData) => void;
 }>();
 </script>
+
+<style scoped>
+.delay-appear {
+  animation: chat-bubble-animation 1s ease-in;
+}
+
+@keyframes chat-bubble-animation {
+  0% {
+    opacity: 0;
+  }
+
+  25% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+</style>
