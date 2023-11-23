@@ -40,23 +40,3 @@ const getFillFirstFoundResp = (strategyName: string, oneOnly: boolean) => `The f
 const getEliminationNotFoundResp = (strategyName: string) =>
   `No pattern can be found by ${strategyName}.\nYou can try Help Fill Note and then ask again.`;
 </script>
-
-<style scoped>
-.v-enter-active {
-  animation: chat-bubble-animation 1s ease-in;
-}
-
-@keyframes chat-bubble-animation {
-  0% {
-    opacity: 0;
-  }
-
-  25% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
-  }
-}
-</style>
