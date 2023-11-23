@@ -1,15 +1,14 @@
 <template>
-  <div class="drawer drawer-end">
-    <input id="hint-drawer-toggle" type="checkbox" class="drawer-toggle" v-model="isOpen" />
-    <div class="drawer-content">
-      <label for="hint-drawer-toggle" class="drawer-button btn btn-sm fixed top-6 right-7 z-[1001]">
-        Hint
-        <IconLightBulb class="text-xl text-warning" />
-      </label>
-    </div>
-    <div class="drawer-side z-[1001] overscroll-none">
-      <label for="hint-drawer-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
-      <div class="bg-base-100 min-h-full pt-16 px-4 w-80 max-w-[95vw] overscroll-none">
+  <div for="hint-drawer-toggle" class="btn btn-sm fixed top-6 right-7 z-[1001]" @click="setIsOpen(true)">
+    Hint
+    <IconLightBulb class="text-xl text-warning" />
+  </div>
+  <Transition name="fade">
+    <div v-if="isOpen" @click="setIsOpen(false)" class="bg-black bg-opacity-40 fixed inset-0 z-[1001] overscroll-none overflow-hidden"></div>
+  </Transition>
+  <Transition name="slide">
+    <div class="fixed top-0 bottom-0 left-14 right-0 z-[1002] overscroll-none flex flex-col bg-base-100" v-if="isOpen">
+      <div class="pt-16 px-4 w-80 max-w-[95vw] overscroll-none flex-grow-0 flex-shrink-0 basis-16">
         <div class="absolute top-6 left-6 right-6 flex justify-between flex-row-reverse">
           <button @click="() => (isOpen = false)" class="btn btn-circle btn-sm">
             <IconCross />
@@ -22,7 +21,9 @@
             <IconArrowLeft />
           </button>
         </div>
+      </div>
 
+      <div class="overflow-auto flex-grow basis-auto p-4 relative">
         <button @click="handleFillBasicCandidates" class="btn btn-sm">
           Help Fill Notes
           <IconPencil class="text-xl" />
@@ -53,22 +54,24 @@
           </div>
         </div>
 
-        <div
-          class="chat-container bg-base-100 absolute overflow-y-auto pb-16 px-4 overscroll-none"
-          v-if="currentFillStrategy || currentEliminationStrategy"
-        >
-          <HintResponse
-            :fill-strategy="currentFillStrategy"
-            :fill-input-value-data="fillInputValueData"
-            :on-fill-data-click="handleFillDataClick"
-            :elimination-strategy="currentEliminationStrategy"
-            :elimination-data="eliminateData"
-            :on-elimination-data-click="handleEliminateDataClick"
-          />
-        </div>
+        <Transition name="fade">
+          <div
+            class="bg-base-100 absolute overflow-y-auto pb-16 px-4 overscroll-none inset-0"
+            v-if="currentFillStrategy || currentEliminationStrategy"
+          >
+            <HintResponse
+              :fill-strategy="currentFillStrategy"
+              :fill-input-value-data="fillInputValueData"
+              :on-fill-data-click="handleFillDataClick"
+              :elimination-strategy="currentEliminationStrategy"
+              :elimination-data="eliminateData"
+              :on-elimination-data-click="handleEliminateDataClick"
+            />
+          </div>
+        </Transition>
       </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script lang="ts" setup>
@@ -95,12 +98,15 @@ const {
 } = playStore;
 
 const isOpen = ref(false);
+const setIsOpen = (value: boolean) => {
+  isOpen.value = value;
+};
 
 watch(isOpen, () => {
   if (isOpen.value) {
-    document.body.classList.add("overflow-hidden");
+    document.body.style.overflow = "hidden";
   } else {
-    document.body.classList.remove("overflow-hidden");
+    document.body.style.overflow = "auto";
   }
 });
 
@@ -129,9 +135,22 @@ const handleEliminateDataClick = (data: EliminationData) => {
 </script>
 
 <style lang="scss" scoped>
-.chat-container {
-  inset: 64px 0 0;
-  animation: fade-in 0.3s ease-in-out;
+$animation-duration: 0.3s;
+
+.fade-enter-active {
+  animation: fade-in $animation-duration ease-in-out;
+}
+
+.fade-leave-active {
+  animation: fade-in $animation-duration ease-in-out reverse;
+}
+
+.slide-enter-active {
+  animation: slide-in $animation-duration ease-in-out;
+}
+
+.slide-leave-active {
+  animation: slide-in $animation-duration ease-in-out reverse;
 }
 
 @keyframes fade-in {
@@ -141,6 +160,16 @@ const handleEliminateDataClick = (data: EliminationData) => {
 
   100% {
     opacity: 1;
+  }
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(0);
   }
 }
 </style>
