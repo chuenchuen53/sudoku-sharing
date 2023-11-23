@@ -10,14 +10,19 @@
         :selected="selectedPosition"
         :on-cell-click="setSelectedPosition"
       />
-      <div class="max-w-[466px] w-full space-y-4 lg:max-w-sm">
-        <SudokuInputButtons :on-element-btn-click="fillSelected" :on-clear-btn-click="clearSelected" />
+      <div class="max-w-xl w-full space-y-4 lg:max-w-sm">
+        <SudokuInputButtons
+          :on-element-btn-click="fillSelected"
+          :on-clear-btn-click="clearSelected"
+          single-row-on-tablet-size
+          :single-row-on-desktop-size="false"
+        />
         <div class="flex gap-2 justify-center">
-          <button class="btn w-[135px] sm:btn-lg sm:w-[150px] lg:btn-md lg:w-[135px]">
+          <button class="btn w-[135px]">
             Undo
             <IconRedo class="text-2xl" />
           </button>
-          <button @click="clearGrid" class="btn w-[135px] sm:btn-lg sm:w-[150px] lg:btn-md lg:w-[135px]">
+          <button @click="clearGrid" class="btn w-[135px]">
             Clear all
             <IconEraser class="text-2xl" />
           </button>

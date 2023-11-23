@@ -1,77 +1,86 @@
 <template>
-  <div for="hint-drawer-toggle" class="btn btn-sm fixed top-6 right-7 z-[1001]" @click="setIsOpen(true)">
+  <div for="hint-drawer-toggle" class="btn btn-sm fixed top-4 right-7 z-[1001]" @click="setIsOpen(true)">
     Hint
     <IconLightBulb class="text-xl text-warning" />
   </div>
   <Transition name="fade">
-    <div v-if="isOpen" @click="setIsOpen(false)" class="bg-black bg-opacity-40 fixed inset-0 z-[1001] overscroll-none overflow-hidden"></div>
+    <div
+      v-if="isOpen && !isLargeScreen"
+      @click="setIsOpen(false)"
+      class="bg-black bg-opacity-40 fixed inset-0 z-[1001] overscroll-none overflow-hidden"
+    ></div>
   </Transition>
-  <Transition name="slide">
-    <div class="fixed top-0 bottom-0 left-14 right-0 z-[1002] overscroll-none flex flex-col bg-base-100" v-if="isOpen">
-      <div class="pt-16 px-4 w-80 max-w-[95vw] overscroll-none flex-grow-0 flex-shrink-0 basis-16">
-        <div class="absolute top-6 left-6 right-6 flex justify-between flex-row-reverse">
-          <button @click="() => (isOpen = false)" class="btn btn-circle btn-sm">
-            <IconCross />
-          </button>
-          <button
-            v-if="currentFillStrategy || currentEliminationStrategy"
-            @click="clearFillInputValueDataAndEliminateData"
-            class="btn btn-circle btn-sm"
-          >
-            <IconArrowLeft />
-          </button>
-        </div>
-      </div>
-
-      <div class="overflow-auto flex-grow basis-auto p-4 relative">
-        <button @click="handleFillBasicCandidates" class="btn btn-sm">
-          Help Fill Notes
-          <IconPencil class="text-xl" />
-        </button>
-
-        <div class="divider"></div>
-
-        <div class="flex gap-2">
-          <div class="flex flex-col gap-2 flex-grow basis-1/2">
-            <button
-              v-for="(x, index) in SudokuSolver.enabledFillStrategies"
-              :key="index"
-              @click="() => handleFillStrategyHintClick(x)"
-              class="btn btn-sm whitespace-nowrap btn-block"
-            >
-              {{ FillStrategy.strategyName(x) }}
+  <Teleport :disabled="!isLargeScreen" to="#desktop-hint-container">
+    <Transition :name="isLargeScreen ? 'fade' : 'slide'">
+      <div
+        class="fixed top-0 bottom-0 right-0 z-[1002] overscroll-none flex flex-col bg-base-100 w-80 sm:w-96 lg:static lg:artboard lg:artboard-demo"
+        v-if="isOpen"
+      >
+        <div class="pt-16 px-4 w-full overscroll-none flex-grow-0 flex-shrink-0 basis-16">
+          <div class="absolute top-6 left-6 right-6 flex justify-between flex-row-reverse">
+            <button @click="() => (isOpen = false)" class="btn btn-circle btn-sm">
+              <IconCross />
             </button>
-          </div>
-          <div class="flex flex-col gap-2 flex-grow basis-1/2">
             <button
-              v-for="(x, index) in SudokuSolver.enabledEliminationStrategies"
-              :key="index"
-              @click="() => handleEliminateStrategyHintClick(x)"
-              class="btn btn-sm whitespace-nowrap btn-block"
+              v-if="currentFillStrategy || currentEliminationStrategy"
+              @click="clearFillInputValueDataAndEliminateData"
+              class="btn btn-circle btn-sm"
             >
-              {{ EliminationStrategy.strategyName(x) }}
+              <IconArrowLeft />
             </button>
           </div>
         </div>
 
-        <Transition name="fade">
-          <div
-            class="bg-base-100 absolute overflow-y-auto pb-16 px-4 overscroll-none inset-0"
-            v-if="currentFillStrategy || currentEliminationStrategy"
-          >
-            <HintResponse
-              :fill-strategy="currentFillStrategy"
-              :fill-input-value-data="fillInputValueData"
-              :on-fill-data-click="handleFillDataClick"
-              :elimination-strategy="currentEliminationStrategy"
-              :elimination-data="eliminateData"
-              :on-elimination-data-click="handleEliminateDataClick"
-            />
+        <div class="overflow-auto flex-grow basis-auto p-4 relative w-full">
+          <button @click="handleFillBasicCandidates" class="btn btn-sm sm:w-[172px]">
+            Help Fill Notes
+            <IconPencil class="text-xl" />
+          </button>
+
+          <div class="divider"></div>
+
+          <div class="flex gap-2">
+            <div class="flex flex-col gap-2 flex-grow basis-1/2">
+              <button
+                v-for="(x, index) in SudokuSolver.enabledFillStrategies"
+                :key="index"
+                @click="() => handleFillStrategyHintClick(x)"
+                class="btn btn-sm whitespace-nowrap btn-block"
+              >
+                {{ FillStrategy.strategyName(x) }}
+              </button>
+            </div>
+            <div class="flex flex-col gap-2 flex-grow basis-1/2">
+              <button
+                v-for="(x, index) in SudokuSolver.enabledEliminationStrategies"
+                :key="index"
+                @click="() => handleEliminateStrategyHintClick(x)"
+                class="btn btn-sm whitespace-nowrap btn-block"
+              >
+                {{ EliminationStrategy.strategyName(x) }}
+              </button>
+            </div>
           </div>
-        </Transition>
+
+          <Transition name="fade">
+            <div
+              class="bg-base-100 absolute overflow-y-auto pb-16 px-4 overscroll-none inset-0 lg:bg-base-300 w-full lg:rounded-2xl"
+              v-if="currentFillStrategy || currentEliminationStrategy"
+            >
+              <HintResponse
+                :fill-strategy="currentFillStrategy"
+                :fill-input-value-data="fillInputValueData"
+                :on-fill-data-click="handleFillDataClick"
+                :elimination-strategy="currentEliminationStrategy"
+                :elimination-data="eliminateData"
+                :on-elimination-data-click="handleEliminateDataClick"
+              />
+            </div>
+          </Transition>
+        </div>
       </div>
-    </div>
-  </Transition>
+    </Transition>
+  </Teleport>
 </template>
 
 <script lang="ts" setup>
@@ -85,6 +94,8 @@ import IconPencil from "~/components/Icons/IconPencil.vue";
 import IconLightBulb from "~/components/Icons/IconLightBulb.vue";
 import IconCross from "~/components/Icons/IconCross.vue";
 import IconArrowLeft from "~/components/Icons/IconArrowLeft.vue";
+
+const isLargeScreen = useMediaQuery("(min-width: 1024px)");
 
 const playStore = usePlayStore();
 const { fillInputValueData, eliminateData, currentFillStrategy, currentEliminationStrategy } = storeToRefs(playStore);
@@ -104,15 +115,15 @@ const setIsOpen = (value: boolean) => {
 
 watch(isOpen, () => {
   if (isOpen.value) {
-    document.body.style.overflow = "hidden";
+    if (!isLargeScreen.value) document.body.style.overflow = "hidden";
   } else {
-    document.body.style.overflow = "auto";
+    document.body.style.removeProperty("overflow");
   }
 });
 
 const handleFillBasicCandidates = () => {
   fillBasicCandidates();
-  isOpen.value = false;
+  if (!isLargeScreen.value) isOpen.value = false;
 };
 
 const handleFillStrategyHintClick = (x: FillStrategyType) => {
@@ -125,12 +136,12 @@ const handleEliminateStrategyHintClick = (x: EliminationStrategyType) => {
 
 const handleFillDataClick = (data: FillInputValueData) => {
   setCanFillData(data);
-  isOpen.value = false;
+  if (!isLargeScreen.value) isOpen.value = false;
 };
 
 const handleEliminateDataClick = (data: EliminationData) => {
   setCanEliminateData(data);
-  isOpen.value = false;
+  if (!isLargeScreen.value) isOpen.value = false;
 };
 </script>
 

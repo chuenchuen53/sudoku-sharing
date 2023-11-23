@@ -1,37 +1,45 @@
 <template>
-  <div class="flex flex-col items-center w-full">
-    <SudokuView
-      :grid="inputGrid"
-      :can-fill-data-arr="canFillData ? [canFillData] : []"
-      :elimination-data-arr="canEliminateData ? [canEliminateData] : []"
-      :invalid-positions="invalidPositions"
-      :selected="selectedPosition"
-      :on-cell-click="setSelectedPosition"
-    />
-    <div class="flex flex-col lg:flex-row gap-4 relative pb-20 my-4 max-x-[466px] w-full">
-      <SudokuInputButtons :on-element-btn-click="handleElementBtnClick" :on-clear-btn-click="handleClearBtnClick" />
-      <div class="flex gap-2 justify-center">
-        <button class="btn w-[135px] sm:btn-lg sm:w-[150px] lg:btn-md lg:w-[135px]">
-          Undo
-          <IconRedo class="text-2xl" />
-        </button>
-        <button @click="toggleCandidatesMode" class="btn w-[135px] sm:btn-lg sm:w-[150px] lg:btn-md lg:w-[135px] indicator">
-          Note
-          <IconPencil class="text-xl" />
-          <div
-            class="indicator-item badge badge-sm"
-            :class="{
-              'badge-primary': candidatesMode,
-              'badge-neutral': !candidatesMode,
-            }"
-          >
-            {{ candidatesMode ? "ON" : "OFF" }}
-          </div>
-        </button>
+  <div class="flex justify-center gap-10">
+    <div class="flex flex-col items-center">
+      <SudokuView
+        :grid="inputGrid"
+        :can-fill-data-arr="canFillData ? [canFillData] : []"
+        :elimination-data-arr="canEliminateData ? [canEliminateData] : []"
+        :invalid-positions="invalidPositions"
+        :selected="selectedPosition"
+        :on-cell-click="setSelectedPosition"
+      />
+      <div class="flex flex-col gap-4 relative pb-20 my-4 max-w-xl w-full">
+        <SudokuInputButtons
+          :on-element-btn-click="handleElementBtnClick"
+          :on-clear-btn-click="handleClearBtnClick"
+          single-row-on-tablet-size
+          single-row-on-desktop-size
+        />
+        <div class="flex gap-2 justify-center">
+          <button class="btn w-[135px]">
+            Undo
+            <IconRedo class="text-2xl" />
+          </button>
+          <button @click="toggleCandidatesMode" class="btn w-[135px] indicator">
+            Note
+            <IconPencil class="text-xl" />
+            <div
+              class="indicator-item badge badge-sm"
+              :class="{
+                'badge-primary': candidatesMode,
+                'badge-neutral': !candidatesMode,
+              }"
+            >
+              {{ candidatesMode ? "ON" : "OFF" }}
+            </div>
+          </button>
+        </div>
       </div>
     </div>
 
     <HintDrawer />
+    <div id="desktop-hint-container" class="hidden lg:block relative"></div>
   </div>
 </template>
 
