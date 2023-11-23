@@ -26,11 +26,11 @@ export const usePlayStore = defineStore("play", () => {
   const invalidPositions = shallowRef<Position[]>([]);
   const candidatesMode = ref(false);
   const currentFillStrategy = ref<FillStrategyType | null>(null);
-  const fillInputValueData = ref<{ data: FillInputValueData; description: string }[]>([]);
-  const canFillData = ref<FillInputValueData | null>(null);
+  const fillInputValueData = shallowRef<{ data: FillInputValueData; description: string }[] | null>(null);
+  const canFillData = shallowRef<FillInputValueData | null>(null);
   const currentEliminationStrategy = ref<EliminationStrategyType | null>(null);
-  const eliminateData = ref<{ data: EliminationData; description: string }[]>([]);
-  const canEliminateData = ref<EliminationData | null>(null);
+  const eliminateData = shallowRef<{ data: EliminationData; description: string }[] | null>(null);
+  const canEliminateData = shallowRef<EliminationData | null>(null);
 
   let sudoku: Sudoku = Sudoku.sudokuFromGrid(inputGrid.value);
   let sudokuSolver: SudokuSolver = new SudokuSolver(sudoku);
@@ -110,11 +110,13 @@ export const usePlayStore = defineStore("play", () => {
   };
 
   const computeFillInputValueData = (strategy: FillStrategyType) => {
-    const data = sudokuSolver.computeCanFillAndDescription(strategy);
-    fillInputValueData.value = data;
+    clearFillInputValueDataAndEliminateData();
     currentFillStrategy.value = strategy;
-    currentEliminationStrategy.value = null;
-    eliminateData.value = [];
+
+    // setTimeout for animation
+    setTimeout(() => {
+      fillInputValueData.value = sudokuSolver.computeCanFillAndDescription(strategy);
+    }, 0);
   };
 
   const setCanFillData = (data: FillInputValueData | null) => {
@@ -123,11 +125,13 @@ export const usePlayStore = defineStore("play", () => {
   };
 
   const computeEliminateData = (strategy: EliminationStrategyType) => {
-    const result = sudokuSolver.computeCanEliminateAndDescription(strategy);
-    eliminateData.value = result;
+    clearFillInputValueDataAndEliminateData();
     currentEliminationStrategy.value = strategy;
-    currentFillStrategy.value = null;
-    fillInputValueData.value = [];
+
+    // setTimeout for animation
+    setTimeout(() => {
+      eliminateData.value = sudokuSolver.computeCanEliminateAndDescription(strategy);
+    }, 0);
   };
 
   const setCanEliminateData = (data: EliminationData | null) => {
@@ -136,12 +140,11 @@ export const usePlayStore = defineStore("play", () => {
   };
 
   const clearFillInputValueDataAndEliminateData = () => {
-    console.log("here");
     currentFillStrategy.value = null;
-    fillInputValueData.value = [];
+    fillInputValueData.value = null;
     canFillData.value = null;
     currentEliminationStrategy.value = null;
-    eliminateData.value = [];
+    eliminateData.value = null;
     canEliminateData.value = null;
   };
 
