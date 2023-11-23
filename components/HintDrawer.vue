@@ -7,7 +7,7 @@
         <IconLightBulb class="text-xl text-warning" />
       </label>
     </div>
-    <div class="drawer-side z-[1001]">
+    <div class="drawer-side z-[1001] overscroll-none">
       <label for="hint-drawer-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
       <div class="bg-base-100 min-h-full pt-16 px-4 w-80 max-w-[95vw] overscroll-none">
         <div class="absolute top-6 left-6 right-6 flex justify-between flex-row-reverse">

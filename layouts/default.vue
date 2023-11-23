@@ -93,6 +93,8 @@ const closeDetails = () => {
   width: 100%;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 #main-layout-header {
@@ -119,7 +121,7 @@ const closeDetails = () => {
 }
 
 #main-layout-main {
-  flex: 1 1 auto;
+  flex: 1 0 auto;
   margin-top: 64px;
   padding: 24px;
 }
