@@ -39,7 +39,6 @@
     </div>
 
     <HintDrawer />
-    <div id="desktop-hint-container" class="hidden lg:block relative"></div>
   </div>
 </template>
 
