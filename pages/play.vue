@@ -1,14 +1,24 @@
 <template>
   <div class="flex justify-center gap-10">
     <div class="flex flex-col items-center">
-      <SudokuView
-        :grid="inputGrid"
-        :can-fill-data-arr="canFillData ? [canFillData] : []"
-        :elimination-data-arr="canEliminateData ? [canEliminateData] : []"
-        :invalid-positions="invalidPositions"
-        :selected="selectedPosition"
-        :on-cell-click="setSelectedPosition"
-      />
+      <div class="relative">
+        <SudokuView
+          :grid="inputGrid"
+          :can-fill-data-arr="canFillData ? [canFillData] : []"
+          :elimination-data-arr="canEliminateData ? [canEliminateData] : []"
+          :invalid-positions="invalidPositions"
+          :selected="selectedPosition"
+          :on-cell-click="setSelectedPosition"
+        />
+        <div class="absolute w-full h-full z-10 top-0 left-0 dark:bg-primary bg-primary bg-opacity-10 dark:bg-opacity-20" v-if="showSolvedUi">
+          <div
+            class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 backdrop-blur-sm text-4xl bg-primary bg-opacity-10 p-4 rounded-2xl drop-shadow-md whitespace-nowrap font-bold secondary-text-shadow"
+          >
+            YOU DID IT!
+          </div>
+          <Confetti />
+        </div>
+      </div>
       <div class="flex flex-col gap-4 relative pb-20 my-4 max-w-xl w-full">
         <SudokuInputButtons
           :on-element-btn-click="handleElementBtnClick"
@@ -51,7 +61,7 @@ import IconRedo from "~/components/Icons/IconRedo.vue";
 import HintDrawer from "~/components/HintDrawer.vue";
 
 const playStore = usePlayStore();
-const { candidatesMode, inputGrid, invalidPositions, selectedPosition, canFillData, canEliminateData } = storeToRefs(playStore);
+const { showSolvedUi, candidatesMode, inputGrid, invalidPositions, selectedPosition, canFillData, canEliminateData } = storeToRefs(playStore);
 const { setSelectedPosition, fillSelected, clearSelected, toggleCandidatesMode, toggleCandidateInSelectedCell } = playStore;
 
 const handleKeyDown = (e: KeyboardEvent) => {
@@ -120,3 +130,21 @@ const handleClearBtnClick = () => {
   clearSelected();
 };
 </script>
+
+<style lang="scss" scoped>
+.secondary-text-shadow {
+  @apply text-base-100 dark:text-base-content;
+
+  animation: secondary-text-shadow-animation 2s ease-in-out infinite alternate;
+}
+
+@keyframes secondary-text-shadow-animation {
+  0% {
+    text-shadow: oklch(var(--s)) 1px 0 5px;
+  }
+
+  100% {
+    text-shadow: oklch(var(--s)) 1px 0 10px;
+  }
+}
+</style>

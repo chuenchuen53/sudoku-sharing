@@ -20,6 +20,8 @@ const tempGrid: Grid = (
 ).map((row, rowIndex) => row.map((clue, columnIndex) => (clue !== "0" ? { rowIndex, columnIndex, clue } : { rowIndex, columnIndex })));
 
 export const usePlayStore = defineStore("play", () => {
+  const solved = ref(false);
+  const showSolvedUi = ref(false);
   const selectedPosition = shallowRef<Position>({ rowIndex: 0, columnIndex: 0 });
   const inputGrid = ref<Grid>(tempGrid);
   const invalidPositions = shallowRef<Position[]>([]);
@@ -41,17 +43,26 @@ export const usePlayStore = defineStore("play", () => {
   const fillSelected = (value: SudokuElement) => {
     clearFillInputValueDataAndEliminateData();
 
+    if (solved.value) return;
     const { rowIndex, columnIndex } = selectedPosition.value;
     if (inputGrid.value[rowIndex][columnIndex].clue) return;
     inputGrid.value[rowIndex][columnIndex].inputValue = value;
     sudoku.setInputValue({ rowIndex, columnIndex, value }, true);
     inputGrid.value[rowIndex][columnIndex].candidates = sudoku.grid[rowIndex][columnIndex].candidates;
     invalidPositions.value = sudoku.invalidCells;
+    solved.value = sudoku.solved;
+    if (solved.value) {
+      showSolvedUi.value = true;
+      setTimeout(() => {
+        showSolvedUi.value = false;
+      }, 5000);
+    }
   };
 
   const clearSelected = () => {
     clearFillInputValueDataAndEliminateData();
 
+    if (solved.value) return;
     const { rowIndex, columnIndex } = selectedPosition.value;
     if (inputGrid.value[rowIndex][columnIndex].inputValue) delete inputGrid.value[rowIndex][columnIndex].inputValue;
     sudoku.removeInputValue({ rowIndex, columnIndex }, true);
@@ -154,6 +165,8 @@ export const usePlayStore = defineStore("play", () => {
   };
 
   return {
+    solved,
+    showSolvedUi,
     selectedPosition,
     inputGrid,
     invalidPositions,
