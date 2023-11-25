@@ -20,7 +20,7 @@ const onClick = (id: string) => {
 </script>
 
 <template>
-  <div class="max-h-82 overflow-auto">
+  <div>
     <div>Table of Contents</div>
     <nav class="flex mt-2">
       <ul class="pl-2 space-y-2">

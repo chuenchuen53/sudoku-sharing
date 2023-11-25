@@ -1,11 +1,14 @@
 <template>
-  <ContentDoc v-slot="{ doc }">
-    <article ref="containerRef" id="strategies-article" class="prose mx-auto max-w-[80ch]">
-      <ContentRenderer :value="doc" />
-    </article>
-  </ContentDoc>
-  <div class="fixed top-16 flex flex-col items-center">
-    <TableOfContents :activeTocId="activeTocId" :path="$route.path" />
+  <div>
+    <ContentDoc v-slot="{ doc }">
+      <article ref="containerRef" id="strategies-article" class="prose mx-auto max-w-[80ch]">
+        <ContentRenderer :value="doc" />
+      </article>
+    </ContentDoc>
+
+    <div class="px-4 h-full w-52 fixed top-24 right-0 hidden xl:block">
+      <TableOfContents :activeTocId="activeTocId" :path="$route.path" />
+    </div>
   </div>
 </template>
 

@@ -31,7 +31,7 @@ module.exports = {
     "vue/multi-word-component-names": [
       "warn",
       {
-        ignores: ["index", "default", "play", "solution"],
+        ignores: ["index", "default", "play", "solution", "strategies"],
       },
     ],
   },

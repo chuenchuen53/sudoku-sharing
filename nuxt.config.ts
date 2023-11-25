@@ -9,4 +9,7 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  content: {
+    markdown: { anchorLinks: false },
+  },
 });
