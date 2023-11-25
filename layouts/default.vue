@@ -75,8 +75,8 @@ const routes = [
     path: "/solver",
   },
   {
-    name: "About",
-    path: "/about",
+    name: "Strategies",
+    path: "/strategies",
   },
 ];
 
