@@ -61,7 +61,7 @@
 
         <Transition name="fade">
           <div
-            class="bg-base-100 absolute overflow-y-auto pb-16 px-4 overscroll-none inset-0 lg:bg-base-300 w-full lg:rounded-2xl"
+            class="bg-base-100 absolute overflow-y-auto pb-16 px-4 overscroll-none inset-0 lg:bg-base-300 w-full lg:rounded-2xl lg:dark:bg-neutral"
             v-if="currentFillStrategy || currentEliminationStrategy"
           >
             <HintResponse
