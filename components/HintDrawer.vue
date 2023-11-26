@@ -12,7 +12,7 @@
   </Transition>
   <Transition :name="isLargeScreen ? 'fade' : 'slide'">
     <div
-      class="fixed top-0 bottom-0 right-0 z-[1002] overscroll-none flex flex-col bg-base-100 w-[350px] sm:w-96 lg:relative lg:artboard lg:artboard-demo lg:h-[600px]"
+      class="fixed top-0 bottom-0 right-0 z-[1002] overscroll-none flex flex-col bg-base-100 w-[350px] sm:w-96 lg:relative lg:artboard lg:artboard-demo lg:h-[600px] lg:z-10 lg:dark:bg-neutral"
       v-if="isOpen"
     >
       <div class="pt-16 px-4 w-full overscroll-none flex-grow-0 flex-shrink-0 basis-16">
