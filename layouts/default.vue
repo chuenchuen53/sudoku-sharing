@@ -1,31 +1,27 @@
 <template>
   <div id="main-layout-container">
-    <header id="main-layout-header" :class="y <= 0 && 'reach-top'">
-      <div class="navbar">
-        <details ref="detailsRef" class="dropdown">
-          <summary class="btn btn-ghost sm:hidden">
-            <IconMenu class="h-5 w-5" />
-          </summary>
-          <ul class="menu dropdown-content z-[1] p-4 shadow bg-base-100 w-[100vw] left-[-10px]">
-            <li v-for="x in routes" :key="x.path" class="space-y-6">
-              <NuxtLink :to="x.path" @click="closeDetails" class="text-xl">
-                {{ x.name }}
-              </NuxtLink>
-            </li>
-          </ul>
-        </details>
+    <header id="main-layout-header" :class="{ 'reach-top': y <= 0, 'mobile-menu-opened': isMobileMenuOpened }">
+      <div class="navbar flex-col items-start sm:flex-row">
+        <button @click="isMobileMenuOpened = !isMobileMenuOpened" class="btn btn-square btn-ghost sm:hidden">
+          <IconMenu class="h-5 w-5 sm:hidden" />
+        </button>
 
-        <ul class="space-x-2 hidden sm:flex">
-          <li v-for="x in routes" :key="x.path">
-            <NuxtLink
-              class="btn btn-ghost btn-sm text-lg"
-              :class="{ 'btn-active': x.path === '/' ? route.path === x.path : route.path.startsWith(x.path) }"
-              :to="x.path"
-            >
-              {{ x.name }}
-            </NuxtLink>
-          </li>
-        </ul>
+        <Transition>
+          <nav v-if="showHorizontally || isMobileMenuOpened" class="pt-1 pb-3 px-3 fixed top-16 bg-base-100 left-0 right-0 sm:static">
+            <ul class="space-y-2 sm:space-y-0 sm:space-x-2 flex flex-col sm:flex-row">
+              <li v-for="x in routes" :key="x.path">
+                <NuxtLink
+                  class="btn btn-ghost btn-sm"
+                  :class="{ 'text-primary': x.path === '/' ? route.path === x.path : route.path.startsWith(x.path) }"
+                  :to="x.path"
+                  @click="isMobileMenuOpened && (isMobileMenuOpened = false)"
+                >
+                  {{ x.name }}
+                </NuxtLink>
+              </li>
+            </ul>
+          </nav>
+        </Transition>
       </div>
     </header>
     <main id="main-layout-main"><slot></slot></main>
@@ -59,7 +55,9 @@ import IconMenu from "~/components/Icons/IconMenu.vue";
 
 const route = useRoute();
 const { y } = useWindowScroll();
-const detailsRef = ref<HTMLElement | null>(null);
+
+const showHorizontally = useMediaQuery("(min-width: 640px)");
+const isMobileMenuOpened = ref(false);
 
 const routes = [
   {
@@ -75,12 +73,6 @@ const routes = [
     path: "/strategies",
   },
 ];
-
-const closeDetails = () => {
-  if (detailsRef.value) {
-    detailsRef.value.removeAttribute("open");
-  }
-};
 </script>
 
 <style lang="scss" scoped>
@@ -108,7 +100,8 @@ const closeDetails = () => {
     border-bottom: 1px solid rgb(255 255 255 / 10%);
   }
 
-  &.reach-top {
+  &.reach-top,
+  &.mobile-menu-opened {
     @apply bg-base-100;
 
     backdrop-filter: none;
@@ -124,5 +117,23 @@ const closeDetails = () => {
 
 #main-layout-footer {
   flex: 0 0 auto;
+}
+
+.v-enter-active {
+  animation: menu-animation 0.2s ease-in-out;
+}
+
+.v-leave-active {
+  animation: menu-animation 0.2s ease-in-out reverse;
+}
+
+@keyframes menu-animation {
+  0% {
+    clip-path: inset(0 0 150px 0);
+  }
+
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
 }
 </style>
