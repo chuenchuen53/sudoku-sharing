@@ -22,21 +22,23 @@ const onClick = (id: string) => {
 <template>
   <div>
     <div>Table of Contents</div>
-    <nav class="flex mt-2">
-      <ul class="pl-2 space-y-2">
-        <li v-for="{ id, text, children } in tocLinks" :key="id" class="cursor-pointer text-sm">
+    <nav class="flex mt-2 w-80">
+      <ul class="menu menu-sm">
+        <li v-for="{ id, text, children } in tocLinks" :key="id" class="">
           <span @click="onClick(id)" :class="id === activeTocId && 'text-primary font-bold'">
             {{ text }}
           </span>
-          <ul v-if="children" class="ml-4 mt-2 mb-3 space-y-2">
+          <ul v-if="children" class="">
             <li
               v-for="{ id: childId, text: childText } in children"
               :key="childId"
-              class="cursor-pointer text-xs"
+              class=""
               :class="childId === activeTocId && 'text-primary font-bold'"
               @click="onClick(childId)"
             >
-              {{ childText }}
+              <span>
+                {{ childText }}
+              </span>
             </li>
           </ul>
         </li>

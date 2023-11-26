@@ -7,7 +7,10 @@
         </button>
 
         <Transition>
-          <nav v-if="showHorizontally || isMobileMenuOpened" class="pt-1 pb-3 px-3 fixed top-16 bg-base-100 left-0 right-0 sm:static">
+          <nav
+            v-if="showHorizontally || isMobileMenuOpened"
+            class="pt-1 pb-3 px-3 fixed top-16 bg-base-100 left-0 right-0 sm:static sm:bg-transparent"
+          >
             <ul class="space-y-2 sm:space-y-0 sm:space-x-2 flex flex-col sm:flex-row">
               <li v-for="x in routes" :key="x.path">
                 <NuxtLink
