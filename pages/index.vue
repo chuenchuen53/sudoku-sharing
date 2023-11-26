@@ -1,6 +1,11 @@
 <template>
-  <h1 class="text-3xl font-bold underline dark:text-gray-200">Hello world!</h1>
-  <button class="btn">Button</button>
+  <div></div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+definePageMeta({
+  middleware: (_to, _from) => {
+    return navigateTo("/play");
+  },
+});
+</script>

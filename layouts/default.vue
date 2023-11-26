@@ -63,10 +63,6 @@ const detailsRef = ref<HTMLElement | null>(null);
 
 const routes = [
   {
-    name: "Home",
-    path: "/",
-  },
-  {
     name: "Play",
     path: "/play",
   },

@@ -1,6 +1,6 @@
 <template>
-  <div class="flex justify-center gap-10">
-    <div class="flex flex-col items-center">
+  <div class="flex justify-center gap-10 w-full">
+    <div class="flex flex-col items-center w-full">
       <div class="relative">
         <SudokuView
           :grid="inputGrid"
@@ -19,7 +19,7 @@
           <Confetti />
         </div>
       </div>
-      <div class="flex flex-col gap-4 relative pb-20 my-4 max-w-xl w-full">
+      <div class="flex flex-col gap-4 relative pb-20 mt-8 mb-4 max-w-xl w-full">
         <SudokuInputButtons
           :on-element-btn-click="handleElementBtnClick"
           :on-clear-btn-click="handleClearBtnClick"
@@ -53,12 +53,14 @@
 </template>
 
 <script lang="ts" setup>
+import { storeToRefs } from "pinia";
 import SudokuView from "../components/SudokuView.vue";
 import { usePlayStore } from "../stores/play";
 import type { SudokuElement } from "~/core/Sudoku/type";
 import IconPencil from "~/components/Icons/IconPencil.vue";
 import IconRedo from "~/components/Icons/IconRedo.vue";
 import HintDrawer from "~/components/HintDrawer.vue";
+import SudokuInputUtil from "~/utils/SudokuInputUtil";
 
 const playStore = usePlayStore();
 const { showSolvedUi, candidatesMode, inputGrid, invalidPositions, selectedPosition, canFillData, canEliminateData } = storeToRefs(playStore);

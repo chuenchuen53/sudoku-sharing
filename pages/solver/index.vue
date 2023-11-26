@@ -45,6 +45,7 @@
 </template>
 
 <script lang="ts" setup>
+import { storeToRefs } from "pinia";
 import SudokuSolver from "../../core/Sudoku/SudokuSolver";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import SudokuView from "../../components/SudokuView.vue";
