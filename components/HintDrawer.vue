@@ -7,12 +7,12 @@
     <div
       v-if="isOpen && !isLargeScreen"
       @click="setIsOpen(false)"
-      class="bg-blachttps://sudoku.com/k bg-opacity-40 fixed inset-0 z-[1001] overscroll-none overflow-hidden"
+      class="bg-black bg-opacity-40 fixed inset-0 z-[1001] overscroll-none overflow-hidden"
     ></div>
   </Transition>
   <Transition :name="isLargeScreen ? 'fade' : 'slide'">
     <div
-      class="fixed top-0 bottom-0 right-0 z-[1002] overscroll-none flex flex-col bg-base-100 w-80 sm:w-96 lg:relative lg:artboard lg:artboard-demo lg:h-[600px]"
+      class="fixed top-0 bottom-0 right-0 z-[1002] overscroll-none flex flex-col bg-base-100 w-[350px] sm:w-96 lg:relative lg:artboard lg:artboard-demo lg:h-[600px]"
       v-if="isOpen"
     >
       <div class="pt-16 px-4 w-full overscroll-none flex-grow-0 flex-shrink-0 basis-16">
@@ -31,15 +31,12 @@
       </div>
 
       <div class="overflow-auto flex-grow basis-auto p-4 relative w-full">
-        <button @click="handleFillBasicCandidates" class="btn btn-sm sm:w-[172px]">
-          Help Fill Notes
-          <IconPencil class="text-xl" />
-        </button>
-
-        <div class="divider"></div>
-
         <div class="flex gap-2">
           <div class="flex flex-col gap-2 flex-grow basis-1/2">
+            <button @click="handleFillBasicCandidates" class="btn btn-sm mb-4 whitespace-nowrap">
+              Help Fill Notes
+              <IconPencil class="text-xl" />
+            </button>
             <button
               v-for="(x, index) in SudokuSolver.enabledFillStrategies"
               :key="index"
@@ -50,6 +47,7 @@
             </button>
           </div>
           <div class="flex flex-col gap-2 flex-grow basis-1/2">
+            <button @click="solveBySolver" class="btn btn-sm mb-4 whitespace-nowrap">Solve</button>
             <button
               v-for="(x, index) in SudokuSolver.enabledEliminationStrategies"
               :key="index"
@@ -82,21 +80,24 @@
 </template>
 
 <script lang="ts" setup>
-import SudokuSolver from "../core/Sudoku/SudokuSolver";
 import FillStrategy from "../core/Sudoku/FillStrategy/FillStrategy";
 import EliminationStrategy from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import { usePlayStore } from "../stores/play";
+import { useSolverSolutionStore } from "../stores/solverSolution";
 import type { EliminationData, EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import type { FillInputValueData, FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
+import type { Grid } from "~/core/Sudoku/type";
 import IconPencil from "~/components/Icons/IconPencil.vue";
 import IconLightBulb from "~/components/Icons/IconLightBulb.vue";
 import IconCross from "~/components/Icons/IconCross.vue";
 import IconArrowLeft from "~/components/Icons/IconArrowLeft.vue";
+import Sudoku from "~/core/Sudoku/Sudoku";
+import SudokuSolver from "~/core/Sudoku/SudokuSolver";
 
 const isLargeScreen = useMediaQuery("(min-width: 1024px)");
 
 const playStore = usePlayStore();
-const { fillInputValueData, eliminateData, currentFillStrategy, currentEliminationStrategy } = storeToRefs(playStore);
+const { inputGrid, fillInputValueData, eliminateData, currentFillStrategy, currentEliminationStrategy } = storeToRefs(playStore);
 const {
   fillBasicCandidates,
   computeFillInputValueData,
@@ -105,6 +106,8 @@ const {
   setCanEliminateData,
   clearFillInputValueDataAndEliminateData,
 } = playStore;
+
+const solverSolutionStore = useSolverSolutionStore();
 
 const isOpen = ref(false);
 const setIsOpen = (value: boolean) => {
@@ -141,6 +144,25 @@ const handleEliminateDataClick = (data: EliminationData) => {
   setCanEliminateData(data);
   if (!isLargeScreen.value) isOpen.value = false;
 };
+
+const solveBySolver = () => {
+  const grid: Grid = inputGrid.value.map((row) =>
+    row.map((x) => ({ rowIndex: x.rowIndex, columnIndex: x.columnIndex, clue: x.clue, value: x.inputValue })),
+  );
+  const sudoku = Sudoku.sudokuFromGrid(grid);
+  const sudokuSolver = new SudokuSolver(sudoku);
+  sudokuSolver.trySolve();
+  solverSolutionStore.setData({
+    puzzle: grid,
+    steps: sudokuSolver.getSteps(),
+    stats: sudokuSolver.getStats(),
+  });
+  navigateTo("/solver/solution");
+};
+
+onUnmounted(() => {
+  document.body.style.removeProperty("overflow");
+});
 </script>
 
 <style lang="scss" scoped>
