@@ -17,6 +17,7 @@
   "dependencies": {
     "@nuxt/content": "^2.9.0",
     "@pinia/nuxt": "^0.5.1",
+    "html-to-image": "^1.11.11",
     "lodash": "4.17.21",
     "normalize.css": "^8.0.1",
     "pinia": "2.1.7",

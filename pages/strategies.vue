@@ -41,3 +41,31 @@ onUnmounted(() => {
   observer.value?.disconnect();
 });
 </script>
+
+<style lang="scss">
+#strategies-article {
+  @media screen and (width >= 514px) {
+    img {
+      margin-left: auto;
+      margin-right: auto;
+      width: 466px;
+    }
+  }
+
+  img[alt$="light"] {
+    display: block;
+
+    @media (prefers-color-scheme: dark) {
+      display: none;
+    }
+  }
+
+  img[alt$="dark"] {
+    display: none;
+
+    @media (prefers-color-scheme: dark) {
+      display: block;
+    }
+  }
+}
+</style>
