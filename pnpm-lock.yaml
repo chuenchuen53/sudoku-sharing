@@ -26,6 +26,9 @@ dependencies:
   sass:
     specifier: 1.69.5
     version: 1.69.5
+  sudoku-gen:
+    specifier: ^1.0.2
+    version: 1.0.2
   typescript:
     specifier: ^5.2.2
     version: 5.2.2
@@ -8359,6 +8362,10 @@ packages:
       pirates: 4.0.6
       ts-interface-checker: 0.1.13
     dev: true
+
+  /sudoku-gen@1.0.2:
+    resolution: {integrity: sha512-zQFQNbar9qGpbteAH7CQShGoR5lk7r4KYlt0Wsvts1eVMzLb2EZUovzc7gAmoHp+HmXGYadmqCyyXoY7QVEyhA==}
+    dev: false
 
   /supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}

@@ -1,29 +1,22 @@
 import { defineStore } from "pinia";
+import { getSudoku } from "sudoku-gen";
 import Sudoku from "../core/Sudoku/Sudoku";
 import SudokuSolver from "../core/Sudoku/SudokuSolver";
 import type { EliminationData, EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
-import type { Position, Grid, SudokuElement } from "../core/Sudoku/type";
+import type { Position, Grid, SudokuElement, SudokuElementWithZero } from "../core/Sudoku/type";
 import type { FillInputValueData, FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
+import type { Difficulty } from "sudoku-gen/dist/types/difficulty.type";
+import ArrUtil from "~/core/utils/ArrUtil";
 
-const tempGrid: Grid = (
-  [
-    ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
-    ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
-    ["0", "0", "8", "0", "0", "0", "4", "0", "9"],
-    ["9", "6", "2", "1", "0", "0", "0", "4", "0"],
-    ["8", "1", "0", "0", "0", "3", "0", "2", "0"],
-    ["0", "3", "7", "6", "5", "0", "8", "0", "1"],
-    ["5", "8", "0", "7", "0", "4", "9", "1", "3"],
-    ["1", "0", "0", "3", "0", "0", "0", "0", "0"],
-    ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
-  ] as const
-).map((row, rowIndex) => row.map((clue, columnIndex) => (clue !== "0" ? { rowIndex, columnIndex, clue } : { rowIndex, columnIndex })));
+// use for ssr
+const initialGrid: Grid = Sudoku.createEmptyGrid();
 
 export const usePlayStore = defineStore("play", () => {
+  const isFinishInitData = ref(false);
   const solved = ref(false);
   const showSolvedUi = ref(false);
   const selectedPosition = shallowRef<Position>({ rowIndex: 0, columnIndex: 0 });
-  const inputGrid = ref<Grid>(tempGrid);
+  const inputGrid = ref<Grid>(initialGrid);
   const invalidPositions = shallowRef<Position[]>([]);
   const candidatesMode = ref(false);
   const currentFillStrategy = ref<FillStrategyType | null>(null);
@@ -164,6 +157,25 @@ export const usePlayStore = defineStore("play", () => {
     canEliminateData.value = null;
   };
 
+  const initGridInFirstRender = () => {
+    if (!isFinishInitData.value) {
+      const gridStr = getSudoku("easy").puzzle.replaceAll("-", "0") as unknown as SudokuElementWithZero[];
+      const initialGrid: Grid = ArrUtil.create2DArray(9, 9, (i, j) => gridStr[i * 9 + j]).map((row, rowIndex) =>
+        row.map((clue, columnIndex) => (clue !== "0" ? { rowIndex, columnIndex, clue } : { rowIndex, columnIndex })),
+      );
+      replaceGrid(initialGrid);
+      isFinishInitData.value = true;
+    }
+  };
+
+  const newGame = (difficulty: Difficulty) => {
+    const gridStr = getSudoku(difficulty).puzzle.replaceAll("-", "0") as unknown as SudokuElementWithZero[];
+    const initialGrid: Grid = ArrUtil.create2DArray(9, 9, (i, j) => gridStr[i * 9 + j]).map((row, rowIndex) =>
+      row.map((clue, columnIndex) => (clue !== "0" ? { rowIndex, columnIndex, clue } : { rowIndex, columnIndex })),
+    );
+    replaceGrid(initialGrid);
+  };
+
   return {
     solved,
     showSolvedUi,
@@ -189,5 +201,7 @@ export const usePlayStore = defineStore("play", () => {
     computeEliminateData,
     setCanEliminateData,
     clearFillInputValueDataAndEliminateData,
+    initGridInFirstRender,
+    newGame,
   };
 });

@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-center gap-10 w-full">
-    <div class="flex flex-col items-center w-full">
+    <div class="flex flex-col items-center w-full max-w-xl">
       <div class="relative">
         <SudokuView
           :grid="inputGrid"
@@ -19,7 +19,7 @@
           <Confetti />
         </div>
       </div>
-      <div class="flex flex-col gap-4 relative pb-20 mt-8 mb-4 max-w-xl w-full">
+      <div class="flex flex-col gap-4 relative pb-20 mt-8 mb-4 w-full">
         <SudokuInputButtons
           :on-element-btn-click="handleElementBtnClick"
           :on-clear-btn-click="handleClearBtnClick"
@@ -48,6 +48,19 @@
       </div>
     </div>
 
+    <div class="dropdown dropdown-bottom dropdown-end fixed top-3 right-28 z-[1001]">
+      <label ref="newLabelRef" tabindex="0" class="btn btn-sm m-1">
+        New
+        <IconGrid class="text-xl text-accent" />
+      </label>
+      <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-28">
+        <li><button @click="(e) => handleNewGameClick(e, 'easy')">easy</button></li>
+        <li><button @click="(e) => handleNewGameClick(e, 'medium')">medium</button></li>
+        <li><button @click="(e) => handleNewGameClick(e, 'hard')">hard</button></li>
+        <li><button @click="(e) => handleNewGameClick(e, 'expert')">expert</button></li>
+      </ul>
+    </div>
+
     <HintDrawer />
   </div>
 </template>
@@ -58,13 +71,16 @@ import SudokuView from "../components/SudokuView.vue";
 import { usePlayStore } from "../stores/play";
 import type { SudokuElement } from "~/core/Sudoku/type";
 import IconPencil from "~/components/Icons/IconPencil.vue";
+import IconGrid from "~/components/Icons/IconGrid.vue";
 import IconRedo from "~/components/Icons/IconRedo.vue";
 import HintDrawer from "~/components/HintDrawer.vue";
 import SudokuInputUtil from "~/utils/SudokuInputUtil";
 
+const newLabelRef = ref<HTMLElement | null>(null);
 const playStore = usePlayStore();
 const { showSolvedUi, candidatesMode, inputGrid, invalidPositions, selectedPosition, canFillData, canEliminateData } = storeToRefs(playStore);
-const { setSelectedPosition, fillSelected, clearSelected, toggleCandidatesMode, toggleCandidateInSelectedCell } = playStore;
+const { setSelectedPosition, fillSelected, clearSelected, toggleCandidatesMode, toggleCandidateInSelectedCell, initGridInFirstRender, newGame } =
+  playStore;
 
 const handleKeyDown = (e: KeyboardEvent) => {
   if (document.activeElement?.tagName === "TEXTAREA") return;
@@ -113,6 +129,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
 
 onMounted(() => {
   window.addEventListener("keydown", handleKeyDown);
+  initGridInFirstRender();
 });
 
 onUnmounted(() => {
@@ -130,6 +147,11 @@ const handleElementBtnClick = (x: SudokuElement) => {
 const handleClearBtnClick = () => {
   if (candidatesMode.value) return;
   clearSelected();
+};
+
+const handleNewGameClick = (event: MouseEvent, difficulty: "easy" | "medium" | "hard" | "expert") => {
+  newGame(difficulty);
+  (event.target as HTMLButtonElement).blur();
 };
 </script>
 
