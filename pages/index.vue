@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-5xl flex flex-col items-center justify-center mx-auto">
-    <section>
+    <section class="my-10">
       <div class="hero">
         <div class="hero-content flex-col lg:flex-row lg:items-start gap-9">
           <div class="basis-2/5">
@@ -19,43 +19,42 @@
         </div>
       </div>
     </section>
-    <section>
-      <div class="flex">
-        <div class="mockup-window border bg-base-300 basis-3/5">
-          <div class="flex justify-center">
-            <picture>
-              <source srcset="/img/landing/solver-dark.png" media="(prefers-color-scheme: dark)" />
-              <img src="/img/landing/solver-light.png" />
-            </picture>
+    <section class="my-10">
+      <div class="hero">
+        <div class="hero-content flex-col lg:flex-row lg:items-start gap-9">
+          <div class="mockup-window border bg-base-300 basis-3/5">
+            <div class="flex justify-center">
+              <picture>
+                <source srcset="/img/landing/solver-dark.png" media="(prefers-color-scheme: dark)" />
+                <img src="/img/landing/solver-light.png" />
+              </picture>
+            </div>
           </div>
-        </div>
-        <div>
-          <div class="text-3xl">Sudoku Solver</div>
-          <div>A sudoku solver for solving a sudoku puzzle step-by-step to help you learn how to solve sudoku puzzles.</div>
-          <button>Try Solver</button>
+          <div class="basis-2/5">
+            <h2 class="text-4xl font-bold">Sudoku Solver</h2>
+            <p class="py-6">A sudoku solver for solving a sudoku puzzle step-by-step to help you learn how to solve sudoku puzzles.</p>
+            <button class="btn btn-primary">Try Solver</button>
+          </div>
         </div>
       </div>
     </section>
-    <section>
-      <div class="flex">
-        <div>
-          <div class="text-3xl">Master Sudoku with helpful tips</div>
-          <div>Learn the strategies used in solving Sudoku puzzles.</div>
-          <button>Explore Tips</button>
-        </div>
-        <div>
-          <div class="mockup-phone">
-            <div class="camera"></div>
-            <div class="display">
-              <div class="artboard artboard-demo phone-1 justify-start bg-base-200">
-                <div class="mt-14 text-3xl">Learning Sudoku</div>
-                <div class="flex flex-col gap-4 w-52 mt-8">
-                  <div class="skeleton h-52 w-full"></div>
-                  <div class="skeleton h-4 w-full"></div>
-                  <div class="skeleton h-4 w-full"></div>
-                  <div class="skeleton h-4 w-full"></div>
-                  <div class="skeleton h-4 w-full"></div>
-                  <div class="skeleton h-4 w-full"></div>
+    <section class="my-10">
+      <div class="hero">
+        <div class="hero-content flex-col lg:flex-row lg:items-start gap-9">
+          <div class="basis-2/5">
+            <h2 class="text-4xl font-bold">Master Sudoku with helpful tips</h2>
+            <p class="py-6">Learn the strategies used in solving Sudoku puzzles.</p>
+            <button class="btn btn-primary">Explore Tips</button>
+          </div>
+          <div class="basis-2/5 flex-grow">
+            <div class="mockup-window border bg-base-300 basis-3/5">
+              <div class="pb-6 px-6">
+                <div class="text-2xl text-center">Learning Sudoku</div>
+                <div class="mt-4 bg-base-100 w-1/3 h-4"></div>
+                <div class="mt-4 space-y-4">
+                  <div class="bg-base-100 h-4 w-full"></div>
+                  <div class="bg-base-100 h-4 w-full"></div>
+                  <div class="bg-base-100 h-4 w-full"></div>
                 </div>
               </div>
             </div>
