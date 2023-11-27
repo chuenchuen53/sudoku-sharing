@@ -6,7 +6,7 @@
       </article>
     </ContentDoc>
 
-    <div class="px-4 h-full w-52 fixed top-24 right-0 hidden xl:block">
+    <div class="fixed right-4 top-24 hidden h-full w-52 px-4 xl:block">
       <TableOfContents :activeTocId="activeTocId" :path="$route.path" />
     </div>
   </div>

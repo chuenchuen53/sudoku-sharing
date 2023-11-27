@@ -9,9 +9,9 @@
         <Transition>
           <nav
             v-if="showHorizontally || isMobileMenuOpened"
-            class="pt-1 pb-3 px-3 fixed top-16 bg-base-100 left-0 right-0 sm:static sm:bg-transparent"
+            class="fixed left-0 right-0 top-16 bg-base-100 px-3 pb-3 pt-1 sm:static sm:bg-transparent"
           >
-            <ul class="space-y-2 sm:space-y-0 sm:space-x-2 flex flex-col sm:flex-row">
+            <ul class="flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0">
               <li v-for="x in routes" :key="x.path">
                 <NuxtLink
                   class="btn btn-ghost btn-sm"
@@ -28,28 +28,6 @@
       </div>
     </header>
     <main id="main-layout-main"><slot></slot></main>
-    <footer class="footer p-10 bg-neutral text-neutral-content">
-      <nav>
-        <header class="footer-title">Services</header>
-        <a class="link link-hover">Branding</a>
-        <a class="link link-hover">Design</a>
-        <a class="link link-hover">Marketing</a>
-        <a class="link link-hover">Advertisement</a>
-      </nav>
-      <nav>
-        <header class="footer-title">Company</header>
-        <a class="link link-hover">About us</a>
-        <a class="link link-hover">Contact</a>
-        <a class="link link-hover">Jobs</a>
-        <a class="link link-hover">Press kit</a>
-      </nav>
-      <nav>
-        <header class="footer-title">Legal</header>
-        <a class="link link-hover">Terms of use</a>
-        <a class="link link-hover">Privacy policy</a>
-        <a class="link link-hover">Cookie policy</a>
-      </nav>
-    </footer>
   </div>
 </template>
 
@@ -63,6 +41,10 @@ const showHorizontally = useMediaQuery("(min-width: 640px)");
 const isMobileMenuOpened = ref(false);
 
 const routes = [
+  {
+    name: "Home",
+    path: "/",
+  },
   {
     name: "Play",
     path: "/play",
@@ -132,7 +114,7 @@ const routes = [
 
 @keyframes menu-animation {
   0% {
-    clip-path: inset(0 0 150px 0);
+    clip-path: inset(0 0 170px 0);
   }
 
   100% {

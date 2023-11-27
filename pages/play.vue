@@ -1,6 +1,6 @@
 <template>
-  <div class="flex justify-center gap-10 w-full">
-    <div class="flex flex-col items-center w-full max-w-xl">
+  <div class="flex w-full justify-center gap-10">
+    <div class="flex w-full max-w-xl flex-col items-center">
       <div class="relative">
         <SudokuView
           :grid="inputGrid"
@@ -10,32 +10,32 @@
           :selected="selectedPosition"
           :on-cell-click="setSelectedPosition"
         />
-        <div class="absolute w-full h-full z-10 top-0 left-0 dark:bg-primary bg-primary bg-opacity-10 dark:bg-opacity-20" v-if="showSolvedUi">
+        <div class="absolute left-0 top-0 z-10 h-full w-full bg-primary bg-opacity-10 dark:bg-primary dark:bg-opacity-20" v-if="showSolvedUi">
           <div
-            class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 backdrop-blur-sm text-4xl bg-primary bg-opacity-10 p-4 rounded-2xl drop-shadow-md whitespace-nowrap font-bold secondary-text-shadow"
+            class="secondary-text-shadow absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-2xl bg-primary bg-opacity-10 p-4 text-4xl font-bold drop-shadow-md backdrop-blur-sm"
           >
             YOU DID IT!
           </div>
           <Confetti />
         </div>
       </div>
-      <div class="flex flex-col gap-4 relative pb-20 mt-8 mb-4 w-full">
+      <div class="relative mb-4 mt-8 flex w-full flex-col gap-4">
         <SudokuInputButtons
           :on-element-btn-click="handleElementBtnClick"
           :on-clear-btn-click="handleClearBtnClick"
           single-row-on-tablet-size
           single-row-on-desktop-size
         />
-        <div class="flex gap-2 justify-center">
+        <div class="flex justify-center gap-2">
           <button class="btn w-[135px]">
             Undo
             <IconRedo class="text-2xl" />
           </button>
-          <button @click="toggleCandidatesMode" class="btn w-[135px] indicator">
+          <button @click="toggleCandidatesMode" class="btn indicator w-[135px]">
             Note
             <IconPencil class="text-xl" />
             <div
-              class="indicator-item badge badge-sm"
+              class="badge indicator-item badge-sm"
               :class="{
                 'badge-primary': candidatesMode,
                 'badge-neutral': !candidatesMode,
@@ -48,12 +48,12 @@
       </div>
     </div>
 
-    <div class="dropdown dropdown-bottom dropdown-end fixed top-3 right-28 z-[1001]">
+    <div class="dropdown dropdown-end dropdown-bottom fixed right-28 top-3 z-[1001]">
       <label ref="newLabelRef" tabindex="0" class="btn btn-sm m-1">
         New
         <IconGrid class="text-xl text-accent" />
       </label>
-      <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-28">
+      <ul tabindex="0" class="menu dropdown-content z-[1] w-28 rounded-box bg-base-100 p-2 shadow">
         <li><button @click="(e) => handleNewGameClick(e, 'easy')">easy</button></li>
         <li><button @click="(e) => handleNewGameClick(e, 'medium')">medium</button></li>
         <li><button @click="(e) => handleNewGameClick(e, 'hard')">hard</button></li>
