@@ -159,8 +159,9 @@ export const usePlayStore = defineStore("play", () => {
 
   const initGridInFirstRender = () => {
     if (!isFinishInitData.value) {
-      const gridStr = getSudoku("easy").puzzle.replaceAll("-", "0") as unknown as SudokuElementWithZero[];
-      const initialGrid: Grid = ArrUtil.create2DArray(9, 9, (i, j) => gridStr[i * 9 + j]).map((row, rowIndex) =>
+      const gridStr = "800000000059100200103295080306910700000607300200358904605071029048502070700000500";
+      // const gridStr = getSudoku("easy").puzzle.replaceAll("-", "0");
+      const initialGrid: Grid = (ArrUtil.create2DArray(9, 9, (i, j) => gridStr[i * 9 + j]) as SudokuElementWithZero[][]).map((row, rowIndex) =>
         row.map((clue, columnIndex) => (clue !== "0" ? { rowIndex, columnIndex, clue } : { rowIndex, columnIndex })),
       );
       replaceGrid(initialGrid);
