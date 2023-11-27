@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="'final' in step" class="text-lg mb-2">Solved</div>
+    <div v-if="'final' in step" class="mb-2 text-lg">Solved</div>
     <div v-else class="text-lg">Step {{ stepNum }}</div>
 
     <div class="[&>div>p]:mb-2">
@@ -33,10 +33,8 @@ import SudokuView from "./SudokuView.vue";
 import type { Step } from "../core/Sudoku/SudokuSolver";
 import EliminationStrategy from "~/core/Sudoku/EliminationStrategy/EliminationStrategy";
 
-const props = defineProps<{
+defineProps<{
   stepNum: number;
   step: Step;
 }>();
 </script>
-
-<style></style>

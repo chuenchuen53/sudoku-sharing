@@ -1,7 +1,7 @@
 \
 <template>
   <div class="flex justify-center">
-    <div class="flex flex-col w-full lg:flex-row gap-8 relative pb-6 items-center lg:pb-24 justify-center lg:items-start lg:w-fit">
+    <div class="relative flex w-full flex-col items-center justify-center gap-8 pb-6 lg:w-fit lg:flex-row lg:items-start lg:pb-24">
       <SudokuView
         :grid="inputGrid"
         :can-fill-data-arr="[]"
@@ -10,14 +10,14 @@
         :selected="selectedPosition"
         :on-cell-click="setSelectedPosition"
       />
-      <div class="max-w-xl w-full space-y-4 lg:max-w-sm">
+      <div class="w-full max-w-xl space-y-4 lg:max-w-sm">
         <SudokuInputButtons
           :on-element-btn-click="fillSelected"
           :on-clear-btn-click="clearSelected"
           single-row-on-tablet-size
           :single-row-on-desktop-size="false"
         />
-        <div class="flex gap-2 justify-center">
+        <div class="flex justify-center gap-2">
           <button class="btn w-[135px]">
             Undo
             <IconRedo class="text-2xl" />
@@ -29,14 +29,14 @@
         </div>
         <SudokuGridTextInput :on-input="replaceGrid" />
         <br />
-        <button @click="handleSolve" class="w-full btn btn-primary lg:w-fit lg:absolute lg:top-[490px] lg:!mt-0 lg:left-0" :disabled="loading">
+        <button @click="handleSolve" class="btn btn-primary w-full lg:absolute lg:left-0 lg:top-[490px] lg:!mt-0 lg:w-fit" :disabled="loading">
           Solve
           <span v-if="loading" class="loading loading-spinner loading-sm"></span>
         </button>
       </div>
     </div>
 
-    <div v-if="showErrToastTimer !== null" class="toast toast-top toast-center mt-16">
+    <div v-if="showErrToastTimer !== null" class="toast toast-center toast-top mt-16">
       <div class="alert alert-error">
         <span>Invalid puzzle</span>
       </div>

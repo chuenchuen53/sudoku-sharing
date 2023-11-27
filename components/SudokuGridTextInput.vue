@@ -1,13 +1,13 @@
 <template>
   <div class="w-full">
-    <div class="flex justify-between items-center mb-2">
+    <div class="mb-2 flex items-center justify-between">
       <div class="text-lg">Input puzzle by text</div>
       <details ref="detailsRef" class="dropdown dropdown-end">
-        <summary class="btn btn-circle btn-ghost text-primary text-xl">
+        <summary class="btn btn-circle btn-ghost text-xl text-primary">
           <IconInfo />
         </summary>
-        <div class="dropdown-content z-[1] shadow bg-base-100 rounded-box w-64">
-          <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-32 space-y-2">
+        <div class="dropdown-content z-[1] w-64 rounded-box bg-base-100 shadow">
+          <ul class="menu dropdown-content z-[1] w-32 space-y-2 rounded-box bg-base-100 p-2 shadow">
             <li v-for="(x, index) in samplePuzzles" :key="index">
               <button class="btn btn-ghost btn-sm" @click="() => fillSample(x)">Sample {{ index + 1 }}</button>
             </li>
@@ -18,12 +18,12 @@
     <textarea
       ref="textareaRef"
       v-model="inputText"
-      class="textarea textarea-bordered w-full resize-none min-h-[64px] max-h-[235px] mb-2 leading-6 text-base"
+      class="textarea textarea-bordered mb-2 max-h-[235px] min-h-[64px] w-full resize-none text-base leading-6"
       :class="errText && 'textarea-error'"
       placeholder="input text like 9024150000... (with or without line break)"
     ></textarea>
     <div class="flex justify-end">
-      <pre class="text-error flex-grow">{{ errText }}</pre>
+      <pre class="flex-grow text-error">{{ errText }}</pre>
       <button @click="handleSubmit" class="btn btn-outline btn-primary btn-sm">input</button>
     </div>
   </div>
