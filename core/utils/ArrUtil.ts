@@ -1,7 +1,7 @@
 import cloneDeep from "lodash/cloneDeep";
 
 export default class ArrUtil {
-  static create2DArray<T extends string | number | boolean | (object & { length?: never })>(
+  static create2DArray<T extends string | number | boolean | (object & { length?: never }) | undefined>(
     rows: number,
     columns: number,
     fn: (row: number, column: number) => T,

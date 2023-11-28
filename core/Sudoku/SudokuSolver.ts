@@ -1,3 +1,4 @@
+import ArrUtil from "../utils/ArrUtil";
 import EliminationStrategy, { EliminationStrategyType, type EliminationData } from "./EliminationStrategy/EliminationStrategy";
 import HiddenPairs from "./EliminationStrategy/HiddenPairs";
 import HiddenQuads from "./EliminationStrategy/HiddenQuads";
@@ -152,7 +153,9 @@ export default class SudokuSolver {
     this.steps = [];
   }
 
-  setBasicCandidates(): void {
+  getBasicCandidates(): (Candidates | undefined)[][] {
+    const result = ArrUtil.create2DArray<Candidates | undefined>(9, 9, () => undefined);
+
     const missingInRowArr = this.sudoku.getAllRows().map((x) => Sudoku.missingValuesInVirtualLine(x));
     const missingInColumnArr = this.sudoku.getAllColumns().map((x) => Sudoku.missingValuesInVirtualLine(x));
     const missingInBoxArr = this.sudoku.getAllBoxes().map((x) => Sudoku.missingValuesInVirtualLine(x));
@@ -170,7 +173,21 @@ export default class SudokuSolver {
             candidatesTemplate[sudokuElement] = true;
           }
         });
-        this.sudoku.setCandidates(i, j, candidatesTemplate);
+        result[i][j] = candidatesTemplate;
+      }
+    }
+
+    return result;
+  }
+
+  setBasicCandidates(): void {
+    const result = this.getBasicCandidates();
+
+    for (let i = 0; i < this.sudoku.grid.length; i++) {
+      for (let j = 0; j < this.sudoku.grid[i].length; j++) {
+        if (this.sudoku.grid[i][j].clue || this.sudoku.grid[i][j].inputValue) continue;
+        if (!result[i][j]) continue;
+        this.sudoku.setCandidates(i, j, result[i][j]!);
       }
     }
     const step: FillCandidatesStep = { grid: Sudoku.cloneGrid(this.sudoku.grid), fillCandidates: true };
