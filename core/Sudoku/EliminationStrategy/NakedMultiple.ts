@@ -41,7 +41,7 @@ export default abstract class NakedMultiple extends EliminationStrategy {
             rowIndex: x.rowIndex,
             columnIndex: x.columnIndex,
           },
-          candidates: x.candidates,
+          candidates: {...x.candidates},
         }));
 
         result.push({ eliminations, relatedLines, highlights });
