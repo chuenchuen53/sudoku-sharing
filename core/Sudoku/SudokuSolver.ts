@@ -17,14 +17,36 @@ import { FillStrategyType, type FillInputValueData } from "./FillStrategy/FillSt
 import CSolveStats, { type Stats } from "./SolveStats";
 import FillStrategy from "./FillStrategy/FillStrategy";
 import SingleEliminationStep from "./SingleEliminationStep";
-import type { Candidates, SudokuElement, VirtualLine, CandidateCell, Grid } from "./type";
+import SingleFillStep from "./SingleFillStep";
+import type { Candidates, SudokuElement, VirtualLine, CandidateCell, Grid, Position } from "./type";
 
 export interface BaseStep {
   grid: Grid;
 }
 
+export interface SingleNoCandidateFillStep extends BaseStep {
+  singleNoCandidateFill: {
+    strategy: FillStrategyType;
+    data: FillInputValueData;
+    tempCandidate: Candidates;
+    secondaryHighlight: {
+      position: Position;
+      relatedLine: VirtualLine;
+      crossPosition: Position;
+    }[];
+  };
+}
+
 export interface FillCandidatesStep extends BaseStep {
   fillCandidates: true;
+}
+
+export interface NoCandidateFillStep extends BaseStep {
+  noCandidateFill: {
+    overriddenCandidates: (Candidates | undefined)[][];
+    strategy: FillStrategyType;
+    data: FillInputValueData[];
+  };
 }
 
 export interface FillStep extends BaseStep {
@@ -51,7 +73,7 @@ export interface FinalStep extends BaseStep {
   final: true;
 }
 
-export type Step = FillCandidatesStep | FillStep | EliminationAfterFillStep | EliminationStep | FinalStep;
+export type Step = NoCandidateFillStep | FillCandidatesStep | FillStep | EliminationAfterFillStep | EliminationStep | FinalStep;
 
 export default class SudokuSolver {
   public static enabledFillStrategies: FillStrategyType[] = [
@@ -151,6 +173,32 @@ export default class SudokuSolver {
   resetStatsAndSteps(): void {
     this.stats.reset();
     this.steps = [];
+  }
+
+  computeCanFillWithoutCandidates(): { fillInputValueDataArr: FillInputValueData[]; overriddenCandidates: (Candidates | undefined)[][] } {
+    const overriddenCandidates = this.getBasicCandidates();
+    const fillInputValueDataArr = HiddenSingle.hiddenSingleWithOverrideCandidates(this.sudoku, overriddenCandidates);
+    return { fillInputValueDataArr, overriddenCandidates };
+  }
+
+  setValueFromFillStrategyWithNoCandidateFill(fillStrategyType: FillStrategyType): number {
+    if (fillStrategyType !== FillStrategyType.HIDDEN_SINGLE) throw new Error("not implemented");
+
+    const result = this.computeCanFillWithoutCandidates();
+    if (result.fillInputValueDataArr.length === 0) return 0;
+    const fillStep: NoCandidateFillStep = {
+      grid: Sudoku.cloneGrid(this.sudoku.grid),
+      noCandidateFill: {
+        strategy: fillStrategyType,
+        overriddenCandidates: result.overriddenCandidates,
+        data: result.fillInputValueDataArr,
+      },
+    };
+    this.steps.push(fillStep);
+    this.sudoku.setInputValues(result.fillInputValueDataArr);
+    this.stats.addFilled(fillStrategyType, result.fillInputValueDataArr.length);
+
+    return result.fillInputValueDataArr.length;
   }
 
   getBasicCandidates(): (Candidates | undefined)[][] {
@@ -266,6 +314,9 @@ export default class SudokuSolver {
     for (const step of this.steps) {
       if ("elimination" in step) {
         const singularizedSteps = SingleEliminationStep.singularizeSteps(step);
+        result.push(...singularizedSteps);
+      } else if ("noCandidateFill" in step) {
+        const singularizedSteps = SingleFillStep.singularizeSteps(step);
         result.push(...singularizedSteps);
       } else {
         result.push(step);
