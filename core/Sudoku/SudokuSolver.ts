@@ -19,6 +19,7 @@ import FillStrategy from "./FillStrategy/FillStrategy";
 import SingleEliminationStep from "./SingleEliminationStep";
 import SingleFillStep from "./SingleFillStep";
 import type { Candidates, SudokuElement, VirtualLine, CandidateCell, Grid, Position } from "./type";
+import type { SudokuLine } from "./SudokuLine";
 
 export interface BaseStep {
   grid: Grid;
@@ -31,7 +32,7 @@ export interface SingleNoCandidateFillStep extends BaseStep {
     tempCandidate: Candidates;
     secondaryHighlight: {
       position: Position;
-      relatedLine: VirtualLine;
+      relatedLine: SudokuLine;
       crossPosition: Position;
     }[];
   };
@@ -73,7 +74,14 @@ export interface FinalStep extends BaseStep {
   final: true;
 }
 
-export type Step = NoCandidateFillStep | FillCandidatesStep | FillStep | EliminationAfterFillStep | EliminationStep | FinalStep;
+export type Step =
+  | NoCandidateFillStep
+  | SingleNoCandidateFillStep
+  | FillCandidatesStep
+  | FillStep
+  | EliminationAfterFillStep
+  | EliminationStep
+  | FinalStep;
 
 export default class SudokuSolver {
   public static enabledFillStrategies: FillStrategyType[] = [

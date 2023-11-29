@@ -47,7 +47,7 @@ export default class HiddenSingle extends FillStrategy {
         if (candidatesCount[sudokuElement].length !== 1) return;
         const cell = candidatesCount[sudokuElement][0];
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        if ((overrideCandidates ? overrideCandidates[cell.rowIndex][cell.columnIndex] : SudokuSolver.numberOfCandidates(cell.candidates!)) === 1) {
+        if (SudokuSolver.numberOfCandidates(overrideCandidates ? overrideCandidates[cell.rowIndex][cell.columnIndex]! : cell.candidates!) === 1) {
           return; // naked single
         }
         result.push({
