@@ -25,35 +25,15 @@ export interface BaseStep {
   grid: Grid;
 }
 
-export interface SingleNoCandidateFillStep extends BaseStep {
-  singleNoCandidateFill: {
-    strategy: FillStrategyType;
-    data: FillInputValueData;
-    tempCandidate: Candidates;
-    secondaryHighlight: {
-      position: Position;
-      relatedLine: SudokuLine;
-      crossPosition: Position;
-    }[];
-  };
-}
-
 export interface FillCandidatesStep extends BaseStep {
   fillCandidates: true;
-}
-
-export interface NoCandidateFillStep extends BaseStep {
-  noCandidateFill: {
-    overriddenCandidates: (Candidates | undefined)[][];
-    strategy: FillStrategyType;
-    data: FillInputValueData[];
-  };
 }
 
 export interface FillStep extends BaseStep {
   fill: {
     strategy: FillStrategyType;
     data: FillInputValueData[];
+    withoutCandidates?: boolean;
   };
 }
 
@@ -75,8 +55,6 @@ export interface FinalStep extends BaseStep {
 }
 
 export type Step =
-  | NoCandidateFillStep
-  | SingleNoCandidateFillStep
   | FillCandidatesStep
   | FillStep
   | EliminationAfterFillStep
@@ -194,12 +172,12 @@ export default class SudokuSolver {
 
     const result = this.computeCanFillWithoutCandidates();
     if (result.fillInputValueDataArr.length === 0) return 0;
-    const fillStep: NoCandidateFillStep = {
+    const fillStep: FillStep = {
       grid: Sudoku.cloneGrid(this.sudoku.grid),
-      noCandidateFill: {
+      fill: {
         strategy: fillStrategyType,
-        overriddenCandidates: result.overriddenCandidates,
         data: result.fillInputValueDataArr,
+        withoutCandidates: true,
       },
     };
     this.steps.push(fillStep);
@@ -323,7 +301,7 @@ export default class SudokuSolver {
       if ("elimination" in step) {
         const singularizedSteps = SingleEliminationStep.singularizeSteps(step);
         result.push(...singularizedSteps);
-      } else if ("noCandidateFill" in step) {
+      } else if ("fill" in step && step.fill.strategy === FillStrategyType.HIDDEN_SINGLE && step.fill.withoutCandidates) {
         const singularizedSteps = SingleFillStep.singularizeSteps(step);
         result.push(...singularizedSteps);
       } else {

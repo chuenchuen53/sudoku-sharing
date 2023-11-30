@@ -1,5 +1,5 @@
 import type { SudokuLine } from "../SudokuLine";
-import type { InputValueData } from "../type";
+import type { InputValueData, Position } from "../type";
 import type Sudoku from "../Sudoku";
 import type { Elimination } from "../EliminationStrategy/EliminationStrategy";
 
@@ -12,6 +12,9 @@ export enum FillStrategyType {
 export interface FillInputValueData extends InputValueData {
   relatedLine?: SudokuLine;
   highlightWholeCell?: boolean;
+  mainRelatedLine?: SudokuLine;
+  secondaryRelatedLines?: SudokuLine[];
+  secondaryHighlight?: Position[];
 }
 
 export default abstract class FillStrategy {
