@@ -18,8 +18,7 @@ import CSolveStats, { type Stats } from "./SolveStats";
 import FillStrategy from "./FillStrategy/FillStrategy";
 import SingleEliminationStep from "./SingleEliminationStep";
 import SingleFillStep from "./SingleFillStep";
-import type { Candidates, SudokuElement, VirtualLine, CandidateCell, Grid, Position } from "./type";
-import type { SudokuLine } from "./SudokuLine";
+import type { Candidates, SudokuElement, VirtualLine, CandidateCell, Grid } from "./type";
 
 export interface BaseStep {
   grid: Grid;
@@ -54,12 +53,7 @@ export interface FinalStep extends BaseStep {
   final: true;
 }
 
-export type Step =
-  | FillCandidatesStep
-  | FillStep
-  | EliminationAfterFillStep
-  | EliminationStep
-  | FinalStep;
+export type Step = FillCandidatesStep | FillStep | EliminationAfterFillStep | EliminationStep | FinalStep;
 
 export default class SudokuSolver {
   public static enabledFillStrategies: FillStrategyType[] = [
@@ -326,7 +320,10 @@ export default class SudokuSolver {
   trySolve(): boolean {
     let haveSetCandidates = false;
     while (!haveSetCandidates) {
-      if (this.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING) === 0) {
+      if (
+        this.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING) === 0 &&
+        this.setValueFromFillStrategyWithNoCandidateFill(FillStrategyType.HIDDEN_SINGLE) === 0
+      ) {
         this.setBasicCandidates();
         haveSetCandidates = true;
       }
