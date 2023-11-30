@@ -298,6 +298,15 @@ export default class SudokuSolver {
       } else if ("fill" in step && step.fill.strategy === FillStrategyType.HIDDEN_SINGLE && step.fill.withoutCandidates) {
         const singularizedSteps = SingleFillStep.singularizeSteps(step);
         result.push(...singularizedSteps);
+      } else if ("fill" in step && step.fill.strategy === FillStrategyType.UNIQUE_MISSING) {
+        const cloneGrid = Sudoku.cloneGrid(step.grid);
+        for (const data of step.fill.data) {
+          const { rowIndex, columnIndex, value } = data;
+          if (!cloneGrid[rowIndex][columnIndex].candidates) {
+            cloneGrid[rowIndex][columnIndex].candidates = Sudoku.candidatesFactory(true, [value]);
+          }
+        }
+        result.push({ grid: cloneGrid, fill: step.fill });
       } else {
         result.push(step);
       }

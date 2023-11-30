@@ -127,7 +127,7 @@ const highlightedCandidates = computed<Omit<Highlight, "isSecondaryPosition">[]>
   canFillDataArr.forEach((data) => {
     const position = { rowIndex: data.rowIndex, columnIndex: data.columnIndex };
     const candidates = Sudoku.candidatesFactory(true, [data.value]);
-    if (!data.highlightWholeCell) highlighted.push({ position, candidates });
+    highlighted.push({ position, candidates });
   });
 
   eliminationDataArr.forEach((data) => {
