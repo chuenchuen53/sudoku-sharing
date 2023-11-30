@@ -429,27 +429,27 @@ $sub-border-width: 1px;
     }
 
     &.outline-top-3 {
-      top: calc(var(--cell-size-with-sub-border) * 3 - #{$sub-border-width} + #{$outline-width});
+      top: calc(var(--cell-size-with-sub-border) * 3 - #{$sub-border-width} + #{$main-border-width});
     }
 
     &.outline-top-4 {
-      top: calc(var(--cell-size-with-sub-border) * 4 - #{$sub-border-width} + #{$outline-width});
+      top: calc(var(--cell-size-with-sub-border) * 4 - #{$sub-border-width} + #{$main-border-width});
     }
 
     &.outline-top-5 {
-      top: calc(var(--cell-size-with-sub-border) * 5 - #{$sub-border-width} + #{$outline-width});
+      top: calc(var(--cell-size-with-sub-border) * 5 - #{$sub-border-width} + #{$main-border-width});
     }
 
     &.outline-top-6 {
-      top: calc(var(--cell-size-with-sub-border) * 6 - 2 * #{$sub-border-width} + 2 * #{$outline-width});
+      top: calc(var(--cell-size-with-sub-border) * 6 - 2 * #{$sub-border-width} + 2 * #{$main-border-width});
     }
 
     &.outline-top-7 {
-      top: calc(var(--cell-size-with-sub-border) * 7 - 2 * #{$sub-border-width} + 2 * #{$outline-width});
+      top: calc(var(--cell-size-with-sub-border) * 7 - 2 * #{$sub-border-width} + 2 * #{$main-border-width});
     }
 
     &.outline-top-8 {
-      top: calc(var(--cell-size-with-sub-border) * 8 - 2 * #{$sub-border-width} + 2 * #{$outline-width});
+      top: calc(var(--cell-size-with-sub-border) * 8 - 2 * #{$sub-border-width} + 2 * #{$main-border-width});
     }
 
     &.outline-left-0 {
@@ -465,27 +465,27 @@ $sub-border-width: 1px;
     }
 
     &.outline-left-3 {
-      left: calc(var(--cell-size-with-sub-border) * 3 - #{$sub-border-width} + #{$outline-width});
+      left: calc(var(--cell-size-with-sub-border) * 3 - #{$sub-border-width} + #{$main-border-width});
     }
 
     &.outline-left-4 {
-      left: calc(var(--cell-size-with-sub-border) * 4 - #{$sub-border-width} + #{$outline-width});
+      left: calc(var(--cell-size-with-sub-border) * 4 - #{$sub-border-width} + #{$main-border-width});
     }
 
     &.outline-left-5 {
-      left: calc(var(--cell-size-with-sub-border) * 5 - #{$sub-border-width} + #{$outline-width});
+      left: calc(var(--cell-size-with-sub-border) * 5 - #{$sub-border-width} + #{$main-border-width});
     }
 
     &.outline-left-6 {
-      left: calc(var(--cell-size-with-sub-border) * 6 - 2 * #{$sub-border-width} + 2 * #{$outline-width});
+      left: calc(var(--cell-size-with-sub-border) * 6 - 2 * #{$sub-border-width} + 2 * #{$main-border-width});
     }
 
     &.outline-left-7 {
-      left: calc(var(--cell-size-with-sub-border) * 7 - 2 * #{$sub-border-width} + 2 * #{$outline-width});
+      left: calc(var(--cell-size-with-sub-border) * 7 - 2 * #{$sub-border-width} + 2 * #{$main-border-width});
     }
 
     &.outline-left-8 {
-      left: calc(var(--cell-size-with-sub-border) * 8 - 2 * #{$sub-border-width} + 2 * #{$outline-width});
+      left: calc(var(--cell-size-with-sub-border) * 8 - 2 * #{$sub-border-width} + 2 * #{$main-border-width});
     }
 
     &.outline-one-cell-width {
@@ -497,11 +497,11 @@ $sub-border-width: 1px;
     }
 
     &.outline-three-cells-width {
-      width: calc(var(--cell-size-with-sub-border) * 3 - #{$outline-width});
+      width: calc(var(--cell-size-with-sub-border) * 3 - #{$sub-border-width});
     }
 
     &.outline-three-cells-height {
-      height: calc(var(--cell-size-with-sub-border) * 3 - #{$outline-width});
+      height: calc(var(--cell-size-with-sub-border) * 3 - #{$sub-border-width});
     }
 
     &.outline-full-width {
