@@ -47,6 +47,7 @@ export default class SingleFillStep {
       secondaryRelatedLines.filter((x, i) => secondaryRelatedLines.findIndex(y => x.toString() === y.toString()) === i);
       secondaryHighlight.filter((x, i) => secondaryHighlight.findIndex(y => Sudoku.isSamePos(x, y)) === i);
 
+      sudoku.setCandidates(x.rowIndex, x.columnIndex, Sudoku.candidatesFactory(true, [x.value]))
       result.push({
         grid: Sudoku.cloneGrid(sudoku.grid),
         fill: {
@@ -63,7 +64,6 @@ export default class SingleFillStep {
           ],
         },
       });
-
       sudoku.setInputValue(x, false);
     }
 

@@ -42,6 +42,12 @@
         </div>
       </div>
     </div>
+    <div
+      v-for="(x, index) in outlinedLines"
+      :key="index"
+      class="outlined-line"
+      :class="`${x.topCls} ${x.leftCls} ${x.widthCls} ${x.heightCls}`"
+    ></div>
   </div>
 </template>
 
@@ -49,8 +55,8 @@
 import { SudokuLineUtil, type SudokuLine } from "../core/Sudoku/SudokuLine";
 import Sudoku from "../core/Sudoku/Sudoku";
 import SudokuSolver from "../core/Sudoku/SudokuSolver";
+import { VirtualLineType, type Grid, type Position } from "../core/Sudoku/type";
 import type { Highlight, EliminationData } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
-import type { Grid, Position } from "../core/Sudoku/type";
 import type { FillInputValueData } from "../core/Sudoku/FillStrategy/FillStrategy";
 
 const props = defineProps<{
@@ -58,15 +64,27 @@ const props = defineProps<{
   canFillDataArr: FillInputValueData[];
   eliminationDataArr: EliminationData[];
   invalidPositions: Position[];
+  outlinedLine?: SudokuLine;
   selected?: Position;
   onCellClick?: (position: Position) => void;
 }>();
+
+const outlinedLines = computed<ReturnType<typeof outlinedLinePosition>[]>(() => {
+  const { canFillDataArr } = props;
+  const lines = new Set<SudokuLine>();
+  canFillDataArr.forEach((data) => {
+    if (data.mainRelatedLine) lines.add(data.mainRelatedLine);
+  });
+  const linesArr = Array.from(lines);
+  return linesArr.map((x) => outlinedLinePosition(x));
+});
 
 const relatedLinesCells = computed<Position[]>(() => {
   const { canFillDataArr, eliminationDataArr } = props;
   const relatedLines = new Set<SudokuLine>();
   canFillDataArr.forEach((data) => {
     if (data.relatedLine) relatedLines.add(data.relatedLine);
+    if (data.secondaryRelatedLines) data.secondaryRelatedLines.forEach((line) => relatedLines.add(line));
   });
   eliminationDataArr.forEach((data) => {
     if (data.relatedLines.length !== 0) {
@@ -87,6 +105,7 @@ const highlightedCells = computed<{ primary: Position[]; secondary: Position[] }
   const secondaryPositions: Position[] = [];
   canFillDataArr.forEach((data) => {
     if (data.highlightWholeCell) primaryPositions.push({ rowIndex: data.rowIndex, columnIndex: data.columnIndex });
+    if (data.secondaryHighlight) secondaryPositions.push(...data.secondaryHighlight);
   });
   eliminationDataArr.forEach((data) => {
     if (data.highlights.length !== 0) {
@@ -120,6 +139,39 @@ const highlightedCandidates = computed<Omit<Highlight, "isSecondaryPosition">[]>
   });
   return highlighted;
 });
+
+function outlinedLinePosition(line: SudokuLine): {
+  topCls: string;
+  leftCls: string;
+  widthCls: string;
+  heightCls: string;
+} {
+  const { virtualLineType, lineIndex } = SudokuLineUtil.lineTypeAndIndex(line);
+  switch (virtualLineType) {
+    case VirtualLineType.ROW:
+      return {
+        topCls: `outline-top-${lineIndex}`,
+        leftCls: `outline-left-0`,
+        widthCls: `outline-full-width`,
+        heightCls: `outline-one-cell-height`,
+      };
+    case VirtualLineType.COLUMN:
+      return {
+        topCls: `outline-top-0`,
+        leftCls: `outline-left-${lineIndex}`,
+        widthCls: `outline-one-cell-width`,
+        heightCls: `outline-full-height`,
+      };
+    case VirtualLineType.BOX: {
+      return {
+        topCls: `outline-top-${Sudoku.boxFirstLineIndex(lineIndex, VirtualLineType.ROW)}`,
+        leftCls: `outline-left-${Sudoku.boxFirstLineIndex(lineIndex, VirtualLineType.COLUMN)}`,
+        widthCls: `outline-three-cells-width`,
+        heightCls: `outline-three-cells-height`,
+      };
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -151,6 +203,7 @@ $sub-border-width: 1px;
   @apply bg-base-100 dark:bg-base-100;
   @apply border-base-content dark:border-slate-50;
 
+  position: relative;
   display: flex;
   flex-direction: column;
   border-width: $grand-border-width;
@@ -351,6 +404,112 @@ $sub-border-width: 1px;
         border-bottom: none;
         height: var(--cell-size);
       }
+    }
+  }
+
+  .outlined-line {
+    $outline-width: 2px;
+
+    position: absolute;
+    outline-style: solid;
+    outline-width: 3px;
+
+    @apply outline-error;
+
+    &.outline-top-0 {
+      top: 0;
+    }
+
+    &.outline-top-1 {
+      top: calc(var(--cell-size-with-sub-border));
+    }
+
+    &.outline-top-2 {
+      top: calc(var(--cell-size-with-sub-border) * 2);
+    }
+
+    &.outline-top-3 {
+      top: calc(var(--cell-size-with-sub-border) * 3 - #{$sub-border-width} + #{$outline-width});
+    }
+
+    &.outline-top-4 {
+      top: calc(var(--cell-size-with-sub-border) * 4 - #{$sub-border-width} + #{$outline-width});
+    }
+
+    &.outline-top-5 {
+      top: calc(var(--cell-size-with-sub-border) * 5 - #{$sub-border-width} + #{$outline-width});
+    }
+
+    &.outline-top-6 {
+      top: calc(var(--cell-size-with-sub-border) * 6 - 2 * #{$sub-border-width} + 2 * #{$outline-width});
+    }
+
+    &.outline-top-7 {
+      top: calc(var(--cell-size-with-sub-border) * 7 - 2 * #{$sub-border-width} + 2 * #{$outline-width});
+    }
+
+    &.outline-top-8 {
+      top: calc(var(--cell-size-with-sub-border) * 8 - 2 * #{$sub-border-width} + 2 * #{$outline-width});
+    }
+
+    &.outline-left-0 {
+      left: 0;
+    }
+
+    &.outline-left-1 {
+      left: calc(var(--cell-size-with-sub-border));
+    }
+
+    &.outline-left-2 {
+      left: calc(var(--cell-size-with-sub-border) * 2);
+    }
+
+    &.outline-left-3 {
+      left: calc(var(--cell-size-with-sub-border) * 3 - #{$sub-border-width} + #{$outline-width});
+    }
+
+    &.outline-left-4 {
+      left: calc(var(--cell-size-with-sub-border) * 4 - #{$sub-border-width} + #{$outline-width});
+    }
+
+    &.outline-left-5 {
+      left: calc(var(--cell-size-with-sub-border) * 5 - #{$sub-border-width} + #{$outline-width});
+    }
+
+    &.outline-left-6 {
+      left: calc(var(--cell-size-with-sub-border) * 6 - 2 * #{$sub-border-width} + 2 * #{$outline-width});
+    }
+
+    &.outline-left-7 {
+      left: calc(var(--cell-size-with-sub-border) * 7 - 2 * #{$sub-border-width} + 2 * #{$outline-width});
+    }
+
+    &.outline-left-8 {
+      left: calc(var(--cell-size-with-sub-border) * 8 - 2 * #{$sub-border-width} + 2 * #{$outline-width});
+    }
+
+    &.outline-one-cell-width {
+      width: var(--cell-size);
+    }
+
+    &.outline-one-cell-height {
+      height: var(--cell-size);
+    }
+
+    &.outline-three-cells-width {
+      width: calc(var(--cell-size-with-sub-border) * 3 - #{$outline-width});
+    }
+
+    &.outline-three-cells-height {
+      height: calc(var(--cell-size-with-sub-border) * 3 - #{$outline-width});
+    }
+
+    &.outline-full-width {
+      width: calc(var(--puzzle-size) - 2 * #{$grand-border-width});
+    }
+
+    &.outline-full-height {
+      height: calc(var(--puzzle-size) - 2 * #{$grand-border-width});
     }
   }
 }
