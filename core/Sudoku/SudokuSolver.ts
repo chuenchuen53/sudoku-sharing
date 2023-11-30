@@ -329,6 +329,12 @@ export default class SudokuSolver {
   trySolve(): boolean {
     let haveSetCandidates = false;
     while (!haveSetCandidates) {
+      if (this.sudoku.solved) {
+        const finalStep: FinalStep = { grid: Sudoku.cloneGrid(this.sudoku.grid), final: true };
+        this.steps.push(finalStep);
+        return true;
+      }
+
       if (
         this.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING) === 0 &&
         this.setValueFromFillStrategyWithNoCandidateFill(FillStrategyType.HIDDEN_SINGLE) === 0
