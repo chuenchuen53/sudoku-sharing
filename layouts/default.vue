@@ -7,23 +7,22 @@
         </button>
 
         <Transition>
-          <nav
-            v-if="showHorizontally || isMobileMenuOpened"
-            class="fixed left-0 right-0 top-16 bg-base-100 px-3 pb-3 pt-1 sm:static sm:bg-transparent"
-          >
-            <ul class="flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0">
-              <li v-for="x in routes" :key="x.path">
-                <NuxtLink
-                  class="btn btn-ghost btn-sm"
-                  :class="{ 'text-primary': x.path === '/' ? route.path === x.path : route.path.startsWith(x.path) }"
-                  :to="x.path"
-                  @click="isMobileMenuOpened && (isMobileMenuOpened = false)"
-                >
-                  {{ x.name }}
-                </NuxtLink>
-              </li>
-            </ul>
-          </nav>
+          <div v-if="showHorizontally || isMobileMenuOpened">
+            <nav class="fixed left-0 right-0 top-16 bg-base-100 px-3 pb-3 pt-1 sm:static sm:bg-transparent">
+              <ul class="flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0">
+                <li v-for="x in routes" :key="x.path">
+                  <NuxtLink
+                    class="btn btn-ghost btn-sm"
+                    :class="{ 'text-primary': x.path === '/' ? route.path === x.path : route.path.startsWith(x.path) }"
+                    :to="x.path"
+                    @click="isMobileMenuOpened && (isMobileMenuOpened = false)"
+                  >
+                    {{ x.name }}
+                  </NuxtLink>
+                </li>
+              </ul>
+            </nav>
+          </div>
         </Transition>
       </div>
     </header>
