@@ -27,7 +27,7 @@
           single-row-on-desktop-size
         />
         <div class="flex justify-center gap-2">
-          <button class="btn w-[135px]">
+          <button @click="undoActionFn" :disabled="!haveUndo" class="btn w-[135px]">
             Undo
             <IconRedo class="text-2xl" />
           </button>
@@ -69,21 +69,27 @@
 import { storeToRefs } from "pinia";
 import SudokuView from "../components/SudokuView.vue";
 import { usePlayStore } from "../stores/play";
-import type { InputClues, SudokuElement } from "~/core/Sudoku/type";
+import type { SudokuElement } from "~/core/Sudoku/type";
 import IconPencil from "~/components/Icons/IconPencil.vue";
 import IconGrid from "~/components/Icons/IconGrid.vue";
 import IconRedo from "~/components/Icons/IconRedo.vue";
 import HintDrawer from "~/components/HintDrawer.vue";
 import SudokuInputUtil from "~/utils/SudokuInputUtil";
-import Sudoku from "~/core/Sudoku/Sudoku";
-import SudokuSolver from "~/core/Sudoku/SudokuSolver";
-import { FillStrategyType } from "~/core/Sudoku/FillStrategy/FillStrategy";
 
 const newLabelRef = ref<HTMLElement | null>(null);
 const playStore = usePlayStore();
-const { showSolvedUi, candidatesMode, inputGrid, invalidPositions, selectedPosition, canFillData, canEliminateData } = storeToRefs(playStore);
-const { setSelectedPosition, fillSelected, clearSelected, toggleCandidatesMode, toggleCandidateInSelectedCell, initGridInFirstRender, newGame } =
-  playStore;
+const { showSolvedUi, candidatesMode, inputGrid, invalidPositions, selectedPosition, canFillData, canEliminateData, haveUndo } =
+  storeToRefs(playStore);
+const {
+  setSelectedPosition,
+  fillSelected,
+  clearSelected,
+  toggleCandidatesMode,
+  toggleCandidateInSelectedCell,
+  initGridInFirstRender,
+  newGame,
+  undoActionFn,
+} = playStore;
 
 const handleKeyDown = (e: KeyboardEvent) => {
   if (document.activeElement?.tagName === "TEXTAREA") return;
@@ -133,27 +139,6 @@ const handleKeyDown = (e: KeyboardEvent) => {
 onMounted(() => {
   window.addEventListener("keydown", handleKeyDown);
   initGridInFirstRender();
-
-  // testing
-  const p0: InputClues = [
-    ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
-    ["7", "0", "0", "0", "0", "0", "0", "0", "0"],
-    ["0", "0", "8", "0", "0", "0", "4", "0", "9"],
-    ["9", "6", "2", "1", "0", "0", "0", "4", "0"],
-    ["8", "1", "0", "0", "0", "3", "0", "2", "0"],
-    ["0", "3", "7", "6", "5", "0", "8", "0", "1"],
-    ["5", "8", "0", "7", "0", "4", "9", "1", "3"],
-    ["1", "0", "0", "3", "0", "0", "0", "0", "0"],
-    ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
-  ];
-
-  const sudoku = new Sudoku(p0);
-  const solver = new SudokuSolver(sudoku);
-  solver.setValueFromFillStrategyWithNoCandidateFill(FillStrategyType.HIDDEN_SINGLE);
-
-  const steps = solver.getSteps();
-  console.log(steps);
-  // testing
 });
 
 onUnmounted(() => {

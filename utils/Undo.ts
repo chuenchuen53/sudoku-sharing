@@ -118,7 +118,7 @@ export class Undo {
   public overwriteAllCandidates(): void {
     const arr = ArrUtil.create2DArray<Candidates | undefined>(9, 9, () => undefined);
     for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; i++) {
+      for (let j = 0; j < 9; j++) {
         const candidates = this.sudoku.grid[i][j].candidates;
         if (candidates) {
           arr[i][j] = { ...candidates };
@@ -153,6 +153,10 @@ export function undoAction(reactiveGrid: Ref<Grid>, sudoku: Sudoku, undoItem: Un
           sudoku.setInputValue({ rowIndex: undoItem.rowIndex, columnIndex: undoItem.columnIndex, value: undoItem.inputValue }, true);
         }
       } else {
+        if (reactiveGrid.value[undoItem.rowIndex][undoItem.columnIndex].inputValue) {
+          delete reactiveGrid.value[undoItem.rowIndex][undoItem.columnIndex].inputValue;
+          sudoku.removeInputValue({ rowIndex: undoItem.rowIndex, columnIndex: undoItem.columnIndex }, true);
+        }
         reactiveGrid.value[undoItem.rowIndex][undoItem.columnIndex].candidates = undoItem.candidates;
       }
       break;
@@ -161,12 +165,15 @@ export function undoAction(reactiveGrid: Ref<Grid>, sudoku: Sudoku, undoItem: Un
       if (undoItem.candidates === null) {
         delete reactiveGrid.value[undoItem.rowIndex][undoItem.columnIndex].candidates;
         sudoku.removeCandidatesForCell(undoItem.rowIndex, undoItem.columnIndex);
+      } else {
+        reactiveGrid.value[undoItem.rowIndex][undoItem.columnIndex].candidates = { ...undoItem.candidates };
+        sudoku.setCandidates(undoItem.rowIndex, undoItem.columnIndex, undoItem.candidates);
       }
       break;
     }
     case UndoType.OVERWRITE_ALL_CANDIDATES: {
       for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; i++) {
+        for (let j = 0; j < 9; j++) {
           const candidates = undoItem.overwriteAllCandidates[i][j];
           if (candidates === undefined) {
             delete reactiveGrid.value[i][j].candidates;

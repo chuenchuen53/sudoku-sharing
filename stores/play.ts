@@ -25,9 +25,15 @@ export const usePlayStore = defineStore("play", () => {
   const currentEliminationStrategy = ref<EliminationStrategyType | null>(null);
   const eliminateData = shallowRef<{ data: EliminationData; description: string }[] | null>(null);
   const canEliminateData = shallowRef<EliminationData | null>(null);
+  const haveUndo = ref(false);
 
   let sudoku: Sudoku = Sudoku.sudokuFromGrid(inputGrid.value);
   let sudokuSolver: SudokuSolver = new SudokuSolver(sudoku);
+  let undo = new Undo(sudoku);
+
+  const _updateHaveUndo = () => {
+    haveUndo.value = undo.haveUndo;
+  };
 
   const setSelectedPosition = (position: Position) => {
     selectedPosition.value = position;
@@ -39,6 +45,8 @@ export const usePlayStore = defineStore("play", () => {
     if (solved.value) return;
     const { rowIndex, columnIndex } = selectedPosition.value;
     if (inputGrid.value[rowIndex][columnIndex].clue) return;
+    undo.fill(rowIndex, columnIndex);
+    _updateHaveUndo();
     inputGrid.value[rowIndex][columnIndex].inputValue = value;
     sudoku.setInputValue({ rowIndex, columnIndex, value }, true);
     inputGrid.value[rowIndex][columnIndex].candidates = sudoku.grid[rowIndex][columnIndex].candidates;
@@ -57,9 +65,14 @@ export const usePlayStore = defineStore("play", () => {
 
     if (solved.value) return;
     const { rowIndex, columnIndex } = selectedPosition.value;
-    if (inputGrid.value[rowIndex][columnIndex].inputValue) delete inputGrid.value[rowIndex][columnIndex].inputValue;
-    sudoku.removeInputValue({ rowIndex, columnIndex }, true);
-    invalidPositions.value = sudoku.invalidCells;
+
+    if (inputGrid.value[rowIndex][columnIndex].inputValue) {
+      undo.clear(rowIndex, columnIndex);
+      _updateHaveUndo();
+      delete inputGrid.value[rowIndex][columnIndex].inputValue;
+      sudoku.removeInputValue({ rowIndex, columnIndex }, true);
+      invalidPositions.value = sudoku.invalidCells;
+    }
   };
 
   const replaceGrid = (grid: Grid) => {
@@ -68,12 +81,16 @@ export const usePlayStore = defineStore("play", () => {
     inputGrid.value = grid;
     sudoku = Sudoku.sudokuFromGrid(inputGrid.value);
     sudokuSolver = new SudokuSolver(sudoku);
+    undo = new Undo(sudoku);
+    _updateHaveUndo();
     invalidPositions.value = sudoku.invalidCells;
   };
 
   const addCandidateCell = (rowIndex: number, columnIndex: number, value: SudokuElement) => {
     const reactiveCell = inputGrid.value[rowIndex][columnIndex];
     if (reactiveCell.clue || reactiveCell.inputValue) return;
+    undo.addCandidate(rowIndex, columnIndex, value);
+    _updateHaveUndo();
     const added = sudoku.addElementInCandidates(rowIndex, columnIndex, value);
     if (added) reactiveCell.candidates = { ...sudoku.grid[rowIndex][columnIndex].candidates! };
     invalidPositions.value = sudoku.invalidCells;
@@ -82,6 +99,8 @@ export const usePlayStore = defineStore("play", () => {
   const removeCandidateCell = (rowIndex: number, columnIndex: number, value: SudokuElement) => {
     const reactiveCell = inputGrid.value[rowIndex][columnIndex];
     if (reactiveCell.clue || reactiveCell.inputValue) return;
+    undo.removeCandidate(rowIndex, columnIndex, value);
+    _updateHaveUndo();
     const removed = sudoku.removeElementInCandidates(rowIndex, columnIndex, value);
     if (removed) reactiveCell.candidates = { ...sudoku.grid[rowIndex][columnIndex].candidates! };
     invalidPositions.value = sudoku.invalidCells;
@@ -108,6 +127,8 @@ export const usePlayStore = defineStore("play", () => {
   const fillBasicCandidates = () => {
     clearFillInputValueDataAndEliminateData();
 
+    undo.overwriteAllCandidates();
+    _updateHaveUndo();
     sudokuSolver.setBasicCandidates();
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
@@ -177,6 +198,16 @@ export const usePlayStore = defineStore("play", () => {
     replaceGrid(initialGrid);
   };
 
+  const undoActionFn = () => {
+    if (solved.value) return;
+
+    const lastUndo = undo.lastUndo;
+    _updateHaveUndo();
+    if (!lastUndo) return;
+    undoAction(inputGrid, sudoku, lastUndo);
+    invalidPositions.value = [...sudoku.invalidCells];
+  };
+
   return {
     solved,
     showSolvedUi,
@@ -190,6 +221,7 @@ export const usePlayStore = defineStore("play", () => {
     canEliminateData,
     currentFillStrategy,
     currentEliminationStrategy,
+    haveUndo,
     setSelectedPosition,
     fillSelected,
     clearSelected,
@@ -204,5 +236,6 @@ export const usePlayStore = defineStore("play", () => {
     clearFillInputValueDataAndEliminateData,
     initGridInFirstRender,
     newGame,
+    undoActionFn,
   };
 });

@@ -27,25 +27,26 @@ export const useSolverStore = defineStore("solver", () => {
   const fillSelected = (value: SudokuElement) => {
     const { rowIndex, columnIndex } = selectedPosition.value;
     undo.fill(rowIndex, columnIndex);
+    _updateHaveUndo();
     inputGrid.value[rowIndex][columnIndex].inputValue = value;
     sudoku.setInputValue({ rowIndex, columnIndex, value }, true);
     invalidPositions.value = [...sudoku.invalidCells];
-    _updateHaveUndo();
   };
 
   const clearSelected = () => {
     const { rowIndex, columnIndex } = selectedPosition.value;
     if (inputGrid.value[rowIndex][columnIndex].inputValue) {
       undo.clear(rowIndex, columnIndex);
+      _updateHaveUndo();
       delete inputGrid.value[rowIndex][columnIndex].inputValue;
       sudoku.removeInputValue({ rowIndex, columnIndex }, true);
       invalidPositions.value = [...sudoku.invalidCells];
     }
-    _updateHaveUndo();
   };
 
   const clearGrid = () => {
     undo.replaceAllInputValues();
+    _updateHaveUndo();
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
         if (inputGrid.value[i][j].inputValue) {
@@ -56,11 +57,11 @@ export const useSolverStore = defineStore("solver", () => {
     }
     sudoku.validatePuzzle();
     invalidPositions.value = [];
-    _updateHaveUndo();
   };
 
   const replaceGrid = (grid: Grid) => {
     undo.replaceAllInputValues();
+    _updateHaveUndo();
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
         if (inputGrid.value[i][j].inputValue) {
@@ -75,15 +76,14 @@ export const useSolverStore = defineStore("solver", () => {
     }
     sudoku.validatePuzzle();
     invalidPositions.value = [...sudoku.invalidCells];
-    _updateHaveUndo();
   };
 
   const undoActionFn = () => {
     const lastUndo = undo.lastUndo;
+    _updateHaveUndo();
     if (!lastUndo) return;
     undoAction(inputGrid, sudoku, lastUndo);
     invalidPositions.value = [...sudoku.invalidCells];
-    _updateHaveUndo();
   };
 
   return {
