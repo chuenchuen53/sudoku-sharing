@@ -18,7 +18,7 @@
           :single-row-on-desktop-size="false"
         />
         <div class="flex justify-center gap-2">
-          <button class="btn w-[135px]">
+          <button @click="undoActionFn" :disabled="!haveUndo" class="btn w-[135px]">
             Undo
             <IconRedo class="text-2xl" />
           </button>
@@ -61,8 +61,8 @@ import IconEraser from "~/components/Icons/IconEraser.vue";
 const solverStore = useSolverStore();
 const solverSolutionStore = useSolverSolutionStore();
 
-const { loading, selectedPosition, inputGrid, invalidPositions } = storeToRefs(solverStore);
-const { setLoading, setSelectedPosition, fillSelected, clearSelected, clearGrid, replaceGrid } = solverStore;
+const { loading, selectedPosition, inputGrid, invalidPositions, haveUndo } = storeToRefs(solverStore);
+const { setLoading, setSelectedPosition, fillSelected, clearSelected, clearGrid, replaceGrid, undoActionFn } = solverStore;
 
 const showErrToastTimer = ref<number | null>(null);
 

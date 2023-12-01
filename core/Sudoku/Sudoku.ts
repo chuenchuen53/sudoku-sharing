@@ -289,6 +289,10 @@ export default class Sudoku {
     }
   }
 
+  removeCandidatesForCell(rowIndex: number, columnIndex: number): void {
+    if (this.grid[rowIndex][columnIndex].candidates) delete this.grid[rowIndex][columnIndex].candidates;
+  }
+
   setInputValue({ rowIndex, columnIndex, value }: InputValueData, updateValidateInfo: boolean): boolean {
     const cell = this.grid[rowIndex][columnIndex];
     if (cell.clue) return false;
