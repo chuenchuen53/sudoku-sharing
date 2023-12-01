@@ -45,6 +45,7 @@ export const useSolverStore = defineStore("solver", () => {
   };
 
   const clearGrid = () => {
+    if (inputGrid.value.every((row) => row.every((cell) => !cell.inputValue))) return;
     undo.replaceAllInputValues();
     _updateHaveUndo();
     for (let i = 0; i < 9; i++) {
