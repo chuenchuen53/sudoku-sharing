@@ -1,7 +1,7 @@
 import SudokuSolver from "../SudokuSolver";
 import FillStrategy, { type FillInputValueData } from "./FillStrategy";
 import type Sudoku from "../Sudoku";
-import type { Cell, Grid } from "../type";
+import type { Candidates, Cell, Grid } from "../type";
 
 export default class NakedSingle extends FillStrategy {
   private static readonly instance = new NakedSingle();
@@ -29,6 +29,18 @@ export default class NakedSingle extends FillStrategy {
     NakedSingle.loopGrid(sudoku.grid, (rowIndex, columnIndex, cell) => {
       if (!cell.candidates) return;
       const candidatesArr = SudokuSolver.getCandidatesArr(cell.candidates);
+      if (candidatesArr.length === 1) result.push({ rowIndex, columnIndex, value: candidatesArr[0] });
+    });
+    return result;
+  }
+
+  public static nakedSingleWithOverrideCandidates(sudoku: Sudoku, overrideCandidates: (Candidates | undefined)[][]): FillInputValueData[] {
+    const result: FillInputValueData[] = [];
+    NakedSingle.loopGrid(sudoku.grid, (rowIndex, columnIndex, cell) => {
+      if (cell.clue || cell.inputValue) return;
+      const candidates = overrideCandidates[rowIndex][columnIndex];
+      if (!candidates) return;
+      const candidatesArr = SudokuSolver.getCandidatesArr(candidates);
       if (candidatesArr.length === 1) result.push({ rowIndex, columnIndex, value: candidatesArr[0] });
     });
     return result;

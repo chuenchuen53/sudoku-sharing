@@ -5,15 +5,55 @@ import { type FillStep } from "./SudokuSolver";
 import { FillStrategyType } from "./FillStrategy/FillStrategy";
 import type { SudokuLine } from "./SudokuLine";
 
-
 export default class SingleFillStep {
   private constructor() {}
 
   public static singularizeSteps(step: FillStep): FillStep[] {
     const strategy = step.fill.strategy;
 
-    if(strategy !== FillStrategyType.HIDDEN_SINGLE) throw new Error("not implemented");
+    switch (strategy) {
+      case FillStrategyType.NAKED_SINGLE:
+        return SingleFillStep.NakedSingle(step);
+      case FillStrategyType.HIDDEN_SINGLE:
+        return SingleFillStep.hiddenSingle(step);
+      case FillStrategyType.UNIQUE_MISSING:
+        throw new Error("not implemented");
+    }
+  }
 
+  static NakedSingle(step: FillStep): FillStep[] {
+    const result: FillStep[] = [];
+    const initGrid = step.grid;
+    const sudoku = Sudoku.sudokuFromGrid(initGrid);
+
+    for (const x of step.fill.data) {
+      const { rowIndex, columnIndex, value } = x;
+      const candidates = Sudoku.candidatesFactory(true, [value]);
+      sudoku.setCandidates(rowIndex, columnIndex, candidates);
+      const rowLine = SudokuLineUtil.sudokuLine(VirtualLineType.ROW, rowIndex);
+      const columnLine = SudokuLineUtil.sudokuLine(VirtualLineType.COLUMN, columnIndex);
+      const boxLine = SudokuLineUtil.sudokuLine(VirtualLineType.BOX, Sudoku.getBoxIndex(rowIndex, columnIndex));
+      result.push({
+        grid: Sudoku.cloneGrid(sudoku.grid),
+        fill: {
+          strategy: FillStrategyType.NAKED_SINGLE,
+          data: [
+            {
+              rowIndex,
+              columnIndex,
+              value,
+              secondaryRelatedLines: [rowLine, columnLine, boxLine],
+            },
+          ],
+        },
+      });
+      sudoku.setInputValue(x, false);
+    }
+
+    return result;
+  }
+
+  static hiddenSingle(step: FillStep) {
     const result: FillStep[] = [];
     const initGrid = step.grid;
     const sudoku = Sudoku.sudokuFromGrid(initGrid);
@@ -44,14 +84,14 @@ export default class SingleFillStep {
         secondaryHighlight.push({ rowIndex: relatedData.cell.rowIndex, columnIndex: relatedData.cell.columnIndex });
       }
 
-      secondaryRelatedLines.filter((x, i) => secondaryRelatedLines.findIndex(y => x.toString() === y.toString()) === i);
-      secondaryHighlight.filter((x, i) => secondaryHighlight.findIndex(y => Sudoku.isSamePos(x, y)) === i);
+      secondaryRelatedLines.filter((x, i) => secondaryRelatedLines.findIndex((y) => x.toString() === y.toString()) === i);
+      secondaryHighlight.filter((x, i) => secondaryHighlight.findIndex((y) => Sudoku.isSamePos(x, y)) === i);
 
-      sudoku.setCandidates(x.rowIndex, x.columnIndex, Sudoku.candidatesFactory(true, [x.value]))
+      sudoku.setCandidates(x.rowIndex, x.columnIndex, Sudoku.candidatesFactory(true, [x.value]));
       result.push({
         grid: Sudoku.cloneGrid(sudoku.grid),
         fill: {
-          strategy,
+          strategy: FillStrategyType.HIDDEN_SINGLE,
           data: [
             {
               rowIndex: x.rowIndex,
@@ -60,7 +100,7 @@ export default class SingleFillStep {
               mainRelatedLine: x.relatedLine,
               secondaryRelatedLines,
               secondaryHighlight,
-            }
+            },
           ],
         },
       });
@@ -70,8 +110,13 @@ export default class SingleFillStep {
     return result;
   }
 
-  static foundRelatedCellAndRelatedLine(sudoku: Sudoku, target: Position, value: SudokuElement, skip: VirtualLineType): { cell: Cell; relatedLine: SudokuLine } {
-    if(skip !== VirtualLineType.ROW){
+  static foundRelatedCellAndRelatedLine(
+    sudoku: Sudoku,
+    target: Position,
+    value: SudokuElement,
+    skip: VirtualLineType,
+  ): { cell: Cell; relatedLine: SudokuLine } {
+    if (skip !== VirtualLineType.ROW) {
       for (const relatedCell of sudoku.getRow(target.rowIndex)) {
         if (Sudoku.isSamePos(relatedCell, target)) continue;
         if (relatedCell.clue === value || relatedCell.inputValue === value) {
@@ -80,7 +125,7 @@ export default class SingleFillStep {
         }
       }
     }
-    if(skip !== VirtualLineType.COLUMN){
+    if (skip !== VirtualLineType.COLUMN) {
       for (const relatedCell of sudoku.getColumn(target.columnIndex)) {
         if (Sudoku.isSamePos(relatedCell, target)) continue;
         if (relatedCell.clue === value || relatedCell.inputValue === value) {
@@ -89,7 +134,7 @@ export default class SingleFillStep {
         }
       }
     }
-    if(skip !== VirtualLineType.BOX){
+    if (skip !== VirtualLineType.BOX) {
       for (const relatedCell of sudoku.getBoxFromRowColumnIndex(target.rowIndex, target.columnIndex)) {
         if (Sudoku.isSamePos(relatedCell, target)) continue;
         if (relatedCell.clue === value || relatedCell.inputValue === value) {

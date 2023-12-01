@@ -155,16 +155,31 @@ export default class SudokuSolver {
     this.steps = [];
   }
 
-  computeCanFillWithoutCandidates(): { fillInputValueDataArr: FillInputValueData[]; overriddenCandidates: (Candidates | undefined)[][] } {
+  computeCanFillWithoutCandidates(fillStrategyType: FillStrategyType): {
+    fillInputValueDataArr: FillInputValueData[];
+    overriddenCandidates: (Candidates | undefined)[][];
+  } {
     const overriddenCandidates = this.getBasicCandidates();
-    const fillInputValueDataArr = HiddenSingle.hiddenSingleWithOverrideCandidates(this.sudoku, overriddenCandidates);
-    return { fillInputValueDataArr, overriddenCandidates };
+    switch (fillStrategyType) {
+      case FillStrategyType.NAKED_SINGLE:
+        return {
+          fillInputValueDataArr: NakedSingle.nakedSingleWithOverrideCandidates(this.sudoku, overriddenCandidates),
+          overriddenCandidates,
+        };
+      case FillStrategyType.HIDDEN_SINGLE:
+        return {
+          fillInputValueDataArr: HiddenSingle.hiddenSingleWithOverrideCandidates(this.sudoku, overriddenCandidates),
+          overriddenCandidates,
+        };
+      default:
+        throw new Error("not implemented");
+    }
   }
 
   setValueFromFillStrategyWithNoCandidateFill(fillStrategyType: FillStrategyType): number {
-    if (fillStrategyType !== FillStrategyType.HIDDEN_SINGLE) throw new Error("not implemented");
+    if (fillStrategyType === FillStrategyType.UNIQUE_MISSING) throw new Error("not implemented");
 
-    const result = this.computeCanFillWithoutCandidates();
+    const result = this.computeCanFillWithoutCandidates(fillStrategyType);
     if (result.fillInputValueDataArr.length === 0) return 0;
     const fillStep: FillStep = {
       grid: Sudoku.cloneGrid(this.sudoku.grid),
@@ -298,6 +313,9 @@ export default class SudokuSolver {
       } else if ("fill" in step && step.fill.strategy === FillStrategyType.HIDDEN_SINGLE && step.fill.withoutCandidates) {
         const singularizedSteps = SingleFillStep.singularizeSteps(step);
         result.push(...singularizedSteps);
+      } else if ("fill" in step && step.fill.strategy === FillStrategyType.NAKED_SINGLE && step.fill.withoutCandidates) {
+        const singularizedSteps = SingleFillStep.singularizeSteps(step);
+        result.push(...singularizedSteps);
       } else if ("fill" in step && step.fill.strategy === FillStrategyType.UNIQUE_MISSING) {
         const cloneGrid = Sudoku.cloneGrid(step.grid);
         for (const data of step.fill.data) {
@@ -337,7 +355,8 @@ export default class SudokuSolver {
 
       if (
         this.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING) === 0 &&
-        this.setValueFromFillStrategyWithNoCandidateFill(FillStrategyType.HIDDEN_SINGLE) === 0
+        this.setValueFromFillStrategyWithNoCandidateFill(FillStrategyType.HIDDEN_SINGLE) === 0 &&
+        this.setValueFromFillStrategyWithNoCandidateFill(FillStrategyType.NAKED_SINGLE) === 0
       ) {
         this.setBasicCandidates();
         haveSetCandidates = true;
