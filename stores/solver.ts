@@ -7,6 +7,7 @@ export const useSolverStore = defineStore("solver", () => {
   const selectedPosition = shallowRef<Position>({ rowIndex: 0, columnIndex: 0 });
   const inputGrid = ref<Grid>(Sudoku.createEmptyGrid());
   const invalidPositions = shallowRef<Position[]>([]);
+  let sudoku = Sudoku.sudokuFromGrid(Sudoku.createEmptyGrid());
 
   const setLoading = (value: boolean) => {
     loading.value = value;
@@ -16,26 +17,31 @@ export const useSolverStore = defineStore("solver", () => {
     selectedPosition.value = position;
   };
 
-  const fillSelected = (e: SudokuElement) => {
+  const fillSelected = (value: SudokuElement) => {
     const { rowIndex, columnIndex } = selectedPosition.value;
-    inputGrid.value[rowIndex][columnIndex].inputValue = e;
-    invalidPositions.value = Sudoku.invalidCells(inputGrid.value);
+    inputGrid.value[rowIndex][columnIndex].inputValue = value;
+    sudoku.setInputValue({ rowIndex, columnIndex, value }, true);
+    invalidPositions.value = [...sudoku.invalidCells];
   };
 
   const clearSelected = () => {
     const { rowIndex, columnIndex } = selectedPosition.value;
     if (inputGrid.value[rowIndex][columnIndex].inputValue) delete inputGrid.value[rowIndex][columnIndex].inputValue;
-    invalidPositions.value = Sudoku.invalidCells(inputGrid.value);
+    sudoku.removeInputValue({ rowIndex, columnIndex }, true);
+    invalidPositions.value = [...sudoku.invalidCells];
   };
 
   const clearGrid = () => {
-    inputGrid.value = Sudoku.createEmptyGrid();
+    const emptyGrid = Sudoku.createEmptyGrid();
+    inputGrid.value = emptyGrid;
+    sudoku = Sudoku.sudokuFromGrid(emptyGrid);
     invalidPositions.value = [];
   };
 
   const replaceGrid = (grid: Grid) => {
     inputGrid.value = grid;
-    invalidPositions.value = Sudoku.invalidCells(inputGrid.value);
+    sudoku = Sudoku.sudokuFromGrid(grid);
+    invalidPositions.value = [...sudoku.invalidCells];
   };
 
   return {
