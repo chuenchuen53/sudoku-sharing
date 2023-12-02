@@ -9,6 +9,7 @@
           :invalid-positions="invalidPositions"
           :selected="selectedPosition"
           :on-cell-click="setSelectedPosition"
+          :temp-candidates="tempCandidate ? tempCandidate : undefined"
         />
         <div class="absolute left-0 top-0 z-10 h-full w-full bg-primary bg-opacity-10 dark:bg-primary dark:bg-opacity-20" v-if="showSolvedUi">
           <div
@@ -78,7 +79,7 @@ import SudokuInputUtil from "~/utils/SudokuInputUtil";
 
 const newLabelRef = ref<HTMLElement | null>(null);
 const playStore = usePlayStore();
-const { showSolvedUi, candidatesMode, inputGrid, invalidPositions, selectedPosition, canFillData, canEliminateData, haveUndo } =
+const { showSolvedUi, candidatesMode, inputGrid, invalidPositions, selectedPosition, canFillData, canEliminateData, haveUndo, tempCandidate } =
   storeToRefs(playStore);
 const {
   setSelectedPosition,

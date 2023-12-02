@@ -20,9 +20,17 @@
         <div v-else-if="cell.inputValue" class="input-value">
           {{ cell.inputValue }}
         </div>
-        <div v-else-if="cell.candidates" class="candidates-container">
+        <div
+          v-else-if="
+            cell.candidates ||
+            (tempCandidates && tempCandidates.position.rowIndex === rowIndex && tempCandidates.position.columnIndex === columnIndex)
+          "
+          class="candidates-container"
+        >
           <div
-            v-for="value in SudokuSolver.getCandidatesArr(cell.candidates)"
+            v-for="value in tempCandidates && tempCandidates.position.rowIndex === rowIndex && tempCandidates.position.columnIndex === columnIndex
+              ? mergeCandidates(cell.candidates, tempCandidates.element)
+              : SudokuSolver.getCandidatesArr(cell.candidates!)"
             :key="value"
             class="candidate"
             :class="[
@@ -55,7 +63,7 @@
 import { SudokuLineUtil, type SudokuLine } from "../core/Sudoku/SudokuLine";
 import Sudoku from "../core/Sudoku/Sudoku";
 import SudokuSolver from "../core/Sudoku/SudokuSolver";
-import { VirtualLineType, type Grid, type Position } from "../core/Sudoku/type";
+import { VirtualLineType, type Grid, type Position, type SudokuElement, type Candidates } from "../core/Sudoku/type";
 import type { Highlight, EliminationData } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import type { FillInputValueData } from "../core/Sudoku/FillStrategy/FillStrategy";
 
@@ -66,6 +74,7 @@ const props = defineProps<{
   invalidPositions: Position[];
   outlinedLine?: SudokuLine;
   selected?: Position;
+  tempCandidates?: { position: Position; element: SudokuElement };
   onCellClick?: (position: Position) => void;
 }>();
 
@@ -170,6 +179,16 @@ function outlinedLinePosition(line: SudokuLine): {
         heightCls: `outline-three-cells-height`,
       };
     }
+  }
+}
+
+function mergeCandidates(candidates: Candidates | undefined, tempElement: SudokuElement): SudokuElement[] {
+  if (candidates) {
+    const candidatesArr = SudokuSolver.getCandidatesArr(candidates);
+    candidatesArr.push(tempElement);
+    return candidatesArr;
+  } else {
+    return [tempElement];
   }
 }
 </script>

@@ -18,7 +18,8 @@ import CSolveStats, { type Stats } from "./SolveStats";
 import FillStrategy from "./FillStrategy/FillStrategy";
 import SingleEliminationStep from "./SingleEliminationStep";
 import SingleFillStep from "./SingleFillStep";
-import type { Candidates, SudokuElement, VirtualLine, CandidateCell, Grid } from "./type";
+import { type Candidates, type SudokuElement, type VirtualLine, type CandidateCell, type Grid, VirtualLineType } from "./type";
+import { SudokuLineUtil } from "./SudokuLine";
 
 export interface BaseStep {
   grid: Grid;
@@ -242,6 +243,20 @@ export default class SudokuSolver {
   }
 
   computeCanFillAndDescription(fillStrategyType: FillStrategyType): { data: FillInputValueData; description: string }[] {
+    if (fillStrategyType === FillStrategyType.NAKED_SINGLE) {
+      const data = this.computeCanFillWithoutCandidates(fillStrategyType);
+      if (data.fillInputValueDataArr.length > 0) {
+        return data.fillInputValueDataArr.map((x) => {
+          const row = SudokuLineUtil.sudokuLine(VirtualLineType.ROW, x.rowIndex);
+          const column = SudokuLineUtil.sudokuLine(VirtualLineType.COLUMN, x.columnIndex);
+          const box = SudokuLineUtil.sudokuLine(VirtualLineType.BOX, Sudoku.getBoxIndex(x.rowIndex, x.columnIndex));
+          const secondaryRelatedLines = [row, column, box];
+          const description = this.fillStrategiesMap[fillStrategyType].descriptionOfFillInputValueData(x);
+          return { data: { ...x, secondaryRelatedLines }, description };
+        });
+      }
+    }
+
     const data = this.fillStrategiesMap[fillStrategyType].canFill(this.sudoku);
     return data.map((x) => ({ data: x, description: this.fillStrategiesMap[fillStrategyType].descriptionOfFillInputValueData(x) }));
   }

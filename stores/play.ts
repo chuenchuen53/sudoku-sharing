@@ -8,6 +8,11 @@ import type { FillInputValueData, FillStrategyType } from "../core/Sudoku/FillSt
 import type { Difficulty } from "sudoku-gen/dist/types/difficulty.type";
 import ArrUtil from "~/core/utils/ArrUtil";
 
+interface TempCandidate {
+  position: Position;
+  element: SudokuElement;
+}
+
 // use for ssr
 const initialGrid: Grid = Sudoku.createEmptyGrid();
 
@@ -22,6 +27,7 @@ export const usePlayStore = defineStore("play", () => {
   const currentFillStrategy = ref<FillStrategyType | null>(null);
   const fillInputValueData = shallowRef<{ data: FillInputValueData; description: string }[] | null>(null);
   const canFillData = shallowRef<FillInputValueData | null>(null);
+  const tempCandidate = shallowRef<TempCandidate | null>(null);
   const currentEliminationStrategy = ref<EliminationStrategyType | null>(null);
   const eliminateData = shallowRef<{ data: EliminationData; description: string }[] | null>(null);
   const canEliminateData = shallowRef<EliminationData | null>(null);
@@ -152,6 +158,12 @@ export const usePlayStore = defineStore("play", () => {
   const setCanFillData = (data: FillInputValueData | null) => {
     canFillData.value = data;
     canEliminateData.value = null;
+
+    if (!data) return;
+    const { rowIndex, columnIndex, value } = data;
+    if (!inputGrid.value[rowIndex][columnIndex].candidates?.[value]) {
+      tempCandidate.value = { position: { rowIndex, columnIndex }, element: value };
+    }
   };
 
   const computeEliminateData = (strategy: EliminationStrategyType) => {
@@ -173,6 +185,7 @@ export const usePlayStore = defineStore("play", () => {
     currentFillStrategy.value = null;
     fillInputValueData.value = null;
     canFillData.value = null;
+    tempCandidate.value = null;
     currentEliminationStrategy.value = null;
     eliminateData.value = null;
     canEliminateData.value = null;
@@ -222,6 +235,7 @@ export const usePlayStore = defineStore("play", () => {
     currentFillStrategy,
     currentEliminationStrategy,
     haveUndo,
+    tempCandidate,
     setSelectedPosition,
     fillSelected,
     clearSelected,
