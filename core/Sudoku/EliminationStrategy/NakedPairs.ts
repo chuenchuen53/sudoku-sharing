@@ -81,6 +81,6 @@ export default class NakedPairs extends EliminationStrategy {
     const { relatedLines, highlights } = data;
     const nakedPair = SudokuSolver.getCandidatesArr(highlights[0].candidates).join(", ");
     const nakedVirtualLine = SudokuLineUtil.lineNameForDisplay(relatedLines[0]);
-    return `Naked pair: (${nakedPair}) in ${nakedVirtualLine}`;
+    return `(${nakedPair}) in ${nakedVirtualLine}`;
   }
 }

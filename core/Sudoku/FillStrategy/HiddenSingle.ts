@@ -79,7 +79,7 @@ export default class HiddenSingle extends FillStrategy {
   public override descriptionOfFillInputValueData(data: FillInputValueData): string {
     const { value, relatedLine } = data;
     const line = SudokuLineUtil.lineNameForDisplay(relatedLine!);
-    return `Hidden Single: ${value} in ${line}`;
+    return `${value} in ${line}`;
   }
 
   public override canFill(sudoku: Sudoku): FillInputValueData[] {

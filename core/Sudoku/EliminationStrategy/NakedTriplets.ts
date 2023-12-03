@@ -36,7 +36,7 @@ export default class NakedTriplets extends NakedMultiple {
       .flat()
       .filter((x, i, arr) => arr.indexOf(x) === i)
       .sort();
-    return `Naked Triplets: (${candidatesArr.join(", ")}) in ${line}`;
+    return `(${candidatesArr.join(", ")}) in ${line}`;
   }
 
   public override canEliminate(sudoku: Sudoku): EliminationData[] {

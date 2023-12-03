@@ -121,6 +121,6 @@ export default class XWing extends EliminationStrategy {
     const perpendicularLine1 = SudokuLineUtil.lineNameForDisplay(relatedLines[2]);
     const perpendicularLine2 = SudokuLineUtil.lineNameForDisplay(relatedLines[3]);
     const perpendicularLineType = SudokuLineUtil.lineTypeAndIndex(relatedLines[2]).virtualLineType.toLowerCase();
-    return `X-Wing: ${element} in ${line1}, ${line2} are in same ${perpendicularLineType} (${perpendicularLine1}, ${perpendicularLine2})`;
+    return `${element} in ${line1}, ${line2} are in same ${perpendicularLineType} (${perpendicularLine1}, ${perpendicularLine2})`;
   }
 }

@@ -109,9 +109,9 @@ export default class YWing extends EliminationStrategy {
     const pivot = highlights[0].position;
     const pincer1 = highlights[1].position;
     const pincer2 = highlights[2].position;
-    return `Y-Wing: pivot r${pivot.rowIndex + 1}c${pivot.columnIndex + 1}, pincers r${pincer1.rowIndex + 1}c${pincer1.columnIndex + 1} and r${
+    return `pivot R${pivot.rowIndex + 1}C${pivot.columnIndex + 1}, pincers R${pincer1.rowIndex + 1}C${pincer1.columnIndex + 1} and R${
       pincer2.rowIndex + 1
-    }c${pincer2.columnIndex + 1}`;
+    }C${pincer2.columnIndex + 1}`;
   }
 
   public override canEliminate(sudoku: Sudoku): EliminationData[] {

@@ -126,6 +126,6 @@ export default class LockedCandidates extends EliminationStrategy {
     const lockedCandidate = SudokuSolver.getCandidatesArr(highlights[0].candidates)[0];
     const sameVirtualLine = SudokuLineUtil.lineNameForDisplay(relatedLines[0]);
 
-    return `Locked Candidates: in ${lockedVirtualLine}, all ${lockedCandidate} are in ${sameVirtualLine}`;
+    return `in ${lockedVirtualLine}, all ${lockedCandidate} are in ${sameVirtualLine}`;
   }
 }

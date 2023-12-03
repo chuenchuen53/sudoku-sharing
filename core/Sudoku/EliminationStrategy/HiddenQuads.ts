@@ -36,7 +36,7 @@ export default class HiddenQuads extends HiddenMultiple {
       .flat()
       .filter((x, i, arr) => arr.indexOf(x) === i)
       .sort();
-    return `Hidden Quads: (${candidatesArr.join(", ")}) in ${line}`;
+    return `(${candidatesArr.join(", ")}) in ${line}`;
   }
 
   public override canEliminate(sudoku: Sudoku): EliminationData[] {
