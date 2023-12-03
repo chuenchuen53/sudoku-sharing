@@ -4,18 +4,18 @@ import CalcUtil from "../../utils/CalcUtil";
 import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
 import type { CandidateCell, Cell, Pincer, SudokuElement, VirtualLine } from "../type";
 
-export default class YWing extends EliminationStrategy {
-  private static readonly instance = new YWing();
+export default class XYWing extends EliminationStrategy {
+  private static readonly instance = new XYWing();
 
   private constructor() {
     super();
   }
 
-  public static getInstance(): YWing {
-    return YWing.instance;
+  public static getInstance(): XYWing {
+    return XYWing.instance;
   }
 
-  public static yWingFromSudoku(sudoku: Sudoku): EliminationData[] {
+  public static xyWingFromSudoku(sudoku: Sudoku): EliminationData[] {
     const result: EliminationData[] = [];
     const cellsWithTwoCandidates = sudoku
       .getAllRows()
@@ -28,13 +28,13 @@ export default class YWing extends EliminationStrategy {
         const pivot = cellsWithTwoCandidates[i][j];
         if (!pivot) continue;
 
-        const possibleRowPincers = YWing.possiblePincersFromLine(sudoku.getRow(i), pivot);
-        const possibleColumnPincers = YWing.possiblePincersFromLine(sudoku.getColumn(j), pivot);
-        const possibleBoxPincers = YWing.possiblePincersFromLine(sudoku.getBoxFromRowColumnIndex(i, j), pivot);
+        const possibleRowPincers = XYWing.possiblePincersFromLine(sudoku.getRow(i), pivot);
+        const possibleColumnPincers = XYWing.possiblePincersFromLine(sudoku.getColumn(j), pivot);
+        const possibleBoxPincers = XYWing.possiblePincersFromLine(sudoku.getBoxFromRowColumnIndex(i, j), pivot);
 
-        const rowColumnProduct = YWing.cartesianProductWithYWingPattern(possibleRowPincers, possibleColumnPincers);
-        const rowBoxProduct = YWing.cartesianProductWithYWingPattern(possibleRowPincers, possibleBoxPincers);
-        const columnBoxProduct = YWing.cartesianProductWithYWingPattern(possibleColumnPincers, possibleBoxPincers);
+        const rowColumnProduct = XYWing.cartesianProductWithXYWingPattern(possibleRowPincers, possibleColumnPincers);
+        const rowBoxProduct = XYWing.cartesianProductWithXYWingPattern(possibleRowPincers, possibleBoxPincers);
+        const columnBoxProduct = XYWing.cartesianProductWithXYWingPattern(possibleColumnPincers, possibleBoxPincers);
 
         const validatePincerPairs = [...rowColumnProduct, ...rowBoxProduct, ...columnBoxProduct];
         validatePincerPairs.forEach((x) => {
@@ -89,19 +89,19 @@ export default class YWing extends EliminationStrategy {
     const [a, b] = SudokuSolver.getCandidatesArr(pivot.candidates);
     return line.reduce((acc, cur) => {
       if (!Sudoku.isSamePos(cur, pivot)) {
-        const pincer = YWing.cellWithTwoCandidatesAndOnlyOneIsAorB(cur, a, b);
+        const pincer = XYWing.cellWithTwoCandidatesAndOnlyOneIsAorB(cur, a, b);
         if (pincer) acc.push(pincer);
       }
       return acc;
     }, [] as Pincer[]);
   }
 
-  static isYWingPattern(x: Pincer, y: Pincer) {
+  static isXYWingPattern(x: Pincer, y: Pincer) {
     return !Sudoku.isSamePos(x, y) && x.same !== y.same && x.diff === y.diff;
   }
 
-  static cartesianProductWithYWingPattern(a: Pincer[], b: Pincer[]): Pincer[][] {
-    return CalcUtil.cartesianProduct(a, b).filter(([x, y]) => YWing.isYWingPattern(x, y));
+  static cartesianProductWithXYWingPattern(a: Pincer[], b: Pincer[]): Pincer[][] {
+    return CalcUtil.cartesianProduct(a, b).filter(([x, y]) => XYWing.isXYWingPattern(x, y));
   }
 
   public override descriptionOfEliminationData(data: EliminationData): string {
@@ -115,6 +115,6 @@ export default class YWing extends EliminationStrategy {
   }
 
   public override canEliminate(sudoku: Sudoku): EliminationData[] {
-    return YWing.yWingFromSudoku(sudoku);
+    return XYWing.xyWingFromSudoku(sudoku);
   }
 }

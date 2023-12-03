@@ -28,7 +28,7 @@ export default class CSolveStats {
         [EliminationStrategyType.HIDDEN_TRIPLETS]: 0,
         [EliminationStrategyType.HIDDEN_QUADS]: 0,
         [EliminationStrategyType.X_WING]: 0,
-        [EliminationStrategyType.Y_WING]: 0,
+        [EliminationStrategyType.XY_WING]: 0,
       },
     };
   }

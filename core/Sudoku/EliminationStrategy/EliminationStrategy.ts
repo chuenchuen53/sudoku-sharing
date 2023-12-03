@@ -44,5 +44,5 @@ export enum EliminationStrategyType {
   HIDDEN_TRIPLETS = "HIDDEN_TRIPLETS",
   HIDDEN_QUADS = "HIDDEN_QUADS",
   X_WING = "X_WING",
-  Y_WING = "Y_WING",
+  XY_WING = "Y_WING",
 }

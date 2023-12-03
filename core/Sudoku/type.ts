@@ -52,7 +52,7 @@ export interface EliminationCount {
   hiddenTriplets: number;
   hiddenQuads: number;
   xWing: number;
-  yWing: number;
+  xyWing: number;
   // swordfish: number;
 }
 

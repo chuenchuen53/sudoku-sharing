@@ -12,7 +12,7 @@ import HiddenSingle from "./FillStrategy/HiddenSingle";
 import NakedSingle from "./FillStrategy/NakedSingle";
 import UniqueMissing from "./FillStrategy/UniqueMissing";
 import Sudoku from "./Sudoku";
-import YWing from "./EliminationStrategy/YWing";
+import XYWing from "./EliminationStrategy/XYWing";
 import { FillStrategyType, type FillInputValueData } from "./FillStrategy/FillStrategy";
 import CSolveStats, { type Stats } from "./SolveStats";
 import FillStrategy from "./FillStrategy/FillStrategy";
@@ -67,7 +67,7 @@ export default class SudokuSolver {
     EliminationStrategyType.NAKED_PAIRS,
     EliminationStrategyType.HIDDEN_PAIRS,
     EliminationStrategyType.X_WING,
-    EliminationStrategyType.Y_WING,
+    EliminationStrategyType.XY_WING,
     EliminationStrategyType.NAKED_TRIPLETS,
     EliminationStrategyType.HIDDEN_TRIPLETS,
     EliminationStrategyType.NAKED_QUADS,
@@ -91,14 +91,14 @@ export default class SudokuSolver {
     [EliminationStrategyType.HIDDEN_TRIPLETS]: HiddenTriplets.getInstance(),
     [EliminationStrategyType.HIDDEN_QUADS]: HiddenQuads.getInstance(),
     [EliminationStrategyType.X_WING]: XWing.getInstance(),
-    [EliminationStrategyType.Y_WING]: YWing.getInstance(),
+    [EliminationStrategyType.XY_WING]: XYWing.getInstance(),
   };
   public enabledEliminationStrategies: EliminationStrategyType[] = [
     EliminationStrategyType.LOCKED_CANDIDATES,
     EliminationStrategyType.NAKED_PAIRS,
     EliminationStrategyType.HIDDEN_PAIRS,
     EliminationStrategyType.X_WING,
-    EliminationStrategyType.Y_WING,
+    EliminationStrategyType.XY_WING,
     EliminationStrategyType.NAKED_TRIPLETS,
     EliminationStrategyType.HIDDEN_TRIPLETS,
     EliminationStrategyType.NAKED_QUADS,
