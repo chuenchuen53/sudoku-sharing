@@ -2,14 +2,14 @@ import Sudoku from "../core/Sudoku/Sudoku";
 import { VirtualLineType } from "../core/Sudoku/type";
 import ArrUtil from "../core/utils/ArrUtil";
 import { SudokuLineUtil } from "../core/Sudoku/SudokuLine";
-import type { Pincer, Cell, InputClues, InputValueData, SudokuElement, VirtualLine } from "../core/Sudoku/type";
+import type { Pincer, Cell, InputClues, PositionAndValue, SudokuElement, VirtualLine } from "../core/Sudoku/type";
 import type { FillInputValueData } from "../core/Sudoku/FillStrategy/FillStrategy";
 import type { Elimination } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 
 export default class TestUtil {
   static emptyPuzzle = (): InputClues => ArrUtil.create2DArray(9, 9, () => "0");
 
-  static inputValueDataFactory = (r: number, c: number, v: SudokuElement): InputValueData => {
+  static inputValueDataFactory = (r: number, c: number, v: SudokuElement): PositionAndValue => {
     return {
       rowIndex: r,
       columnIndex: c,
@@ -17,7 +17,7 @@ export default class TestUtil {
     };
   };
 
-  static inputValueDataArrFactory = (arr: [number, number, SudokuElement][]): InputValueData[] => {
+  static inputValueDataArrFactory = (arr: [number, number, SudokuElement][]): PositionAndValue[] => {
     return arr.map(([r, c, v]) => TestUtil.inputValueDataFactory(r, c, v));
   };
 

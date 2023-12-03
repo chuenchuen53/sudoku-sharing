@@ -6,7 +6,7 @@ import Sudoku from "../../core/Sudoku/Sudoku";
 import XWing from "../../core/Sudoku/EliminationStrategy/XWing";
 import { SudokuLine } from "../../core/Sudoku/SudokuLine";
 import EliminationStrategy, { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
-import type { InputClues, InputValueData, SudokuElement } from "../../core/Sudoku/type";
+import type { InputClues, PositionAndValue, SudokuElement } from "../../core/Sudoku/type";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
@@ -335,7 +335,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.X_WING));
-    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
+    const expectResult: PositionAndValue[] = TestUtil.inputValueDataArrFactory([
       [1, 3, "2"], // due to element "2" in [1, 6], [7, 6], [1, 8], [7, 8]
       [1, 4, "2"], // due to element "2" in [1, 6], [7, 6], [1, 8], [7, 8]
       [1, 5, "2"], // due to element "2" in [1, 6], [7, 6], [1, 8], [7, 8]
@@ -349,7 +349,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p2));
     s.setBasicCandidates();
     const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.X_WING));
-    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
+    const expectResult: PositionAndValue[] = TestUtil.inputValueDataArrFactory([
       [0, 7, "1"], // due to element "1" in [6, 5], [6, 7], [8, 5], [8, 7]
       [1, 7, "1"], // due to element "1" in [6, 5], [6, 7], [8, 5], [8, 7]
       // [0, 7, "1"], // due to element "1" in [0, 2], [1, 2], [0, 8], [1, 8] (duplicate)

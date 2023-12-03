@@ -1,7 +1,7 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../core/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
-import { VirtualLineType, type InputClues, type InputValueData } from "../../core/Sudoku/type";
+import { VirtualLineType, type InputClues, type PositionAndValue } from "../../core/Sudoku/type";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import NakedPairs from "../../core/Sudoku/EliminationStrategy/NakedPairs";
 import EliminationStrategy, { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
@@ -90,7 +90,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     const removals = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.NAKED_PAIRS));
-    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
+    const expectResult: PositionAndValue[] = TestUtil.inputValueDataArrFactory([
       [4, 8, "5"],
       [4, 8, "7"],
       [7, 8, "5"],
@@ -103,7 +103,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
     const removals = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.NAKED_PAIRS));
-    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
+    const expectResult: PositionAndValue[] = TestUtil.inputValueDataArrFactory([
       [6, 8, "5"],
       [1, 6, "3"],
       [1, 7, "3"],

@@ -1,5 +1,5 @@
 import type { SudokuLine } from "../SudokuLine";
-import type { InputValueData, Position } from "../type";
+import type { PositionAndValue, Position } from "../type";
 import type Sudoku from "../Sudoku";
 import type { Elimination } from "../EliminationStrategy/EliminationStrategy";
 
@@ -9,7 +9,7 @@ export enum FillStrategyType {
   HIDDEN_SINGLE = "HIDDEN_SINGLE",
 }
 
-export interface FillInputValueData extends InputValueData {
+export interface FillInputValueData extends PositionAndValue {
   relatedLine?: SudokuLine;
   highlightWholeCell?: boolean;
   mainRelatedLine?: SudokuLine;
@@ -22,9 +22,9 @@ export default abstract class FillStrategy {
     return strategy.toLowerCase().replaceAll("_", " ");
   }
 
-  public static eliminationAfterFill(sudoku: Sudoku, data: FillInputValueData[]): { eliminations: Elimination[]; removals: InputValueData[] } {
+  public static eliminationAfterFill(sudoku: Sudoku, data: FillInputValueData[]): { eliminations: Elimination[]; removals: PositionAndValue[] } {
     const eliminations: Elimination[] = [];
-    const removals: InputValueData[] = [];
+    const removals: PositionAndValue[] = [];
     for (const { rowIndex, columnIndex, value } of data) {
       const relatedCells = sudoku.getAllRelatedCells({ rowIndex, columnIndex });
       relatedCells.forEach(({ rowIndex, columnIndex, candidates }) => {

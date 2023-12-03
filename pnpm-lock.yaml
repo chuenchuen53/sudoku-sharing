@@ -17,6 +17,9 @@ dependencies:
   lodash:
     specifier: 4.17.21
     version: 4.17.21
+  lodash.uniqwith:
+    specifier: ^4.5.0
+    version: 4.5.0
   normalize.css:
     specifier: ^8.0.1
     version: 8.0.1
@@ -46,6 +49,9 @@ devDependencies:
   '@types/lodash':
     specifier: 4.14.201
     version: 4.14.201
+  '@types/lodash.uniqwith':
+    specifier: ^4.5.9
+    version: 4.5.9
   '@vitest/coverage-v8':
     specifier: ^0.34.6
     version: 0.34.6(vitest@0.34.6)
@@ -1815,6 +1821,12 @@ packages:
 
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+    dev: true
+
+  /@types/lodash.uniqwith@4.5.9:
+    resolution: {integrity: sha512-r/L/U1bAHuZF/bKVanxZtPTCr0J47L8Ftpg4BeV1Knv5ZOl9f6bwqVxP5fvvqniHatgcYpp7vwccxbvVGMV8Xw==}
+    dependencies:
+      '@types/lodash': 4.14.201
     dev: true
 
   /@types/lodash@4.14.201:
@@ -5320,6 +5332,10 @@ packages:
 
   /lodash.uniq@4.5.0:
     resolution: {integrity: sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==}
+
+  /lodash.uniqwith@4.5.0:
+    resolution: {integrity: sha512-7lYL8bLopMoy4CTICbxygAUq6CdRJ36vFc80DucPueUee+d5NBRxz3FdT9Pes/HEx5mPoT9jwnsEJWz1N7uq7Q==}
+    dev: false
 
   /lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}

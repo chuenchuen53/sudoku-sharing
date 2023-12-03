@@ -1,7 +1,7 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../core/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
-import { VirtualLineType, type InputClues, type InputValueData } from "../../core/Sudoku/type";
+import { VirtualLineType, type InputClues, type PositionAndValue } from "../../core/Sudoku/type";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import NakedTriplets from "../../core/Sudoku/EliminationStrategy/NakedTriplets";
 import { SudokuLine } from "../../core/Sudoku/SudokuLine";
@@ -77,7 +77,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
     const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.NAKED_TRIPLETS));
-    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
+    const expectResult: PositionAndValue[] = TestUtil.inputValueDataArrFactory([
       [1, 6, "7"], // due to column 6 - 347
       [1, 7, "2"], // due to box 2 - 278
       [1, 7, "7"], // due to box 2 - 278
@@ -92,7 +92,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
     const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.NAKED_TRIPLETS));
-    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
+    const expectResult: PositionAndValue[] = TestUtil.inputValueDataArrFactory([
       [2, 1, "1"], // due to row 2 169
       [2, 1, "6"], // due to row 2 169
       [4, 3, "2"], // due to row 4 257

@@ -1,7 +1,7 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../core/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
-import { type InputClues, type InputValueData, VirtualLineType } from "../../core/Sudoku/type";
+import { type InputClues, type PositionAndValue, VirtualLineType } from "../../core/Sudoku/type";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import HiddenQuads from "../../core/Sudoku/EliminationStrategy/HiddenQuads";
 import { SudokuLine } from "../../core/Sudoku/SudokuLine";
@@ -71,7 +71,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p5));
     s.setBasicCandidates();
     const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.HIDDEN_QUADS));
-    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
+    const expectResult: PositionAndValue[] = TestUtil.inputValueDataArrFactory([
       [0, 0, "7"], // due to [3, 4, 5, 9] in row 0
       [0, 0, "8"], // due to [3, 4, 5, 9] in row 0
       [0, 1, "8"], // due to [3, 4, 5, 9] in row 0

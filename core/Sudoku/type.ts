@@ -31,7 +31,7 @@ export enum VirtualLineType {
 
 export type RowColumn = Exclude<VirtualLineType, VirtualLineType.BOX>;
 
-export interface InputValueData {
+export interface PositionAndValue {
   rowIndex: number;
   columnIndex: number;
   value: SudokuElement;
@@ -63,12 +63,6 @@ export interface SolveStats {
 
 export type SudokuElementWithZero = SudokuElement | "0";
 export type InputClues = SudokuElementWithZero[][];
-
-export interface UniqueMissingResult {
-  virtualLine: VirtualLine;
-  uniqueCandidate: SudokuElement;
-  cell: Cell;
-}
 
 export interface Pincer extends Cell {
   same: SudokuElement;

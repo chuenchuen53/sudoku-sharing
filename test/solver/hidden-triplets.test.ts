@@ -1,7 +1,7 @@
 import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../core/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
-import { type InputClues, type InputValueData, VirtualLineType } from "../../core/Sudoku/type";
+import { type InputClues, type PositionAndValue, VirtualLineType } from "../../core/Sudoku/type";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import HiddenTriplets from "../../core/Sudoku/EliminationStrategy/HiddenTriplets";
 import { SudokuLine } from "../../core/Sudoku/SudokuLine";
@@ -90,7 +90,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p2));
     s.setBasicCandidates();
     const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.HIDDEN_TRIPLETS));
-    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
+    const expectResult: PositionAndValue[] = TestUtil.inputValueDataArrFactory([
       [1, 1, "5"], // due to [1, 4, 9] in column 1
       [1, 1, "7"], // due to [1, 4, 9] in column 1
       [3, 1, "5"], // due to [1, 4, 9] in column 1
@@ -128,7 +128,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p3));
     s.setBasicCandidates();
     const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.HIDDEN_TRIPLETS));
-    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
+    const expectResult: PositionAndValue[] = TestUtil.inputValueDataArrFactory([
       [0, 3, "2"], // due to [5, 6, 8] in box 1
       [0, 3, "3"], // due to [5, 6, 8] in box 1
       [0, 3, "7"], // due to [5, 6, 8] in box 1
@@ -147,7 +147,7 @@ describe("sudoku solver", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
     const result = EliminationStrategy.removalsFromEliminationData(s.computeCanEliminate(EliminationStrategyType.HIDDEN_TRIPLETS));
-    const expectResult: InputValueData[] = TestUtil.inputValueDataArrFactory([
+    const expectResult: PositionAndValue[] = TestUtil.inputValueDataArrFactory([
       [4, 3, "2"], // due to [3, 4, 9] in row 4
       [4, 3, "7"], // due to [3, 4, 9] in row 4
       [4, 4, "2"], // due to [3, 4, 9] in row 4

@@ -1,4 +1,4 @@
-import { expect, describe, it, vitest, beforeAll } from "vitest";
+import { beforeAll, describe, expect, it, vitest } from "vitest";
 import ArrUtil from "../core/utils/ArrUtil";
 import Sudoku from "../core/Sudoku/Sudoku";
 import { VirtualLineType } from "../core/Sudoku/type";
@@ -80,7 +80,13 @@ describe("sudoku basic", () => {
       [{}, {}, {}, { clue: "6" }, { clue: "8" }, {}, {}, { clue: "1" }, { clue: "2" }],
       [{ clue: "5" }, {}, { clue: "8" }, {}, {}, {}, {}, {}, { clue: "4" }],
     ];
-    const gridExpected = values.map((row, rowIndex) => row.map((cell, columnIndex) => ({ ...cell, rowIndex, columnIndex })));
+    const gridExpected = values.map((row, rowIndex) =>
+      row.map((cell, columnIndex) => ({
+        ...cell,
+        rowIndex,
+        columnIndex,
+      })),
+    );
     expect(sudoku.grid).toStrictEqual(gridExpected);
   });
 
@@ -97,7 +103,13 @@ describe("sudoku basic", () => {
       [{ clue: "1" }, {}, {}, {}, {}, {}, {}, { clue: "6" }, {}],
       [{}, {}, { clue: "4" }, {}, { clue: "6" }, {}, { clue: "9" }, {}, { clue: "8" }],
     ];
-    const gridExpected = values.map((row, rowIndex) => row.map((cell, columnIndex) => ({ ...cell, rowIndex, columnIndex })));
+    const gridExpected = values.map((row, rowIndex) =>
+      row.map((cell, columnIndex) => ({
+        ...cell,
+        rowIndex,
+        columnIndex,
+      })),
+    );
     expect(sudoku.grid).toStrictEqual(gridExpected);
   });
 
@@ -231,8 +243,8 @@ describe("sudoku basic", () => {
 
   it("numberOfClues", () => {
     const noc = (i: InputClues) => i.flat(1).reduce((acc, cur) => (cur !== "0" ? acc + 1 : acc), 0);
-    expect(new Sudoku(p1).numberOfClues).toBe(noc(p1));
-    expect(new Sudoku(p2).numberOfClues).toBe(noc(p2));
+    expect(new Sudoku(p1).numOfClues).toBe(noc(p1));
+    expect(new Sudoku(p2).numOfClues).toBe(noc(p2));
   });
 
   it("getRow", () => {

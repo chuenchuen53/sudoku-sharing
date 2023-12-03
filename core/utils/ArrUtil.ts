@@ -1,7 +1,8 @@
 import cloneDeep from "lodash/cloneDeep";
+import uniqwith from "lodash.uniqwith";
 
 export default class ArrUtil {
-  static create2DArray<T extends string | number | boolean | (object & { length?: never }) | undefined>(
+  public static create2DArray<T extends string | number | boolean | (object & { length?: never }) | undefined>(
     rows: number,
     columns: number,
     fn: (row: number, column: number) => T,
@@ -16,7 +17,11 @@ export default class ArrUtil {
     return array;
   }
 
-  static cloneArr<T>(arr: T[]): T[] {
+  public static cloneArr<T>(arr: T[]): T[] {
     return cloneDeep(arr);
+  }
+
+  public static removeDuplicateValue<T>(arr: T[], comparator: (a: T, b: T) => boolean): T[] {
+    return uniqwith(arr, comparator);
   }
 }
