@@ -8,12 +8,12 @@
         </div>
         <div class="mockup-window border bg-base-300 lg:row-span-2">
           <picture class="block sm:hidden">
-            <source srcset="/img/landing/play-mobile-dark.png" media="(prefers-color-scheme: dark)" />
-            <img src="/img/landing/play-mobile-light.png" />
+            <source srcset="/img/landing/play-mobile-dark.png" media="(prefers-color-scheme: dark)" width="750" height="1200" />
+            <img src="/img/landing/play-mobile-light.png" width="750" height="1200" alt="play-ui" />
           </picture>
           <picture class="hidden sm:block">
-            <source srcset="/img/landing/play-dark.png" media="(prefers-color-scheme: dark)" />
-            <img src="/img/landing/play-light.png" />
+            <source srcset="/img/landing/play-dark.png" media="(prefers-color-scheme: dark)" width="2860" height="1700" />
+            <img src="/img/landing/play-light.png" width="2860" height="1700" alt="play-ui" />
           </picture>
         </div>
         <NuxtLink to="/play" class="btn btn-primary btn-block sm:w-fit">Play Now</NuxtLink>

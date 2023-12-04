@@ -2,7 +2,7 @@
   <div id="main-layout-container">
     <header id="main-layout-header" :class="{ 'reach-top': y <= 0, 'mobile-menu-opened': isMobileMenuOpened }">
       <div class="navbar flex-col items-start sm:flex-row">
-        <button @click="toggleMenuOpen" class="btn btn-square btn-ghost sm:hidden">
+        <button @click="toggleMenuOpen" class="btn btn-square btn-ghost sm:hidden" aria-label="nav-toggle">
           <IconMenu class="h-5 w-5 sm:hidden" />
         </button>
 

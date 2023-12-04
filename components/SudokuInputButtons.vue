@@ -4,7 +4,7 @@
     :class="[singleRowOnTabletSize && 'sm:max-lg:grid-cols-10 sm:max-lg:grid-rows-1', singleRowOnDesktopSize && 'lg:grid-cols-10 lg:grid-rows-1']"
   >
     <button v-for="e in allElements" :key="e" @click="() => onElementBtnClick(e)" class="btn btn-square">{{ e }}</button>
-    <button @click="onClearBtnClick" class="btn btn-square text-xl">
+    <button @click="onClearBtnClick" class="btn btn-square text-xl" aria-label="clear">
       <IconEraser />
     </button>
   </div>
