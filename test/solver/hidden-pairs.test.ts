@@ -96,9 +96,7 @@ describe("sudoku solver", () => {
   it("hiddenPairs test 2", () => {
     const s = new SudokuSolver(new Sudoku(p4));
     s.setBasicCandidates();
-    const result = EliminationStrategy.removalsFromEliminationData(
-      s.eliminationStrategiesMap[EliminationStrategyType.HIDDEN_PAIRS].canEliminate(s.sudoku),
-    );
+    const result = EliminationStrategy.removalsFromEliminationData(HiddenPairs.getInstance().canEliminate(s.getSudoku()));
     const expectResult: PositionAndValue[] = TestUtil.inputValueDataArrFactory([
       [4, 4, "2"], // due to [3, 4] in row 4
       [4, 4, "5"], // due to [3, 4] in row 4

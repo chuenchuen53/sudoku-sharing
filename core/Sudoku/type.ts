@@ -1,3 +1,6 @@
+import { type FillInputValueData, FillStrategyType } from "./FillStrategy/FillStrategy";
+import { type EliminationData, EliminationStrategyType } from "./EliminationStrategy/EliminationStrategy";
+
 export type SudokuElement = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
 export type Candidates = {
@@ -68,3 +71,38 @@ export interface Pincer extends Cell {
   same: SudokuElement;
   diff: SudokuElement;
 }
+
+export interface BaseStep {
+  grid: Grid;
+}
+
+export interface FillCandidatesStep extends BaseStep {
+  fillCandidates: true;
+}
+
+export interface FillStep extends BaseStep {
+  fill: {
+    strategy: FillStrategyType;
+    data: FillInputValueData[];
+    withoutCandidates?: true;
+  };
+}
+
+export interface EliminationAfterFillStep extends BaseStep {
+  afterFill: {
+    data: EliminationData;
+  };
+}
+
+export interface EliminationStep extends BaseStep {
+  elimination: {
+    strategy: EliminationStrategyType;
+    data: EliminationData[];
+  };
+}
+
+export interface FinalStep extends BaseStep {
+  final: true;
+}
+
+export type Step = FillCandidatesStep | FillStep | EliminationAfterFillStep | EliminationStep | FinalStep;

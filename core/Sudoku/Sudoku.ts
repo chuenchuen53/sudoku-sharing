@@ -118,7 +118,7 @@ export default class Sudoku {
     return positions.filter((cur, index, self) => index === self.findIndex((x) => Sudoku.isSamePos(x, cur)));
   }
 
-  public static removeDuplicatedInputValueData(data: PositionAndValue[]): PositionAndValue[] {
+  public static removeDuplicatedPositionAndValue(data: PositionAndValue[]): PositionAndValue[] {
     return ArrUtil.removeDuplicateValue(data, (a, b) => Sudoku.isSamePos(a, b) && a.value === b.value);
   }
 
@@ -154,10 +154,6 @@ export default class Sudoku {
     }
   }
 
-  public static candidatesCount(candidates: Candidates): number {
-    return Object.values(candidates).reduce((acc, cur) => (cur ? acc + 1 : acc), 0);
-  }
-
   public static duplicatedValueInVirtualLine(virtualLine: VirtualLine, key: Extract<keyof Cell, "clue" | "inputValue">): Cell[] {
     const duplicatedCells: Cell[] = [];
     const values = key === "clue" ? virtualLine.map((x) => x.clue) : virtualLine.map((x) => x.clue ?? x.inputValue);
@@ -187,6 +183,10 @@ export default class Sudoku {
 
   public getInvalidCells(): Cell[] {
     return this.invalidCells;
+  }
+
+  public getGrid(): Grid {
+    return this.grid;
   }
 
   public getRow(rowIndex: number): VirtualLine {
@@ -278,7 +278,6 @@ export default class Sudoku {
 
     cell.inputValue = value;
     if (cell.candidates) delete cell.candidates;
-
     if (updateValidateInfo) this.validatePuzzle();
 
     return true;

@@ -203,6 +203,17 @@ export class SudokuLineUtil {
     }
   }
 
+  public static sudokuLineFromPosition(virtualLineType: VirtualLineType, position: Position): SudokuLine {
+    switch (virtualLineType) {
+      case VirtualLineType.ROW:
+        return SudokuLineUtil.ROWS[position.rowIndex];
+      case VirtualLineType.COLUMN:
+        return SudokuLineUtil.COLUMNS[position.columnIndex];
+      case VirtualLineType.BOX:
+        return SudokuLineUtil.BOXES[Sudoku.getBoxIndex(position.rowIndex, position.columnIndex)];
+    }
+  }
+
   public static allPositionsInLine(line: SudokuLine): Position[] {
     if (SudokuLineUtil.ROWS.some((row) => row === line)) {
       return SudokuLineUtil.allPositionsInRow(line as unknown as SudokuLineRow);

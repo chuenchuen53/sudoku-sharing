@@ -87,7 +87,7 @@ describe("sudoku basic", () => {
         columnIndex,
       })),
     );
-    expect(sudoku.grid).toStrictEqual(gridExpected);
+    expect(sudoku.getGrid()).toStrictEqual(gridExpected);
   });
 
   it("createGrid 2", () => {
@@ -110,7 +110,7 @@ describe("sudoku basic", () => {
         columnIndex,
       })),
     );
-    expect(sudoku.grid).toStrictEqual(gridExpected);
+    expect(sudoku.getGrid()).toStrictEqual(gridExpected);
   });
 
   it("validatePuzzle", () => {
@@ -126,7 +126,7 @@ describe("sudoku basic", () => {
 
     s1.validatePuzzle();
 
-    expect(s1.invalidCells).toStrictEqual(expectedResult);
+    expect(s1.getInvalidCells()).toStrictEqual(expectedResult);
   });
 
   it("validatePuzzle", () => {
@@ -140,7 +140,7 @@ describe("sudoku basic", () => {
     ];
 
     s1.validatePuzzle();
-    expect(s1.invalidCells).toStrictEqual(expectedResult);
+    expect(s1.getInvalidCells()).toStrictEqual(expectedResult);
   });
 
   it("validatePuzzle", () => {
@@ -160,7 +160,7 @@ describe("sudoku basic", () => {
     ];
 
     s1.validatePuzzle();
-    expect(s1.invalidCells).toStrictEqual(expectedResult);
+    expect(s1.getInvalidCells()).toStrictEqual(expectedResult);
   });
 
   it("setInputValue", () => {
@@ -172,19 +172,19 @@ describe("sudoku basic", () => {
   it("setInputValue", () => {
     const s1 = new Sudoku(p1);
     s1.setInputValue(TestUtil.inputValueDataFactory(2, 0, "9"), false);
-    expect(s1.grid[2][0].inputValue).toBe("9");
+    expect(s1.getGrid()[2][0].inputValue).toBe("9");
   });
 
   it("setInputValue", () => {
     const s1 = new Sudoku(p1);
     s1.setInputValue(TestUtil.inputValueDataFactory(2, 0, "9"), true);
-    expect(s1.grid[2][0].inputValue).toBe("9");
+    expect(s1.getGrid()[2][0].inputValue).toBe("9");
   });
 
   it("setInputValue", () => {
     const s1 = new Sudoku(p1);
     s1.setInputValue(TestUtil.inputValueDataFactory(2, 0, "1"), false);
-    expect(s1.grid[2][0].inputValue).toBe("1");
+    expect(s1.getGrid()[2][0].inputValue).toBe("1");
     expect(s1.isValid).toBe(true);
   });
 
@@ -197,16 +197,16 @@ describe("sudoku basic", () => {
       { clue: "1", columnIndex: 1, rowIndex: 2 },
     ];
 
-    expect(s1.grid[2][0].inputValue).toBe("1");
+    expect(s1.getGrid()[2][0].inputValue).toBe("1");
     expect(s1.isValid).toBe(false);
-    expect(s1.invalidCells).toStrictEqual(expectedInvalidCells);
+    expect(s1.getInvalidCells()).toStrictEqual(expectedInvalidCells);
   });
 
   it("setInputValues", () => {
     const s = new Sudoku(p1);
     s.setInputValues([TestUtil.inputValueDataFactory(2, 0, "9"), TestUtil.inputValueDataFactory(2, 2, "3")]);
-    expect(s.grid[2][0].inputValue).toBe("9");
-    expect(s.grid[2][2].inputValue).toBe("3");
+    expect(s.getGrid()[2][0].inputValue).toBe("9");
+    expect(s.getGrid()[2][2].inputValue).toBe("3");
     expect(s.isValid).toBe(true);
   });
 
@@ -219,10 +219,10 @@ describe("sudoku basic", () => {
     ];
 
     s.setInputValues([TestUtil.inputValueDataFactory(2, 0, "1"), TestUtil.inputValueDataFactory(2, 2, "3")]);
-    expect(s.grid[2][0].inputValue).toBe("1");
-    expect(s.grid[2][2].inputValue).toBe("3");
+    expect(s.getGrid()[2][0].inputValue).toBe("1");
+    expect(s.getGrid()[2][2].inputValue).toBe("3");
     expect(s.isValid).toBe(false);
-    expect(s.invalidCells).toStrictEqual(expectedInvalidCells);
+    expect(s.getInvalidCells()).toStrictEqual(expectedInvalidCells);
   });
 
   it("removeInputValue", () => {
@@ -612,7 +612,7 @@ describe("sudoku basic", () => {
     expect(Sudoku.virtualLinesIntersections(c0, c5)).toStrictEqual([]);
     expect(Sudoku.virtualLinesIntersections(b0, b5)).toStrictEqual([]);
 
-    const c = (rowIndex: number, columnIndex: number) => ({ ...s.grid[rowIndex][columnIndex], rowIndex, columnIndex });
+    const c = (rowIndex: number, columnIndex: number) => ({ ...s.getGrid()[rowIndex][columnIndex], rowIndex, columnIndex });
 
     const r0c0 = [c(0, 0)];
     const r0c5 = [c(0, 5)];
@@ -672,7 +672,7 @@ describe("sudoku basic", () => {
   it("getAllRelatedCells", () => {
     const s = new Sudoku(p1);
 
-    const c = (rowIndex: number, columnIndex: number) => ({ ...s.grid[rowIndex][columnIndex], rowIndex, columnIndex });
+    const c = (rowIndex: number, columnIndex: number) => ({ ...s.getGrid()[rowIndex][columnIndex], rowIndex, columnIndex });
     const c34 = c(3, 4);
     const allRelatedCells = [
       // row
@@ -750,11 +750,11 @@ describe("sudoku basic", () => {
     const input3 = { rowIndex: 3, columnIndex: 6, value: "3" } as const;
     const input4 = { rowIndex: 3, columnIndex: 6, value: "4" } as const;
 
-    expect(Sudoku.removeDuplicatedInputValueData([input1, input2])).toStrictEqual([input1]);
-    expect(Sudoku.removeDuplicatedInputValueData([input1, input2, input1, input1])).toStrictEqual([input1]);
-    expect(Sudoku.removeDuplicatedInputValueData([input1, input3])).toStrictEqual([input1, input3]);
-    expect(Sudoku.removeDuplicatedInputValueData([input3, input4])).toStrictEqual([input3, input4]);
-    expect(Sudoku.removeDuplicatedInputValueData([input1, input2, input3, input4])).toStrictEqual([input1, input3, input4]);
+    expect(Sudoku.removeDuplicatedPositionAndValue([input1, input2])).toStrictEqual([input1]);
+    expect(Sudoku.removeDuplicatedPositionAndValue([input1, input2, input1, input1])).toStrictEqual([input1]);
+    expect(Sudoku.removeDuplicatedPositionAndValue([input1, input3])).toStrictEqual([input1, input3]);
+    expect(Sudoku.removeDuplicatedPositionAndValue([input3, input4])).toStrictEqual([input3, input4]);
+    expect(Sudoku.removeDuplicatedPositionAndValue([input1, input2, input3, input4])).toStrictEqual([input1, input3, input4]);
   });
 
   it("missingInVirtualLine", () => {
@@ -814,9 +814,9 @@ describe("sudoku basic", () => {
   it("clearAllCandidates", () => {
     const s = new Sudoku(p0);
     s.setCandidates(0, 0, candidatesFactory(true, ["2", "3"]));
-    expect(s.grid.some((x) => x.some((y) => y.candidates))).toBe(true);
+    expect(s.getGrid().some((x) => x.some((y) => y.candidates))).toBe(true);
     s.clearAllCandidates();
-    expect(s.grid.some((x) => x.some((y) => y.candidates))).toBe(false);
+    expect(s.getGrid().some((x) => x.some((y) => y.candidates))).toBe(false);
   });
 
   it("solved", () => {
@@ -834,16 +834,6 @@ describe("sudoku basic", () => {
     }
 
     expect(s.solved).toBe(true);
-  });
-
-  it("candidatesCount", () => {
-    const c1 = candidatesFactory(true, ["1", "2", "3"]);
-    const c2 = candidatesFactory(true, ["1", "2", "3", "4"]);
-    const c3 = candidatesFactory(true, ["2", "5"]);
-
-    expect(Sudoku.candidatesCount(c1)).toBe(3);
-    expect(Sudoku.candidatesCount(c2)).toBe(4);
-    expect(Sudoku.candidatesCount(c3)).toBe(2);
   });
 
   it("getRowColumnIndexFromBoxIndexAndCellIndex", () => {
@@ -953,7 +943,7 @@ describe("sudoku basic", () => {
     expect(s0.addElementInCandidates(0, 0, "1")).toBe(true);
     expect(s0.addElementInCandidates(0, 0, "2")).toBe(true);
     expect(s0.addElementInCandidates(0, 0, "3")).toBe(true);
-    expect(s0.grid[0][0].candidates).toStrictEqual(Sudoku.candidatesFactory(true, ["1", "2", "3"]));
+    expect(s0.getGrid()[0][0].candidates).toStrictEqual(Sudoku.candidatesFactory(true, ["1", "2", "3"]));
 
     expect(s0.addElementInCandidates(0, 0, "1")).toBe(false);
     expect(s0.addElementInCandidates(0, 0, "2")).toBe(false);
@@ -982,9 +972,9 @@ describe("sudoku basic", () => {
 
     input.forEach((x) => s0.addElementInCandidates(x.rowIndex, x.columnIndex, x.value));
     expect(s0.batchRemoveElementInCandidates(remove)).toBe(2);
-    expect(s0.grid[0][0].candidates).toStrictEqual(Sudoku.candidatesFactory(true, ["2"]));
+    expect(s0.getGrid()[0][0].candidates).toStrictEqual(Sudoku.candidatesFactory(true, ["2"]));
 
     expect(s0.batchRemoveElementInCandidates(input)).toBe(1);
-    expect(s0.grid[0][0].candidates).toStrictEqual(Sudoku.candidatesFactory(false));
+    expect(s0.getGrid()[0][0].candidates).toStrictEqual(Sudoku.candidatesFactory(false));
   });
 });

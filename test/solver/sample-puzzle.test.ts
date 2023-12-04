@@ -12,7 +12,10 @@ describe("solver", () => {
 
       const s = new SudokuSolver(new Sudoku(clue));
       s.trySolve();
-      const strGrid = s.sudoku.grid.map((row) => row.map((cell) => cell.clue ?? cell.inputValue ?? "0"));
+      const strGrid = s
+        .getSudoku()
+        .getGrid()
+        .map((row) => row.map((cell) => cell.clue ?? cell.inputValue ?? "0"));
       expect(strGrid).toEqual(solution);
     }
   });

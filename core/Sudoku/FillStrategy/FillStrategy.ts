@@ -1,6 +1,6 @@
+import Sudoku from "../Sudoku";
 import type { SudokuLine } from "../SudokuLine";
-import type { PositionAndValue, Position } from "../type";
-import type Sudoku from "../Sudoku";
+import type { PositionAndValue, Position, Candidates } from "../type";
 import type { Elimination } from "../EliminationStrategy/EliminationStrategy";
 
 export enum FillStrategyType {
@@ -12,7 +12,6 @@ export enum FillStrategyType {
 export interface FillInputValueData extends PositionAndValue {
   relatedLine?: SudokuLine;
   highlightWholeCell?: boolean;
-  mainRelatedLine?: SudokuLine;
   secondaryRelatedLines?: SudokuLine[];
   secondaryHighlight?: Position[];
 }
@@ -27,15 +26,16 @@ export default abstract class FillStrategy {
     const removals: PositionAndValue[] = [];
     for (const { rowIndex, columnIndex, value } of data) {
       const relatedCells = sudoku.getAllRelatedCells({ rowIndex, columnIndex });
-      relatedCells.forEach(({ rowIndex, columnIndex, candidates }) => {
-        if (!candidates?.[value]) return;
-        const currentElimination = eliminations.find((x) => x.rowIndex === rowIndex && x.columnIndex === columnIndex);
+      for (const relatedCell of relatedCells) {
+        const { rowIndex, columnIndex, candidates } = relatedCell;
+        if (!candidates?.[value]) continue;
+        const currentElimination = eliminations.find((x) => Sudoku.isSamePos(x, relatedCell));
         if (currentElimination) {
-          currentElimination.elements.push(value);
+          if (!currentElimination.elements.includes(value)) currentElimination.elements.push(value);
         } else {
           eliminations.push({ rowIndex, columnIndex, elements: [value] });
         }
-      });
+      }
     }
     for (const x of eliminations) {
       for (const value of x.elements) {
@@ -47,6 +47,8 @@ export default abstract class FillStrategy {
   }
 
   public abstract canFill(sudoku: Sudoku): FillInputValueData[];
+
+  public abstract canFillWithoutCandidates(sudoku: Sudoku, overrideCandidates: (Candidates | undefined)[][]): FillInputValueData[];
 
   public abstract descriptionOfFillInputValueData(data: FillInputValueData): string;
 }

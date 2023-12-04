@@ -1,6 +1,7 @@
 import EliminationStrategy from "./EliminationStrategy/EliminationStrategy";
 import Sudoku from "./Sudoku";
-import type { EliminationStep } from "./SudokuSolver";
+
+import type { EliminationStep } from "~/core/Sudoku/type";
 
 export default class SingleEliminationStep {
   private constructor() {}

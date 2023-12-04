@@ -38,7 +38,7 @@
               <IconPencil class="text-xl" />
             </button>
             <button
-              v-for="(x, index) in SudokuSolver.enabledFillStrategies"
+              v-for="(x, index) in SudokuSolver.fillStrategiesOrder"
               :key="index"
               @click="() => handleFillStrategyHintClick(x)"
               class="btn btn-sm btn-block whitespace-nowrap"
@@ -49,7 +49,7 @@
           <div class="flex flex-grow basis-1/2 flex-col gap-2">
             <button @click="solveBySolver" class="btn btn-sm mb-4 whitespace-nowrap">Solve</button>
             <button
-              v-for="(x, index) in SudokuSolver.enabledEliminationStrategies"
+              v-for="(x, index) in SudokuSolver.eliminationStrategiesOrder"
               :key="index"
               @click="() => handleEliminateStrategyHintClick(x)"
               class="btn btn-sm btn-block whitespace-nowrap"

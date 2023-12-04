@@ -9,8 +9,8 @@ export interface Stats {
   elimination: EliminationStats;
 }
 
-export default class CSolveStats {
-  private stats: Stats = CSolveStats.initialStats();
+export default class SolveStats {
+  private stats: Stats = SolveStats.initialStats();
 
   private static initialStats(): Stats {
     return {

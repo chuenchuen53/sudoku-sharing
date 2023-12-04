@@ -33,7 +33,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="x in SudokuSolver.enabledEliminationStrategies" :key="x" :class="{ hidden: stats.elimination[x] === 0 }">
+          <tr v-for="x in SudokuSolver.eliminationStrategiesOrder" :key="x" :class="{ hidden: stats.elimination[x] === 0 }">
             <th>{{ EliminationStrategy.strategyName(x) }}</th>
             <td class="text-right">{{ stats.elimination[x] }}</td>
           </tr>

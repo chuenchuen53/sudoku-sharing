@@ -116,7 +116,7 @@ describe("sudoku solver hidden single test", () => {
   it("hiddenSingleFromVirtualLines test4", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    const result = HiddenSingle.hiddenSingleFromVirtualLines(s.sudoku.getAllRows(), VirtualLineType.ROW);
+    const result = HiddenSingle.hiddenSingleFromVirtualLines(s.getSudoku().getAllRows(), VirtualLineType.ROW);
     const expectedResult = [
       TestUtil.fillInputValueDataFactory(0, 2, "1", VirtualLineType.ROW, 0),
       TestUtil.fillInputValueDataFactory(0, 0, "2", VirtualLineType.ROW, 0),
@@ -138,7 +138,7 @@ describe("sudoku solver hidden single test", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
     const fillHiddenSingle = HiddenSingle.getInstance();
-    const overallResult = fillHiddenSingle.canFill(s.sudoku);
+    const overallResult = fillHiddenSingle.canFill(s.getSudoku());
 
     const expectedRowResult = TestUtil.fillInputValueDataArrFactory([
       [0, 2, "1", VirtualLineType.ROW, 0],
@@ -191,9 +191,9 @@ describe("sudoku solver hidden single test", () => {
       [1, 6, "1", VirtualLineType.COLUMN, 6],
     ]);
 
-    expect(HiddenSingle.hiddenSingleFromVirtualLines(s.sudoku.getAllRows(), VirtualLineType.ROW)).toStrictEqual(expectedRowResult);
-    expect(HiddenSingle.hiddenSingleFromVirtualLines(s.sudoku.getAllColumns(), VirtualLineType.COLUMN)).toStrictEqual(expectedColumnResult);
-    expect(HiddenSingle.hiddenSingleFromVirtualLines(s.sudoku.getAllBoxes(), VirtualLineType.BOX)).toStrictEqual(expectedBoxResult);
+    expect(HiddenSingle.hiddenSingleFromVirtualLines(s.getSudoku().getAllRows(), VirtualLineType.ROW)).toStrictEqual(expectedRowResult);
+    expect(HiddenSingle.hiddenSingleFromVirtualLines(s.getSudoku().getAllColumns(), VirtualLineType.COLUMN)).toStrictEqual(expectedColumnResult);
+    expect(HiddenSingle.hiddenSingleFromVirtualLines(s.getSudoku().getAllBoxes(), VirtualLineType.BOX)).toStrictEqual(expectedBoxResult);
 
     expectedOverallResult.forEach((e) => expect(overallResult).toContainEqual(e));
     expect(overallResult).toStrictEqual(expectedOverallResult);
@@ -203,7 +203,7 @@ describe("sudoku solver hidden single test", () => {
     const s = new SudokuSolver(new Sudoku(p1));
     s.setBasicCandidates();
     const fillHiddenSingle = HiddenSingle.getInstance();
-    const overallResult = fillHiddenSingle.canFill(s.sudoku);
+    const overallResult = fillHiddenSingle.canFill(s.getSudoku());
 
     const expectedRowResult = TestUtil.fillInputValueDataArrFactory([
       [0, 2, "4", VirtualLineType.ROW, 0],
@@ -247,9 +247,9 @@ describe("sudoku solver hidden single test", () => {
       [4, 2, "6", VirtualLineType.BOX, 3],
     ]);
 
-    expect(HiddenSingle.hiddenSingleFromVirtualLines(s.sudoku.getAllRows(), VirtualLineType.ROW)).toStrictEqual(expectedRowResult);
-    expect(HiddenSingle.hiddenSingleFromVirtualLines(s.sudoku.getAllColumns(), VirtualLineType.COLUMN)).toStrictEqual(expectedColumnResult);
-    expect(HiddenSingle.hiddenSingleFromVirtualLines(s.sudoku.getAllBoxes(), VirtualLineType.BOX)).toStrictEqual(expectedBoxResult);
+    expect(HiddenSingle.hiddenSingleFromVirtualLines(s.getSudoku().getAllRows(), VirtualLineType.ROW)).toStrictEqual(expectedRowResult);
+    expect(HiddenSingle.hiddenSingleFromVirtualLines(s.getSudoku().getAllColumns(), VirtualLineType.COLUMN)).toStrictEqual(expectedColumnResult);
+    expect(HiddenSingle.hiddenSingleFromVirtualLines(s.getSudoku().getAllBoxes(), VirtualLineType.BOX)).toStrictEqual(expectedBoxResult);
     expectedResult.forEach((e) => expect(overallResult).toContainEqual(e));
     expect(overallResult).toStrictEqual(expectedResult);
   });

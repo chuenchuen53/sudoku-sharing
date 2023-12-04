@@ -1,6 +1,8 @@
 import SudokuSolver from "../SudokuSolver";
+import Sudoku from "../Sudoku";
+import { VirtualLineType } from "../type";
+import { SudokuLineUtil } from "../SudokuLine";
 import FillStrategy, { type FillInputValueData } from "./FillStrategy";
-import type Sudoku from "../Sudoku";
 import type { Candidates, Cell, Grid } from "../type";
 
 export default class NakedSingle extends FillStrategy {
@@ -24,35 +26,36 @@ export default class NakedSingle extends FillStrategy {
     }
   }
 
-  public static nakedSingles(sudoku: Sudoku): FillInputValueData[] {
+  public static nakedSingles(grid: Grid, overrideCandidates?: (Candidates | undefined)[][]): FillInputValueData[] {
     const result: FillInputValueData[] = [];
-    NakedSingle.loopGrid(sudoku.grid, (rowIndex, columnIndex, cell) => {
-      if (!cell.candidates) return;
-      const candidatesArr = SudokuSolver.getCandidatesArr(cell.candidates);
-      if (candidatesArr.length === 1) result.push({ rowIndex, columnIndex, value: candidatesArr[0] });
+    NakedSingle.loopGrid(grid, (rowIndex, columnIndex, cell) => {
+      const candidates = overrideCandidates ? overrideCandidates[rowIndex][columnIndex] : cell.candidates;
+      if (!candidates) return;
+      const candidatesArr = SudokuSolver.getCandidatesArr(candidates);
+      if (candidatesArr.length !== 1) return;
+      if (overrideCandidates) {
+        const relatedRow = SudokuLineUtil.sudokuLine(VirtualLineType.ROW, rowIndex);
+        const relatedColumn = SudokuLineUtil.sudokuLine(VirtualLineType.COLUMN, columnIndex);
+        const relatedBox = SudokuLineUtil.sudokuLine(VirtualLineType.BOX, Sudoku.getBoxIndex(rowIndex, columnIndex));
+        const secondaryRelatedLines = [relatedRow, relatedColumn, relatedBox];
+        result.push({ rowIndex, columnIndex, value: candidatesArr[0], secondaryRelatedLines });
+      } else {
+        result.push({ rowIndex, columnIndex, value: candidatesArr[0] });
+      }
     });
     return result;
   }
 
-  public static nakedSingleWithOverrideCandidates(sudoku: Sudoku, overrideCandidates: (Candidates | undefined)[][]): FillInputValueData[] {
-    const result: FillInputValueData[] = [];
-    NakedSingle.loopGrid(sudoku.grid, (rowIndex, columnIndex, cell) => {
-      if (cell.clue || cell.inputValue) return;
-      const candidates = overrideCandidates[rowIndex][columnIndex];
-      if (!candidates) return;
-      const candidatesArr = SudokuSolver.getCandidatesArr(candidates);
-      if (candidatesArr.length === 1) result.push({ rowIndex, columnIndex, value: candidatesArr[0] });
-    });
-    return result;
+  public override canFill(sudoku: Sudoku): FillInputValueData[] {
+    return NakedSingle.nakedSingles(sudoku.getGrid());
+  }
+
+  public override canFillWithoutCandidates(sudoku: Sudoku, overrideCandidates: (Candidates | undefined)[][]): FillInputValueData[] {
+    return NakedSingle.nakedSingles(sudoku.getGrid(), overrideCandidates);
   }
 
   public override descriptionOfFillInputValueData(data: FillInputValueData): string {
     const { rowIndex, columnIndex, value } = data;
-
     return `${value} in R${rowIndex + 1}C${columnIndex + 1}`;
-  }
-
-  public override canFill(sudoku: Sudoku): FillInputValueData[] {
-    return NakedSingle.nakedSingles(sudoku);
   }
 }

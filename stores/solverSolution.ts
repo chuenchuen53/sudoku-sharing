@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { shallowRef } from "vue";
-import type { Grid } from "../core/Sudoku/type";
-import type { Step } from "../core/Sudoku/SudokuSolver";
+import type { Grid, Step } from "../core/Sudoku/type";
 import type { Stats } from "../core/Sudoku/SolveStats";
 
 interface PageState {

@@ -27,7 +27,7 @@ export default abstract class EliminationStrategy {
     const result: PositionAndValue[] = flattedEliminations.flatMap(({ rowIndex, columnIndex, elements }) =>
       elements.map((element) => ({ rowIndex, columnIndex, value: element })),
     );
-    return Sudoku.removeDuplicatedInputValueData(result);
+    return Sudoku.removeDuplicatedPositionAndValue(result);
   }
 
   public abstract canEliminate(sudoku: Sudoku): EliminationData[];

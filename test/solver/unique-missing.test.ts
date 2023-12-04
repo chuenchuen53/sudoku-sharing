@@ -115,11 +115,11 @@ describe("sudoku solver unique missing test", () => {
       },
     ];
 
-    expect(UniqueMissing.uniqueMissingFromVirtualLines(lines, VirtualLineType.ROW)).toStrictEqual(expectedResult);
+    expect(UniqueMissing.uniqueMissingInVirtualLines(lines, VirtualLineType.ROW)).toStrictEqual(expectedResult);
   });
 
   it("uniqueMissingFromVirtualLines test 2", () => {
-    const fn = UniqueMissing.uniqueMissingFromVirtualLines;
+    const fn = UniqueMissing.uniqueMissingInVirtualLines;
 
     const clue: InputClues = [
       ["2", "9", "0", "4", "6", "7", "5", "3", "8"],
@@ -133,17 +133,17 @@ describe("sudoku solver unique missing test", () => {
       ["0", "2", "4", "0", "0", "9", "6", "0", "0"],
     ];
     const s = new SudokuSolver(new Sudoku(clue));
-    expect(fn(s.sudoku.getAllRows(), VirtualLineType.ROW)).toStrictEqual([dataFactory(s.sudoku.getRow(0)[2], "1", VirtualLineType.ROW, 0)]);
-    expect(fn(s.sudoku.getAllColumns(), VirtualLineType.COLUMN)).toStrictEqual([
-      dataFactory(s.sudoku.getColumn(0)[8], "3", VirtualLineType.COLUMN, 0),
+    expect(fn(s.getSudoku().getAllRows(), VirtualLineType.ROW)).toStrictEqual([dataFactory(s.getSudoku().getRow(0)[2], "1", VirtualLineType.ROW, 0)]);
+    expect(fn(s.getSudoku().getAllColumns(), VirtualLineType.COLUMN)).toStrictEqual([
+      dataFactory(s.getSudoku().getColumn(0)[8], "3", VirtualLineType.COLUMN, 0),
     ]);
-    expect(fn(s.sudoku.getAllBoxes(), VirtualLineType.BOX)).toStrictEqual([
-      dataFactory(s.sudoku.getBoxFromBoxIndex(3)[5], "5", VirtualLineType.BOX, 3),
+    expect(fn(s.getSudoku().getAllBoxes(), VirtualLineType.BOX)).toStrictEqual([
+      dataFactory(s.getSudoku().getBoxFromBoxIndex(3)[5], "5", VirtualLineType.BOX, 3),
     ]);
   });
 
   it("fillUniqueMissing overall", () => {
-    const fn = UniqueMissing.uniqueMissingFromVirtualLines;
+    const fn = UniqueMissing.uniqueMissingInVirtualLines;
 
     const clue: InputClues = [
       ["2", "9", "1", "4", "6", "7", "5", "3", "8"],
@@ -158,20 +158,20 @@ describe("sudoku solver unique missing test", () => {
     ];
 
     const s = new SudokuSolver(new Sudoku(clue));
-    expect(fn(s.sudoku.getAllRows(), VirtualLineType.ROW)).toStrictEqual([dataFactory(s.sudoku.getRow(8)[8], "7", VirtualLineType.ROW, 8)]);
-    expect(fn(s.sudoku.getAllColumns(), VirtualLineType.COLUMN)).toStrictEqual([
-      dataFactory(s.sudoku.getColumn(8)[8], "7", VirtualLineType.COLUMN, 8),
+    expect(fn(s.getSudoku().getAllRows(), VirtualLineType.ROW)).toStrictEqual([dataFactory(s.getSudoku().getRow(8)[8], "7", VirtualLineType.ROW, 8)]);
+    expect(fn(s.getSudoku().getAllColumns(), VirtualLineType.COLUMN)).toStrictEqual([
+      dataFactory(s.getSudoku().getColumn(8)[8], "7", VirtualLineType.COLUMN, 8),
     ]);
-    expect(fn(s.sudoku.getAllBoxes(), VirtualLineType.BOX)).toStrictEqual([
-      dataFactory(s.sudoku.getBoxFromBoxIndex(8)[8], "7", VirtualLineType.BOX, 8),
+    expect(fn(s.getSudoku().getAllBoxes(), VirtualLineType.BOX)).toStrictEqual([
+      dataFactory(s.getSudoku().getBoxFromBoxIndex(8)[8], "7", VirtualLineType.BOX, 8),
     ]);
 
     // check remove duplicated
-    expect(UniqueMissing.uniqueMissing(s.sudoku)).toStrictEqual([dataFactory(s.sudoku.getRow(8)[8], "7", VirtualLineType.ROW, 8)]);
+    expect(UniqueMissing.uniqueMissing(s.getSudoku())).toStrictEqual([dataFactory(s.getSudoku().getRow(8)[8], "7", VirtualLineType.ROW, 8)]);
 
     expect(s.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING)).toBe(1);
-    expect(s.sudoku.isValid).toBe(true);
-    expect(s.sudoku.solved).toBe(true);
+    expect(s.getSudoku().isValid).toBe(true);
+    expect(s.getSudoku().solved).toBe(true);
     expect(s.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING)).toBe(0);
   });
 });

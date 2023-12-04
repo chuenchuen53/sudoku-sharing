@@ -1,5 +1,5 @@
 import Sudoku from "../Sudoku";
-import { SudokuLineUtil } from "../SudokuLine";
+import { type SudokuLine, SudokuLineUtil } from "../SudokuLine";
 import SudokuSolver from "../SudokuSolver";
 import { VirtualLineType, type Candidates, type SudokuElement, type VirtualLine } from "../type";
 import FillStrategy, { type FillInputValueData } from "./FillStrategy";
@@ -20,37 +20,40 @@ export default class UniqueMissing extends FillStrategy {
     return candidatesArr.length === 1 ? candidatesArr[0] : null;
   }
 
-  public static uniqueMissingFromVirtualLines(virtualLines: VirtualLine[], virtualLineType: VirtualLineType): FillInputValueData[] {
+  public static uniqueMissingInVirtualLine(virtualLine: VirtualLine, relatedLine: SudokuLine): FillInputValueData | null {
+    const missing = Sudoku.missingValuesInVirtualLine(virtualLine);
+    const uniqueCandidate = UniqueMissing.uniqueCandidate(missing);
+    if (uniqueCandidate === null) return null;
+    const cell = virtualLine.find((x) => !x.clue && !x.inputValue);
+    if (!cell) return null; // only happen when sudoku is invalid
+    return {
+      rowIndex: cell.rowIndex,
+      columnIndex: cell.columnIndex,
+      value: uniqueCandidate,
+      relatedLine,
+      highlightWholeCell: true,
+    };
+  }
+
+  public static uniqueMissingInVirtualLines(virtualLines: VirtualLine[], virtualLineType: VirtualLineType): FillInputValueData[] {
     const result: FillInputValueData[] = [];
-    const missingArr = virtualLines.map((x) => Sudoku.missingValuesInVirtualLine(x));
 
     for (let i = 0; i < virtualLines.length; i++) {
       const virtualLine = virtualLines[i];
-      const missing = missingArr[i];
-      const uniqueCandidate = UniqueMissing.uniqueCandidate(missing);
-      if (uniqueCandidate) {
-        const cell = virtualLine.find((x) => !x.clue && !x.inputValue);
-        if (!cell) continue; // only happen when sudoku is invalid
-        result.push({
-          rowIndex: cell.rowIndex,
-          columnIndex: cell.columnIndex,
-          value: uniqueCandidate,
-          relatedLine: SudokuLineUtil.sudokuLine(virtualLineType, i),
-          highlightWholeCell: true,
-        });
-      }
+      const data = UniqueMissing.uniqueMissingInVirtualLine(virtualLine, SudokuLineUtil.sudokuLine(virtualLineType, i));
+      if (data !== null) result.push(data);
     }
 
     return result;
   }
 
   public static uniqueMissing(sudoku: Sudoku): FillInputValueData[] {
-    const rowResult = UniqueMissing.uniqueMissingFromVirtualLines(sudoku.getAllRows(), VirtualLineType.ROW);
-    const columnResult = UniqueMissing.uniqueMissingFromVirtualLines(sudoku.getAllColumns(), VirtualLineType.COLUMN);
-    const boxResult = UniqueMissing.uniqueMissingFromVirtualLines(sudoku.getAllBoxes(), VirtualLineType.BOX);
+    const rowResult = UniqueMissing.uniqueMissingInVirtualLines(sudoku.getAllRows(), VirtualLineType.ROW);
+    const columnResult = UniqueMissing.uniqueMissingInVirtualLines(sudoku.getAllColumns(), VirtualLineType.COLUMN);
+    const boxResult = UniqueMissing.uniqueMissingInVirtualLines(sudoku.getAllBoxes(), VirtualLineType.BOX);
 
     const combined = [...rowResult, ...columnResult, ...boxResult];
-    return combined.filter((x, ix) => combined.findIndex((y) => Sudoku.isSamePos(x, y)) === ix);
+    return Sudoku.removeDuplicatedPositionAndValue(combined);
   }
 
   public override descriptionOfFillInputValueData(data: FillInputValueData): string {
@@ -60,6 +63,10 @@ export default class UniqueMissing extends FillStrategy {
   }
 
   public override canFill(sudoku: Sudoku): FillInputValueData[] {
+    return UniqueMissing.uniqueMissing(sudoku);
+  }
+
+  public override canFillWithoutCandidates(sudoku: Sudoku): FillInputValueData[] {
     return UniqueMissing.uniqueMissing(sudoku);
   }
 }

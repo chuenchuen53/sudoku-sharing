@@ -1,5 +1,5 @@
-import TestUtil from "../TestUtil";
 import { expect, describe, it } from "vitest";
+import TestUtil from "../TestUtil";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import SudokuSolver from "../../core/Sudoku/SudokuSolver";
 import type { InputClues, Candidates } from "../../core/Sudoku/type";
@@ -81,11 +81,11 @@ describe("sudoku solver util method test", () => {
       [8, 8, candidatesFactory(true, ["5", "7"])],
     ];
 
-    arr.forEach(([r, c, candidates]) => expect(s.sudoku.grid[r][c].candidates).toStrictEqual(candidates));
+    arr.forEach(([r, c, candidates]) => expect(s.getSudoku().getGrid()[r][c].candidates).toStrictEqual(candidates));
 
     const ns = new SudokuSolver(new Sudoku(p0));
-    arr.forEach(([r, c, candidates]) => ns.sudoku.setCandidates(r, c, candidates));
-    expect(ns.sudoku.grid).toStrictEqual(s.sudoku.grid);
+    arr.forEach(([r, c, candidates]) => ns.getSudoku().setCandidates(r, c, candidates));
+    expect(ns.getSudoku().getGrid()).toStrictEqual(s.getSudoku().getGrid());
   });
 
   it("getCombinedMissing", () => {
@@ -146,50 +146,50 @@ describe("sudoku solver util method test", () => {
       [8, 7, candidatesFactory(true, ["3", "7", "9"])],
     ];
 
-    arr.forEach(([r, c, candidates]) => expect(s.sudoku.grid[r][c].candidates).toStrictEqual(candidates));
+    arr.forEach(([r, c, candidates]) => expect(s.getSudoku().getGrid()[r][c].candidates).toStrictEqual(candidates));
 
     const ns = new SudokuSolver(new Sudoku(p1));
-    arr.forEach(([r, c, candidates]) => ns.sudoku.setCandidates(r, c, candidates));
-    expect(ns.sudoku.grid).toStrictEqual(s.sudoku.grid);
+    arr.forEach(([r, c, candidates]) => ns.getSudoku().setCandidates(r, c, candidates));
+    expect(ns.getSudoku().getGrid()).toStrictEqual(s.getSudoku().getGrid());
   });
 
   it("candidateCellsFromVirtualLine", () => {
     const s = new SudokuSolver(new Sudoku(p0));
 
     for (let i = 0; i < 9; i++) {
-      expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getRow(i))).toStrictEqual([]);
-      expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getColumn(i))).toStrictEqual([]);
-      expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getBoxFromBoxIndex(i))).toStrictEqual([]);
+      expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getRow(i))).toStrictEqual([]);
+      expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getColumn(i))).toStrictEqual([]);
+      expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getBoxFromBoxIndex(i))).toStrictEqual([]);
     }
 
-    s.sudoku.setCandidates(0, 0, candidatesFactory(true, ["1", "2", "3"]));
+    s.getSudoku().setCandidates(0, 0, candidatesFactory(true, ["1", "2", "3"]));
 
     const c00 = TestUtil.CellFactory(0, 0, { candidates: ["1", "2", "3"] });
-    expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getRow(0))).toStrictEqual([c00]);
-    expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getRow(1))).toStrictEqual([]);
-    expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getColumn(0))).toStrictEqual([c00]);
-    expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getColumn(1))).toStrictEqual([]);
-    expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getBoxFromBoxIndex(0))).toStrictEqual([c00]);
-    expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getBoxFromBoxIndex(1))).toStrictEqual([]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getRow(0))).toStrictEqual([c00]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getRow(1))).toStrictEqual([]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getColumn(0))).toStrictEqual([c00]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getColumn(1))).toStrictEqual([]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getBoxFromBoxIndex(0))).toStrictEqual([c00]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getBoxFromBoxIndex(1))).toStrictEqual([]);
 
-    s.sudoku.setCandidates(1, 2, candidatesFactory(true, ["4"]));
+    s.getSudoku().setCandidates(1, 2, candidatesFactory(true, ["4"]));
     const c12 = TestUtil.CellFactory(1, 2, { candidates: ["4"] });
-    expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getRow(1))).toStrictEqual([c12]);
-    expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getColumn(2))).toStrictEqual([c12]);
-    expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getBoxFromBoxIndex(0))).toStrictEqual([c00, c12]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getRow(1))).toStrictEqual([c12]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getColumn(2))).toStrictEqual([c12]);
+    expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getBoxFromBoxIndex(0))).toStrictEqual([c00, c12]);
 
-    s.sudoku.clearAllCandidates();
+    s.getSudoku().clearAllCandidates();
     s.setBasicCandidates();
 
     for (let i = 0; i < 9; i++) {
       const rowCount = p0[i].filter((v) => v === "0").length;
       const colCount = p0.map((v) => v[i]).filter((v) => v === "0").length;
-      expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getRow(i)).length).toBe(rowCount);
-      expect(SudokuSolver.candidateCellsFromVirtualLine(s.sudoku.getColumn(i)).length).toBe(colCount);
+      expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getRow(i)).length).toBe(rowCount);
+      expect(SudokuSolver.candidateCellsFromVirtualLine(s.getSudoku().getColumn(i)).length).toBe(colCount);
     }
 
     for (let i = 0; i < 9; i++) {
-      const box = s.sudoku.getBoxFromBoxIndex(i);
+      const box = s.getSudoku().getBoxFromBoxIndex(i);
       let count = 0;
       for (let i = 0; i < 9; i++) {
         if (p0[box[i].rowIndex][box[i].columnIndex] === "0") count++;

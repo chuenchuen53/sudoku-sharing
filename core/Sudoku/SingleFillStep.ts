@@ -1,7 +1,6 @@
 import Sudoku from "./Sudoku";
 import { SudokuLineUtil } from "./SudokuLine";
-import { VirtualLineType, type VirtualLine, type SudokuElement, type Position, type Cell } from "./type";
-import { type FillStep } from "./SudokuSolver";
+import { VirtualLineType, type VirtualLine, type SudokuElement, type Position, type Cell, FillStep } from "./type";
 import { FillStrategyType } from "./FillStrategy/FillStrategy";
 import type { SudokuLine } from "./SudokuLine";
 
