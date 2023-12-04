@@ -4,5 +4,5 @@ The web app is hosted at [https://simple-sudoku-app.netlify.app](https://simple-
 
 ## Screenshots
 
-![screenshot](screenshot/light.jpg#gh-light-mode-only)
-![screenshot](screenshot/dark.jpg#gh-dark-mode-only)
+![screenshot](screenshot/light.png#gh-light-mode-only)
+![screenshot](screenshot/dark.png#gh-dark-mode-only)
