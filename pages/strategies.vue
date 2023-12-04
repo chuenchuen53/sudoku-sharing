@@ -26,7 +26,7 @@ import IconTableOfContents from "~/components/Icons/IconTableOfContents.vue";
 const containerRef = ref<HTMLElement | null>(null);
 const activeTocId = ref("");
 const observer = ref<IntersectionObserver | null>(null);
-const openMobileToc = ref(true);
+const openMobileToc = ref(false);
 
 onMounted(() => {
   observer.value = new IntersectionObserver(

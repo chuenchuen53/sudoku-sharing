@@ -82,7 +82,7 @@ export class Undo {
   }
 
   public fill(rowIndex: number, columnIndex: number): void {
-    const cell = this.sudoku.grid[rowIndex][columnIndex];
+    const cell = this.sudoku.getGrid()[rowIndex][columnIndex];
     if (cell.inputValue) {
       this.undoStack.push({ undoType: UndoType.FILL, rowIndex, columnIndex, inputValue: cell.inputValue });
     } else if (cell.candidates) {
@@ -93,14 +93,14 @@ export class Undo {
   }
 
   public clear(rowIndex: number, columnIndex: number): void {
-    const cell = this.sudoku.grid[rowIndex][columnIndex];
+    const cell = this.sudoku.getGrid()[rowIndex][columnIndex];
     if (cell.inputValue) {
       this.undoStack.push({ undoType: UndoType.FILL, rowIndex, columnIndex, inputValue: cell.inputValue });
     }
   }
 
   public addCandidate(rowIndex: number, columnIndex: number, value: SudokuElement): void {
-    const cell = this.sudoku.grid[rowIndex][columnIndex];
+    const cell = this.sudoku.getGrid()[rowIndex][columnIndex];
     if (cell.candidates && !cell.candidates[value]) {
       this.undoStack.push({ undoType: UndoType.CANDIDATE, rowIndex, columnIndex, candidates: { ...cell.candidates } });
     } else {
@@ -109,7 +109,7 @@ export class Undo {
   }
 
   public removeCandidate(rowIndex: number, columnIndex: number, value: SudokuElement): void {
-    const cell = this.sudoku.grid[rowIndex][columnIndex];
+    const cell = this.sudoku.getGrid()[rowIndex][columnIndex];
     if (cell.candidates && cell.candidates[value]) {
       this.undoStack.push({ undoType: UndoType.CANDIDATE, rowIndex, columnIndex, candidates: { ...cell.candidates } });
     }
@@ -119,7 +119,7 @@ export class Undo {
     const arr = ArrUtil.create2DArray<Candidates | undefined>(9, 9, () => undefined);
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
-        const candidates = this.sudoku.grid[i][j].candidates;
+        const candidates = this.sudoku.getGrid()[i][j].candidates;
         if (candidates) {
           arr[i][j] = { ...candidates };
         }
@@ -130,7 +130,7 @@ export class Undo {
 
   public replaceAllInputValues(): void {
     const arr = ArrUtil.create2DArray<SudokuElementWithZero>(9, 9, () => "0");
-    this.sudoku.grid.forEach((row, rowIndex) => {
+    this.sudoku.getGrid().forEach((row, rowIndex) => {
       row.forEach((cell, columnIndex) => {
         if (cell.inputValue) {
           arr[rowIndex][columnIndex] = cell.inputValue;
@@ -157,7 +157,8 @@ export function undoAction(reactiveGrid: Ref<Grid>, sudoku: Sudoku, undoItem: Un
           delete reactiveGrid.value[undoItem.rowIndex][undoItem.columnIndex].inputValue;
           sudoku.removeInputValue({ rowIndex: undoItem.rowIndex, columnIndex: undoItem.columnIndex }, true);
         }
-        reactiveGrid.value[undoItem.rowIndex][undoItem.columnIndex].candidates = undoItem.candidates;
+        reactiveGrid.value[undoItem.rowIndex][undoItem.columnIndex].candidates = { ...undoItem.candidates };
+        sudoku.setCandidates(undoItem.rowIndex, undoItem.columnIndex, undoItem.candidates);
       }
       break;
     }

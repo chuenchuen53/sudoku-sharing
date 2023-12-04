@@ -433,6 +433,7 @@ $sub-border-width: 1px;
     position: absolute;
     outline-style: solid;
     outline-width: 3px;
+    pointer-events: none;
 
     @apply outline-error;
 
