@@ -30,7 +30,7 @@ export const useSolverStore = defineStore("solver", () => {
     _updateHaveUndo();
     inputGrid.value[rowIndex][columnIndex].inputValue = value;
     sudoku.setInputValue({ rowIndex, columnIndex, value }, true);
-    invalidPositions.value = [...sudoku.invalidCells];
+    invalidPositions.value = [...sudoku.getInvalidCells()];
   };
 
   const clearSelected = () => {
@@ -40,7 +40,7 @@ export const useSolverStore = defineStore("solver", () => {
       _updateHaveUndo();
       delete inputGrid.value[rowIndex][columnIndex].inputValue;
       sudoku.removeInputValue({ rowIndex, columnIndex }, true);
-      invalidPositions.value = [...sudoku.invalidCells];
+      invalidPositions.value = [...sudoku.getInvalidCells()];
     }
   };
 
@@ -76,7 +76,7 @@ export const useSolverStore = defineStore("solver", () => {
       }
     }
     sudoku.validatePuzzle();
-    invalidPositions.value = [...sudoku.invalidCells];
+    invalidPositions.value = [...sudoku.getInvalidCells()];
   };
 
   const undoActionFn = () => {
@@ -84,7 +84,7 @@ export const useSolverStore = defineStore("solver", () => {
     _updateHaveUndo();
     if (!lastUndo) return;
     undoAction(inputGrid, sudoku, lastUndo);
-    invalidPositions.value = [...sudoku.invalidCells];
+    invalidPositions.value = [...sudoku.getInvalidCells()];
   };
 
   return {

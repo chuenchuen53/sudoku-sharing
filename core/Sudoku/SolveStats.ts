@@ -37,15 +37,6 @@ export default class SolveStats {
     return JSON.parse(JSON.stringify(this.stats));
   }
 
-  public reset(): void {
-    for (const key in this.stats.filled) {
-      this.stats.filled[key as FillStrategyType] = 0;
-    }
-    for (const key in this.stats.elimination) {
-      this.stats.elimination[key as EliminationStrategyType] = 0;
-    }
-  }
-
   public addFilled(fillStrategyType: FillStrategyType, increment: number): void {
     this.stats.filled[fillStrategyType] += increment;
   }
