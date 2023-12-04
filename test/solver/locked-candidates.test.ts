@@ -2,10 +2,10 @@ import { expect, describe, it } from "vitest";
 import SudokuSolver from "../../core/Sudoku/SudokuSolver";
 import { VirtualLineType } from "../../core/Sudoku/type";
 import TestUtil from "../TestUtil";
-import type { InputClues, SudokuElement } from "../../core/Sudoku/type";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import LockedCandidates from "../../core/Sudoku/EliminationStrategy/LockedCandidates";
 import EliminationStrategy, { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import type { InputClues, SudokuElement } from "../../core/Sudoku/type";
 
 interface AllResult {
   rowLockInBoxResult: [number, number, SudokuElement][][];

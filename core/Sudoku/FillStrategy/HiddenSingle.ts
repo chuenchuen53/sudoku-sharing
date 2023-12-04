@@ -3,8 +3,9 @@ import { SudokuLineUtil } from "../SudokuLine";
 import SudokuSolver from "../SudokuSolver";
 import { VirtualLineType, type SudokuElement, type VirtualLine, type Candidates, type Cell, type Position } from "../type";
 import ArrUtil from "../../utils/ArrUtil";
-import FillStrategy, { type FillInputValueData } from "./FillStrategy";
+import FillStrategy from "./FillStrategy";
 import type { SudokuLine } from "../SudokuLine";
+import type { FillInputValueData } from "./type";
 
 export default class HiddenSingle extends FillStrategy {
   private static readonly instance = new HiddenSingle();

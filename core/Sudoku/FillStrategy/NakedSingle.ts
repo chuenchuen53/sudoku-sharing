@@ -2,8 +2,9 @@ import SudokuSolver from "../SudokuSolver";
 import Sudoku from "../Sudoku";
 import { VirtualLineType } from "../type";
 import { SudokuLineUtil } from "../SudokuLine";
-import FillStrategy, { type FillInputValueData } from "./FillStrategy";
+import FillStrategy from "./FillStrategy";
 import type { Candidates, Cell, Grid } from "../type";
+import type { FillInputValueData } from "./type";
 
 export default class NakedSingle extends FillStrategy {
   private static readonly instance = new NakedSingle();

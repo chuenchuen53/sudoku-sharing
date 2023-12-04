@@ -1,5 +1,5 @@
-import { type FillInputValueData, FillStrategyType } from "./FillStrategy/FillStrategy";
-import { type EliminationData, EliminationStrategyType } from "./EliminationStrategy/EliminationStrategy";
+import type { EliminationStrategyType, EliminationData } from "./EliminationStrategy/EliminationStrategy";
+import type { FillInputValueData, FillStrategyType } from "./FillStrategy/type";
 
 export type SudokuElement = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 

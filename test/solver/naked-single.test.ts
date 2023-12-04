@@ -3,7 +3,7 @@ import SudokuSolver from "../../core/Sudoku/SudokuSolver";
 import TestUtil from "../TestUtil";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import NakedSingle from "../../core/Sudoku/FillStrategy/NakedSingle";
-import { FillStrategyType } from "../../core/Sudoku/FillStrategy/FillStrategy";
+import { FillStrategyType } from "../../core/Sudoku/FillStrategy/type";
 import type { InputClues } from "../../core/Sudoku/type";
 
 const p0: InputClues = [

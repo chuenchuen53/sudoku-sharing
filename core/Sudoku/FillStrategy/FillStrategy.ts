@@ -1,20 +1,7 @@
 import Sudoku from "../Sudoku";
-import type { SudokuLine } from "../SudokuLine";
-import type { PositionAndValue, Position, Candidates, FillStep } from "../type";
+import type { Candidates, FillStep, PositionAndValue } from "../type";
 import type { Elimination } from "../EliminationStrategy/EliminationStrategy";
-
-export enum FillStrategyType {
-  UNIQUE_MISSING = "UNIQUE_MISSING",
-  NAKED_SINGLE = "NAKED_SINGLE",
-  HIDDEN_SINGLE = "HIDDEN_SINGLE",
-}
-
-export interface FillInputValueData extends PositionAndValue {
-  relatedLine?: SudokuLine;
-  highlightWholeCell?: boolean;
-  secondaryRelatedLines?: SudokuLine[];
-  secondaryHighlight?: Position[];
-}
+import type { FillInputValueData, FillStrategyType } from "./type";
 
 export default abstract class FillStrategy {
   public static strategyName(strategy: FillStrategyType): string {

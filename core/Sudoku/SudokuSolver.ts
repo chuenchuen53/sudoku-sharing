@@ -13,7 +13,7 @@ import NakedSingle from "./FillStrategy/NakedSingle";
 import UniqueMissing from "./FillStrategy/UniqueMissing";
 import Sudoku from "./Sudoku";
 import XYWing from "./EliminationStrategy/XYWing";
-import FillStrategy, { type FillInputValueData, FillStrategyType } from "./FillStrategy/FillStrategy";
+import FillStrategy from "./FillStrategy/FillStrategy";
 import SolveStats, { type Stats } from "./SolveStats";
 import {
   type CandidateCell,
@@ -29,6 +29,8 @@ import {
   VirtualLineType,
 } from "./type";
 import { SudokuLineUtil } from "./SudokuLine";
+import { FillStrategyType } from "./FillStrategy/type";
+import type { FillInputValueData } from "./FillStrategy/type";
 
 export default class SudokuSolver {
   private static fillStrategiesBeforeSetCandidatesOrder: FillStrategyType[] = [

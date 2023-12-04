@@ -2,7 +2,8 @@ import Sudoku from "../Sudoku";
 import { type SudokuLine, SudokuLineUtil } from "../SudokuLine";
 import SudokuSolver from "../SudokuSolver";
 import { VirtualLineType, type Candidates, type SudokuElement, type VirtualLine } from "../type";
-import FillStrategy, { type FillInputValueData } from "./FillStrategy";
+import FillStrategy from "./FillStrategy";
+import type { FillInputValueData } from "./type";
 
 export default class UniqueMissing extends FillStrategy {
   private static readonly instance = new UniqueMissing();

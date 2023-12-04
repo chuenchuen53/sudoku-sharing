@@ -4,8 +4,8 @@ import Sudoku from "../core/Sudoku/Sudoku";
 import SudokuSolver from "../core/Sudoku/SudokuSolver";
 import type { EliminationData, EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import type { Position, Grid, SudokuElement, SudokuElementWithZero } from "../core/Sudoku/type";
-import type { FillInputValueData, FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
 import type { Difficulty } from "sudoku-gen/dist/types/difficulty.type";
+import type { FillInputValueData, FillStrategyType } from "~/core/Sudoku/FillStrategy/type";
 import ArrUtil from "~/core/utils/ArrUtil";
 
 interface TempCandidate {

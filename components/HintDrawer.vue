@@ -85,8 +85,8 @@ import EliminationStrategy from "../core/Sudoku/EliminationStrategy/EliminationS
 import { usePlayStore } from "../stores/play";
 import { useSolverSolutionStore } from "../stores/solverSolution";
 import type { EliminationData, EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
-import type { FillInputValueData, FillStrategyType } from "../core/Sudoku/FillStrategy/FillStrategy";
 import type { Grid } from "~/core/Sudoku/type";
+import type { FillInputValueData, FillStrategyType } from "~/core/Sudoku/FillStrategy/type";
 import IconPencil from "~/components/Icons/IconPencil.vue";
 import IconLightBulb from "~/components/Icons/IconLightBulb.vue";
 import IconCross from "~/components/Icons/IconCross.vue";
