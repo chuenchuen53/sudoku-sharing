@@ -15,8 +15,6 @@ import Sudoku from "./Sudoku";
 import XYWing from "./EliminationStrategy/XYWing";
 import FillStrategy, { type FillInputValueData, FillStrategyType } from "./FillStrategy/FillStrategy";
 import SolveStats, { type Stats } from "./SolveStats";
-import SingleEliminationStep from "./SingleEliminationStep";
-import SingleFillStep from "./SingleFillStep";
 import {
   type CandidateCell,
   type Candidates,
@@ -33,6 +31,11 @@ import {
 import { SudokuLineUtil } from "./SudokuLine";
 
 export default class SudokuSolver {
+  private static fillStrategiesBeforeSetCandidatesOrder: FillStrategyType[] = [
+    FillStrategyType.UNIQUE_MISSING,
+    FillStrategyType.HIDDEN_SINGLE,
+    FillStrategyType.NAKED_SINGLE,
+  ];
   private static fillStrategiesOrder: FillStrategyType[] = [
     FillStrategyType.UNIQUE_MISSING,
     FillStrategyType.NAKED_SINGLE,
@@ -95,7 +98,6 @@ export default class SudokuSolver {
     return virtualLine.filter((cell): cell is CandidateCell => Boolean(cell.candidates));
   }
 
-  // todo move to multiple
   public static isSubset(candidates: Candidates, superset: SudokuElement[]): boolean {
     for (const sudokuElement of Sudoku.allElements()) {
       if (candidates[sudokuElement] && !superset.includes(sudokuElement)) return false;
@@ -114,48 +116,46 @@ export default class SudokuSolver {
     return this.sudoku;
   }
 
-  public computeCanFillWithoutCandidates(fillStrategyType: FillStrategyType): {
-    fillInputValueDataArr: FillInputValueData[];
-    overriddenCandidates: (Candidates | undefined)[][];
-  } {
-    const overriddenCandidates = this.getBasicCandidates();
-    switch (fillStrategyType) {
-      case FillStrategyType.NAKED_SINGLE:
-        return {
-          fillInputValueDataArr: SudokuSolver.fillStrategiesMap[FillStrategyType.NAKED_SINGLE].canFillWithoutCandidates(
-            this.sudoku,
-            overriddenCandidates,
-          ),
-          overriddenCandidates,
-        };
-      case FillStrategyType.HIDDEN_SINGLE:
-        return {
-          fillInputValueDataArr: HiddenSingle.hiddenSingleWithOverrideCandidates(this.sudoku, overriddenCandidates),
-          overriddenCandidates,
-        };
-      default:
-        throw new Error("not implemented");
-    }
+  public getStats(): Stats {
+    return this.stats.getStats();
   }
 
-  public setValueFromFillStrategyWithNoCandidateFill(fillStrategyType: FillStrategyType): number {
-    if (fillStrategyType === FillStrategyType.UNIQUE_MISSING) throw new Error("not implemented");
+  public getSteps(): Step[] {
+    const result: Step[] = [];
+    for (const step of this.steps) {
+      if ("elimination" in step) {
+        const singleSteps = EliminationStrategy.generateSingleSteps(step);
+        result.push(...singleSteps);
+      } else if ("fill" in step && step.fill.withoutCandidates) {
+        const singleSteps = FillStrategy.generateSingleSteps(step);
+        result.push(...singleSteps);
+      } else {
+        result.push(step);
+      }
+    }
+    return result;
+  }
 
+  public computeCanFillWithoutCandidates(fillStrategyType: FillStrategyType): FillInputValueData[] {
+    return SudokuSolver.fillStrategiesMap[fillStrategyType].canFillWithoutCandidates(this.sudoku, this.getBasicCandidates());
+  }
+
+  public setValueFromFillStrategyWithoutCandidate(fillStrategyType: FillStrategyType): number {
     const result = this.computeCanFillWithoutCandidates(fillStrategyType);
-    if (result.fillInputValueDataArr.length === 0) return 0;
+    if (result.length === 0) return 0;
     const fillStep: FillStep = {
       grid: Sudoku.cloneGrid(this.sudoku.getGrid()),
       fill: {
         strategy: fillStrategyType,
-        data: result.fillInputValueDataArr,
+        data: result,
         withoutCandidates: true,
       },
     };
     this.steps.push(fillStep);
-    this.sudoku.setInputValues(result.fillInputValueDataArr);
-    this.stats.addFilled(fillStrategyType, result.fillInputValueDataArr.length);
+    this.sudoku.setInputValues(result);
+    this.stats.addFilled(fillStrategyType, result.length);
 
-    return result.fillInputValueDataArr.length;
+    return result.length;
   }
 
   public getBasicCandidates(): (Candidates | undefined)[][] {
@@ -205,25 +205,6 @@ export default class SudokuSolver {
     return SudokuSolver.fillStrategiesMap[fillStrategyType].canFill(this.sudoku);
   }
 
-  public computeCanFillAndDescription(fillStrategyType: FillStrategyType): { data: FillInputValueData; description: string }[] {
-    if (fillStrategyType === FillStrategyType.NAKED_SINGLE) {
-      const data = this.computeCanFillWithoutCandidates(fillStrategyType);
-      if (data.fillInputValueDataArr.length > 0) {
-        return data.fillInputValueDataArr.map((x) => {
-          const row = SudokuLineUtil.sudokuLine(VirtualLineType.ROW, x.rowIndex);
-          const column = SudokuLineUtil.sudokuLine(VirtualLineType.COLUMN, x.columnIndex);
-          const box = SudokuLineUtil.sudokuLine(VirtualLineType.BOX, Sudoku.getBoxIndex(x.rowIndex, x.columnIndex));
-          const secondaryRelatedLines = [row, column, box];
-          const description = SudokuSolver.fillStrategiesMap[fillStrategyType].descriptionOfFillInputValueData(x);
-          return { data: { ...x, secondaryRelatedLines }, description };
-        });
-      }
-    }
-
-    const data = SudokuSolver.fillStrategiesMap[fillStrategyType].canFill(this.sudoku);
-    return data.map((x) => ({ data: x, description: SudokuSolver.fillStrategiesMap[fillStrategyType].descriptionOfFillInputValueData(x) }));
-  }
-
   public setValueFromFillStrategy(fillStrategyType: FillStrategyType): number {
     const result = this.computeCanFill(fillStrategyType);
     if (result.length === 0) return 0;
@@ -256,13 +237,27 @@ export default class SudokuSolver {
     return result.length;
   }
 
-  public computeCanEliminate(eliminationStrategy: EliminationStrategyType): EliminationData[] {
-    return SudokuSolver.eliminationStrategiesMap[eliminationStrategy].canEliminate(this.sudoku);
+  public computeCanFillAndDescription(fillStrategyType: FillStrategyType): { data: FillInputValueData; description: string }[] {
+    if (fillStrategyType === FillStrategyType.NAKED_SINGLE) {
+      const data = this.computeCanFillWithoutCandidates(fillStrategyType);
+      if (data.length > 0) {
+        return data.map((x) => {
+          const row = SudokuLineUtil.sudokuLine(VirtualLineType.ROW, x.rowIndex);
+          const column = SudokuLineUtil.sudokuLine(VirtualLineType.COLUMN, x.columnIndex);
+          const box = SudokuLineUtil.sudokuLine(VirtualLineType.BOX, Sudoku.getBoxIndex(x.rowIndex, x.columnIndex));
+          const secondaryRelatedLines = [row, column, box];
+          const description = SudokuSolver.fillStrategiesMap[fillStrategyType].descriptionOfFillInputValueData(x);
+          return { data: { ...x, secondaryRelatedLines }, description };
+        });
+      }
+    }
+
+    const data = SudokuSolver.fillStrategiesMap[fillStrategyType].canFill(this.sudoku);
+    return data.map((x) => ({ data: x, description: SudokuSolver.fillStrategiesMap[fillStrategyType].descriptionOfFillInputValueData(x) }));
   }
 
-  public computeCanEliminateAndDescription(eliminationStrategy: EliminationStrategyType): { data: EliminationData; description: string }[] {
-    const data = SudokuSolver.eliminationStrategiesMap[eliminationStrategy].canEliminate(this.sudoku);
-    return data.map((x) => ({ data: x, description: SudokuSolver.eliminationStrategiesMap[eliminationStrategy].descriptionOfEliminationData(x) }));
+  public computeCanEliminate(eliminationStrategy: EliminationStrategyType): EliminationData[] {
+    return SudokuSolver.eliminationStrategiesMap[eliminationStrategy].canEliminate(this.sudoku);
   }
 
   public removeCandidatesFromEliminationStrategy(eliminationStrategy: EliminationStrategyType): number {
@@ -282,43 +277,22 @@ export default class SudokuSolver {
     return count;
   }
 
-  public getSteps(): Step[] {
-    const result: Step[] = [];
-    for (const step of this.steps) {
-      if ("elimination" in step) {
-        const singularizedSteps = SingleEliminationStep.singularizeSteps(step);
-        result.push(...singularizedSteps);
-      } else if ("fill" in step && step.fill.strategy === FillStrategyType.HIDDEN_SINGLE && step.fill.withoutCandidates) {
-        const singularizedSteps = SingleFillStep.singularizeSteps(step);
-        result.push(...singularizedSteps);
-      } else if ("fill" in step && step.fill.strategy === FillStrategyType.NAKED_SINGLE && step.fill.withoutCandidates) {
-        const singularizedSteps = SingleFillStep.singularizeSteps(step);
-        result.push(...singularizedSteps);
-      } else if ("fill" in step && step.fill.strategy === FillStrategyType.UNIQUE_MISSING) {
-        const cloneGrid = Sudoku.cloneGrid(step.grid);
-        for (const data of step.fill.data) {
-          const { rowIndex, columnIndex, value } = data;
-          if (!cloneGrid[rowIndex][columnIndex].candidates) {
-            cloneGrid[rowIndex][columnIndex].candidates = Sudoku.candidatesFactory(true, [value]);
-          }
-        }
-        result.push({ grid: cloneGrid, fill: step.fill });
-      } else {
-        result.push(step);
-      }
-    }
-    return result;
+  public computeCanEliminateAndDescription(eliminationStrategy: EliminationStrategyType): { data: EliminationData; description: string }[] {
+    const data = SudokuSolver.eliminationStrategiesMap[eliminationStrategy].canEliminate(this.sudoku);
+    return data.map((x) => ({ data: x, description: SudokuSolver.eliminationStrategiesMap[eliminationStrategy].descriptionOfEliminationData(x) }));
   }
 
-  public getStats(): Stats {
-    return this.stats.getStats();
+  public tryFillBeforeSetCandidates(): boolean {
+    for (const fillStrategyType of SudokuSolver.fillStrategiesBeforeSetCandidatesOrder) {
+      if (this.setValueFromFillStrategyWithoutCandidate(fillStrategyType) > 0) return true;
+    }
+    return false;
   }
 
   public tryFillAfterSetCandidates(): boolean {
-    if (this.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING)) return true;
-    if (this.setValueFromFillStrategy(FillStrategyType.NAKED_SINGLE)) return true;
-    if (this.setValueFromFillStrategy(FillStrategyType.HIDDEN_SINGLE)) return true;
-
+    for (const fillStrategyType of SudokuSolver.fillStrategiesOrder) {
+      if (this.setValueFromFillStrategy(fillStrategyType) > 0) return true;
+    }
     return false;
   }
 
@@ -331,11 +305,7 @@ export default class SudokuSolver {
         return true;
       }
 
-      if (
-        this.setValueFromFillStrategy(FillStrategyType.UNIQUE_MISSING) === 0 &&
-        this.setValueFromFillStrategyWithNoCandidateFill(FillStrategyType.HIDDEN_SINGLE) === 0 &&
-        this.setValueFromFillStrategyWithNoCandidateFill(FillStrategyType.NAKED_SINGLE) === 0
-      ) {
+      if (!this.tryFillBeforeSetCandidates()) {
         this.setBasicCandidates();
         haveSetCandidates = true;
       }
