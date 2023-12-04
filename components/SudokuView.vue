@@ -82,7 +82,7 @@ const outlinedLines = computed<ReturnType<typeof outlinedLinePosition>[]>(() => 
   const { canFillDataArr } = props;
   const lines = new Set<SudokuLine>();
   canFillDataArr.forEach((data) => {
-    if (data.mainRelatedLine) lines.add(data.mainRelatedLine);
+    if (data.secondaryHighlight && data.relatedLine) lines.add(data.relatedLine);
   });
   const linesArr = Array.from(lines);
   return linesArr.map((x) => outlinedLinePosition(x));

@@ -107,6 +107,7 @@ export default class HiddenSingle extends FillStrategy {
           columnIndex: cell.columnIndex,
           value: sudokuElement,
           relatedLine: SudokuLineUtil.sudokuLineFromPosition(virtualLineType, cell),
+          highlightWholeCell: true,
           secondaryRelatedLines,
           secondaryHighlight,
         });

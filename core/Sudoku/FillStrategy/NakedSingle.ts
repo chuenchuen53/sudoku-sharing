@@ -38,7 +38,7 @@ export default class NakedSingle extends FillStrategy {
         const relatedColumn = SudokuLineUtil.sudokuLine(VirtualLineType.COLUMN, columnIndex);
         const relatedBox = SudokuLineUtil.sudokuLine(VirtualLineType.BOX, Sudoku.getBoxIndex(rowIndex, columnIndex));
         const secondaryRelatedLines = [relatedRow, relatedColumn, relatedBox];
-        result.push({ rowIndex, columnIndex, value: candidatesArr[0], secondaryRelatedLines });
+        result.push({ rowIndex, columnIndex, value: candidatesArr[0], highlightWholeCell: true, secondaryRelatedLines });
       } else {
         result.push({ rowIndex, columnIndex, value: candidatesArr[0] });
       }
