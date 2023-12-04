@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" style="background-color: #f2f2f2;">
+  <line x1="100" y1="0" x2="100" y2="300" stroke="#2b3440" stroke-width="8" />
+  <line x1="200" y1="0" x2="200" y2="300" stroke="#2b3440" stroke-width="8" />
+  <line x1="0" y1="100" x2="300" y2="100" stroke="#2b3440" stroke-width="8" />
+  <line x1="0" y1="200" x2="300" y2="200" stroke="#2b3440" stroke-width="8" />
+  <text x="50" y="70" text-anchor="middle" font-size="70" fill="#3f00e7" font-family="Arial">1</text>
+  <text x="150" y="70" text-anchor="middle" font-size="70" fill="#3f00e7" font-family="Arial">2</text>
+  <text x="250" y="70" text-anchor="middle" font-size="70" fill="#3f00e7" font-family="Arial">3</text>
+  <text x="50" y="170" text-anchor="middle" font-size="70" fill="#3f00e7" font-family="Arial">4</text>
+  <text x="150" y="170" text-anchor="middle" font-size="70" fill="#3f00e7" font-family="Arial">5</text>
+  <text x="250" y="170" text-anchor="middle" font-size="70" fill="#3f00e7" font-family="Arial">6</text>
+  <text x="50" y="270" text-anchor="middle" font-size="70" fill="#3f00e7" font-family="Arial">7</text>
+  <text x="150" y="270" text-anchor="middle" font-size="70" fill="#3f00e7" font-family="Arial">8</text>
+  <text x="250" y="270" text-anchor="middle" font-size="70" fill="#3f00e7" font-family="Arial">9</text>
+</svg>

@@ -1,14 +1,13 @@
 <template>
   <div id="main-layout-container">
     <header id="main-layout-header" :class="{ 'reach-top': y <= 0, 'mobile-menu-opened': isMobileMenuOpened }">
-      <div class="navbar flex-col items-start sm:flex-row">
+      <div class="navbar flex-col items-start sm:flex-row sm:items-center">
         <button @click="toggleMenuOpen" class="btn btn-square btn-ghost sm:hidden" aria-label="nav-toggle">
           <IconMenu class="h-5 w-5 sm:hidden" />
         </button>
-
         <nav
           :class="{ hidden: !isMobileMenuOpened, 'menu-opening': menuOpening, 'menu-closing': menuClosing }"
-          class="fixed left-0 right-0 top-16 bg-base-100 px-3 pb-3 pt-1 sm:static sm:!block sm:bg-transparent"
+          class="fixed left-0 right-0 top-16 bg-base-100 px-3 pb-3 pt-1 sm:static sm:!block sm:bg-transparent sm:py-0"
         >
           <ul class="flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0">
             <li v-for="x in routes" :key="x.path">

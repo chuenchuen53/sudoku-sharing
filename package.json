@@ -11,8 +11,7 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "type-check": "vue-tsc --noEmit --composite false",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "time": "ts-node ./script/time/index.ts"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
     "@nuxt/content": "^2.9.0",
@@ -27,7 +26,7 @@
     "typescript": "^5.2.2"
   },
   "devDependencies": {
-    "@nuxt/devtools": "^1.0.2",
+    "@nuxt/devtools": "^1.0.4",
     "@rushstack/eslint-patch": "1.5.1",
     "@tailwindcss/typography": "^0.5.10",
     "@types/lodash": "4.14.201",

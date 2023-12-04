@@ -17,7 +17,7 @@
           >
             YOU DID IT!
           </div>
-          <Confetti />
+          <ConfettiAnimation />
         </div>
       </div>
       <div class="relative mb-4 mt-8 flex w-full flex-col gap-4">
@@ -75,6 +75,7 @@ import IconPencil from "~/components/Icons/IconPencil.vue";
 import IconGrid from "~/components/Icons/IconGrid.vue";
 import IconRedo from "~/components/Icons/IconRedo.vue";
 import HintDrawer from "~/components/HintDrawer.vue";
+import ConfettiAnimation from "~/components/ConfettiAnimation.vue";
 import SudokuInputUtil from "~/utils/SudokuInputUtil";
 
 const newLabelRef = ref<HTMLElement | null>(null);
