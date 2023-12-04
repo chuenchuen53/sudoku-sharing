@@ -6,16 +6,27 @@
       </article>
     </ContentDoc>
 
-    <div class="fixed right-4 top-24 hidden h-full w-52 px-4 xl:block">
-      <TableOfContents :activeTocId="activeTocId" :path="$route.path" />
+    <div @click="openMobileToc = !openMobileToc" class="fixed right-4 top-5 z-[1001] xl:hidden">
+      <IconTableOfContents class="h-6 w-6" />
+    </div>
+
+    <div
+      id="strategies-toc"
+      class="fixed right-0 top-16 hidden h-[460px] w-60 bg-base-100 bg-opacity-50 px-6 pt-4 backdrop-blur-sm xl:block xl:bg-transparent"
+      :class="openMobileToc && '!block'"
+    >
+      <TableOfContents :activeTocId="activeTocId" :path="$route.path" :closeMobileToc="() => (openMobileToc = false)" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import IconTableOfContents from "~/components/Icons/IconTableOfContents.vue";
+
 const containerRef = ref<HTMLElement | null>(null);
 const activeTocId = ref("");
 const observer = ref<IntersectionObserver | null>(null);
+const openMobileToc = ref(true);
 
 onMounted(() => {
   observer.value = new IntersectionObserver(
@@ -66,6 +77,20 @@ onUnmounted(() => {
     @media (prefers-color-scheme: dark) {
       display: block;
     }
+  }
+}
+
+#strategies-toc {
+  animation: toc-animation 0.2s ease-in-out;
+}
+
+@keyframes toc-animation {
+  0% {
+    clip-path: inset(0 0 475px 0);
+  }
+
+  100% {
+    clip-path: inset(0 0 0 0);
   }
 }
 </style>

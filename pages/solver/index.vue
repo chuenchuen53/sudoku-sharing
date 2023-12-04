@@ -29,7 +29,7 @@
         </div>
         <SudokuGridTextInput :on-input="replaceGrid" />
         <br />
-        <button @click="handleSolve" class="btn btn-primary w-full lg:absolute lg:left-0 lg:top-[490px] lg:!mt-0 lg:w-fit" :disabled="loading">
+        <button @click="handleSolveClick" class="btn btn-primary w-full lg:absolute lg:left-0 lg:top-[490px] lg:!mt-0 lg:w-fit" :disabled="loading">
           Solve
           <span v-if="loading" class="loading loading-spinner loading-sm"></span>
         </button>
@@ -111,7 +111,7 @@ onUnmounted(() => {
   window.removeEventListener("keydown", handleKeyDown);
 });
 
-const handleSolve = () => {
+const handleSolveClick = () => {
   if (Sudoku.invalidCells(inputGrid.value).length > 0 || inputGrid.value.flatMap((x) => x).filter((x) => x.inputValue).length < 17) {
     if (showErrToastTimer.value) window.clearTimeout(showErrToastTimer.value);
     showErrToastTimer.value = window.setTimeout(() => {

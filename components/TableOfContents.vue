@@ -1,24 +1,3 @@
-<script setup lang="ts">
-const props = defineProps<{ activeTocId: string; path: string }>();
-
-const { data } = await useAsyncData(`blogToc`, () => queryContent(props.path).findOne());
-const tocLinks = computed(() => data.value?.body?.toc?.links ?? []);
-
-const onClick = (id: string) => {
-  const el = document.getElementById(id);
-  if (el) {
-    const headerOffset = 85;
-    const elementPosition = el.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.scrollY - headerOffset;
-
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: "smooth",
-    });
-  }
-};
-</script>
-
 <template>
   <div>
     <div>Table of Contents</div>
@@ -46,3 +25,26 @@ const onClick = (id: string) => {
     </nav>
   </div>
 </template>
+
+<script setup lang="ts">
+const props = defineProps<{ activeTocId: string; path: string; closeMobileToc: () => void }>();
+
+const { data } = await useAsyncData(`blogToc`, () => queryContent(props.path).findOne());
+const tocLinks = computed(() => data.value?.body?.toc?.links ?? []);
+
+const onClick = (id: string) => {
+  const el = document.getElementById(id);
+  if (el) {
+    const headerOffset = 85;
+    const elementPosition = el.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth",
+    });
+
+    props.closeMobileToc();
+  }
+};
+</script>

@@ -30,8 +30,8 @@
 <script lang="ts" setup>
 import FillStrategy from "../core/Sudoku/FillStrategy/FillStrategy";
 import SudokuView from "./SudokuView.vue";
-import EliminationStrategy from "~/core/Sudoku/EliminationStrategy/EliminationStrategy";
 import type { Step } from "~/core/Sudoku/type";
+import EliminationStrategy from "~/core/Sudoku/EliminationStrategy/EliminationStrategy";
 
 defineProps<{
   stepNum: number;

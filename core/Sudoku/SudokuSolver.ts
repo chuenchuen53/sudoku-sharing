@@ -35,17 +35,17 @@ import type { FillInputValueData } from "./FillStrategy/type";
 import type { EliminationData } from "./EliminationStrategy/type";
 
 export default class SudokuSolver {
-  private static fillStrategiesBeforeSetCandidatesOrder: FillStrategyType[] = [
+  public static fillStrategiesBeforeSetCandidatesOrder: readonly FillStrategyType[] = [
     FillStrategyType.UNIQUE_MISSING,
     FillStrategyType.HIDDEN_SINGLE,
     FillStrategyType.NAKED_SINGLE,
   ];
-  private static fillStrategiesOrder: FillStrategyType[] = [
+  public static fillStrategiesOrder: readonly FillStrategyType[] = [
     FillStrategyType.UNIQUE_MISSING,
     FillStrategyType.NAKED_SINGLE,
     FillStrategyType.HIDDEN_SINGLE,
   ];
-  private static eliminationStrategiesOrder: EliminationStrategyType[] = [
+  public static eliminationStrategiesOrder: readonly EliminationStrategyType[] = [
     EliminationStrategyType.LOCKED_CANDIDATES,
     EliminationStrategyType.NAKED_PAIRS,
     EliminationStrategyType.HIDDEN_PAIRS,

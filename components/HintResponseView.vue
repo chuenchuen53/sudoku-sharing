@@ -22,7 +22,7 @@
           </div>
         </div>
         <div v-else>
-          <div class="chat chat-start delay-appear">
+          <div class="delay-appear chat chat-start">
             <div class="chat-bubble chat-bubble-accent whitespace-pre-wrap">
               {{ notFoundResponse }}
             </div>

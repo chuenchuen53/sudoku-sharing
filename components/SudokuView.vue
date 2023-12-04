@@ -202,7 +202,7 @@ $sub-border-width: 1px;
 .sudoku-view {
   --cell-font-size: 25px;
   --candidate-font-size: 8px;
-  --cell-size: calc((100vw - 64px) / 9);
+  --cell-size: calc(min(50px, (100vw - 64px) / 9));
   --cell-size-with-sub-border: calc(var(--cell-size) + #{$sub-border-width});
   --cell-size-with-main-border: calc(var(--cell-size) + #{$main-border-width});
   --puzzle-size: calc(9 * var(--cell-size) + 2 * #{$grand-border-width} + 2 * #{$main-border-width} + 6 * #{$sub-border-width});

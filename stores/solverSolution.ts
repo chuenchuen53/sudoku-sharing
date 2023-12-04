@@ -16,13 +16,8 @@ export const useSolverSolutionStore = defineStore("solverSolution", () => {
     data.value = newData;
   }
 
-  function clearData() {
-    data.value = null;
-  }
-
   return {
     data,
     setData,
-    clearData,
   };
 });
