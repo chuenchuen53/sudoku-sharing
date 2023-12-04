@@ -64,9 +64,9 @@ import { SudokuLineUtil, type SudokuLine } from "../core/Sudoku/SudokuLine";
 import Sudoku from "../core/Sudoku/Sudoku";
 import SudokuSolver from "../core/Sudoku/SudokuSolver";
 import { VirtualLineType, type Grid, type Position, type SudokuElement, type Candidates } from "../core/Sudoku/type";
-import type { Highlight, EliminationData } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 
 import type { FillInputValueData } from "~/core/Sudoku/FillStrategy/type";
+import type { EliminationData, Highlight } from "~/core/Sudoku/EliminationStrategy/type";
 
 const props = defineProps<{
   grid: Grid;

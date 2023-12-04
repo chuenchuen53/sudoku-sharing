@@ -1,8 +1,9 @@
 import Sudoku from "../Sudoku";
 import SudokuSolver from "../SudokuSolver";
 import CalcUtil from "../../utils/CalcUtil";
-import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
+import EliminationStrategy from "./EliminationStrategy";
 import type { CandidateCell, Cell, Pincer, SudokuElement, VirtualLine } from "../type";
+import type { Elimination, EliminationData, Highlight } from "./type";
 
 export default class XYWing extends EliminationStrategy {
   private static readonly instance = new XYWing();

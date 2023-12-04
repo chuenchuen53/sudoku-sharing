@@ -2,8 +2,9 @@ import Sudoku from "../Sudoku";
 import SudokuSolver from "../SudokuSolver";
 import { SudokuLineUtil } from "../SudokuLine";
 import CalcUtil from "../../utils/CalcUtil";
-import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
+import EliminationStrategy from "./EliminationStrategy";
 import type { SudokuElement, VirtualLine, VirtualLineType } from "../type";
+import type { Elimination, EliminationData, Highlight } from "./type";
 
 export default abstract class NakedMultiple extends EliminationStrategy {
   public static nakedMultipleFromVirtualLines(

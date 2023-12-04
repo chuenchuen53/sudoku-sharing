@@ -3,8 +3,9 @@ import { VirtualLineType, type CandidateCell, type RowColumn, type VirtualLine }
 import { SudokuLineUtil } from "../SudokuLine";
 import CalcUtil from "../../utils/CalcUtil";
 import SudokuSolver from "../SudokuSolver";
-import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
+import EliminationStrategy from "./EliminationStrategy";
 import type { SudokuLine } from "../SudokuLine";
+import type { Elimination, EliminationData, Highlight } from "./type";
 
 export default class XWing extends EliminationStrategy {
   private static readonly instance = new XWing();

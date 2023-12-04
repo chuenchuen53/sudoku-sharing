@@ -5,7 +5,8 @@ import { type InputClues, type PositionAndValue, VirtualLineType } from "../../c
 import Sudoku from "../../core/Sudoku/Sudoku";
 import HiddenTriplets from "../../core/Sudoku/EliminationStrategy/HiddenTriplets";
 import { SudokuLine } from "../../core/Sudoku/SudokuLine";
-import EliminationStrategy, { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/type";
 
 const p2: InputClues = [
   ["0", "3", "0", "9", "0", "0", "0", "0", "0"],

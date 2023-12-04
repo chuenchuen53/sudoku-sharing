@@ -3,8 +3,8 @@ import { VirtualLineType } from "../core/Sudoku/type";
 import ArrUtil from "../core/utils/ArrUtil";
 import { SudokuLineUtil } from "../core/Sudoku/SudokuLine";
 import type { Pincer, Cell, InputClues, PositionAndValue, SudokuElement, VirtualLine } from "../core/Sudoku/type";
-import type { Elimination } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import type { FillInputValueData } from "../core/Sudoku/FillStrategy/type";
+import type { Elimination } from "../core/Sudoku/EliminationStrategy/type";
 
 export default class TestUtil {
   static emptyPuzzle = (): InputClues => ArrUtil.create2DArray(9, 9, () => "0");

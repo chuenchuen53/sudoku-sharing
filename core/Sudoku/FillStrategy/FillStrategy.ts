@@ -1,7 +1,7 @@
 import Sudoku from "../Sudoku";
 import type { Candidates, FillStep, PositionAndValue } from "../type";
-import type { Elimination } from "../EliminationStrategy/EliminationStrategy";
 import type { FillInputValueData, FillStrategyType } from "./type";
+import type { Elimination } from "../EliminationStrategy/type";
 
 export default abstract class FillStrategy {
   public static strategyName(strategy: FillStrategyType): string {

@@ -5,7 +5,8 @@ import TestUtil from "../TestUtil";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import XWing from "../../core/Sudoku/EliminationStrategy/XWing";
 import { SudokuLine } from "../../core/Sudoku/SudokuLine";
-import EliminationStrategy, { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/type";
 import type { InputClues, PositionAndValue, SudokuElement } from "../../core/Sudoku/type";
 
 const p0: InputClues = [

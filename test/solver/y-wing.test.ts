@@ -4,7 +4,8 @@ import TestUtil from "../TestUtil";
 import { VirtualLineType } from "../../core/Sudoku/type";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import XYWing from "../../core/Sudoku/EliminationStrategy/XYWing";
-import EliminationStrategy, { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/type";
 import type { Pincer, InputClues, PositionAndValue, SudokuElement, CandidateCell } from "../../core/Sudoku/type";
 
 const p0: InputClues = [
@@ -156,7 +157,7 @@ describe("sudoku solver", () => {
   it("xyWingFromSudoku test 1", () => {
     const s = new SudokuSolver(new Sudoku(p0));
     s.setBasicCandidates();
-    const result = XYWing.xyWingFromSudoku(s.sudoku);
+    const result = XYWing.xyWingFromSudoku(s.getSudoku());
     const expectResult: typeof result = [
       {
         eliminations: TestUtil.eliminationArrFactory([[3, 6, ["7"]]]),

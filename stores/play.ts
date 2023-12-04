@@ -2,10 +2,10 @@ import { defineStore } from "pinia";
 import { getSudoku } from "sudoku-gen";
 import Sudoku from "../core/Sudoku/Sudoku";
 import SudokuSolver from "../core/Sudoku/SudokuSolver";
-import type { EliminationData, EliminationStrategyType } from "../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import type { Position, Grid, SudokuElement, SudokuElementWithZero } from "../core/Sudoku/type";
 import type { Difficulty } from "sudoku-gen/dist/types/difficulty.type";
 import type { FillInputValueData, FillStrategyType } from "~/core/Sudoku/FillStrategy/type";
+import type { EliminationData, EliminationStrategyType } from "~/core/Sudoku/EliminationStrategy/type";
 import ArrUtil from "~/core/utils/ArrUtil";
 
 interface TempCandidate {

@@ -3,7 +3,8 @@ import { SudokuLineUtil } from "../SudokuLine";
 import SudokuSolver from "../SudokuSolver";
 import HiddenMultiple from "./HiddenMultiple";
 import type Sudoku from "../Sudoku";
-import type { EliminationData } from "./EliminationStrategy";
+
+import type { EliminationData } from "./type";
 
 export default class HiddenPairs extends HiddenMultiple {
   public static readonly SIZE_OF_CANDIDATE = 2;

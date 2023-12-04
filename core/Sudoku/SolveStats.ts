@@ -1,5 +1,5 @@
-import { EliminationStrategyType } from "./EliminationStrategy/EliminationStrategy";
 import { FillStrategyType } from "./FillStrategy/type";
+import { EliminationStrategyType } from "./EliminationStrategy/type";
 
 export type FilleStats = Record<FillStrategyType, number>;
 export type EliminationStats = Record<EliminationStrategyType, number>;

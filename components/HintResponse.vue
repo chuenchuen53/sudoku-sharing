@@ -22,8 +22,8 @@
 
 <script lang="ts" setup>
 import HintResponseView from "./HintResponseView.vue";
-import type { EliminationData, EliminationStrategyType } from "~/core/Sudoku/EliminationStrategy/EliminationStrategy";
 import type { FillInputValueData, FillStrategyType } from "~/core/Sudoku/FillStrategy/type";
+import type { EliminationData, EliminationStrategyType } from "~/core/Sudoku/EliminationStrategy/type";
 import EliminationStrategy from "~/core/Sudoku/EliminationStrategy/EliminationStrategy";
 import FillStrategy from "~/core/Sudoku/FillStrategy/FillStrategy";
 

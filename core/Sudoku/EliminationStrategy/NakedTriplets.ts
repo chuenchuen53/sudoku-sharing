@@ -3,7 +3,7 @@ import { SudokuLineUtil } from "../SudokuLine";
 import SudokuSolver from "../SudokuSolver";
 import NakedMultiple from "./NakedMultiple";
 import type Sudoku from "../Sudoku";
-import type { EliminationData } from "./EliminationStrategy";
+import type { EliminationData } from "./type";
 
 export default class NakedTriplets extends NakedMultiple {
   public static readonly SIZE_OF_CANDIDATE = 3;

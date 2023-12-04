@@ -2,7 +2,8 @@ import Sudoku from "../Sudoku";
 import { SudokuLineUtil } from "../SudokuLine";
 import SudokuSolver from "../SudokuSolver";
 import { VirtualLineType, type RowColumn } from "../type";
-import EliminationStrategy, { type Elimination, type EliminationData, type Highlight } from "./EliminationStrategy";
+import EliminationStrategy from "./EliminationStrategy";
+import type { Elimination, EliminationData, Highlight } from "./type";
 
 export default class LockedCandidates extends EliminationStrategy {
   private static readonly instance = new LockedCandidates();

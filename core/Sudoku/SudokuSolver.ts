@@ -1,5 +1,5 @@
 import ArrUtil from "../utils/ArrUtil";
-import EliminationStrategy, { type EliminationData, EliminationStrategyType } from "./EliminationStrategy/EliminationStrategy";
+import EliminationStrategy from "./EliminationStrategy/EliminationStrategy";
 import HiddenPairs from "./EliminationStrategy/HiddenPairs";
 import HiddenQuads from "./EliminationStrategy/HiddenQuads";
 import HiddenTriplets from "./EliminationStrategy/HiddenTriplets";
@@ -30,7 +30,9 @@ import {
 } from "./type";
 import { SudokuLineUtil } from "./SudokuLine";
 import { FillStrategyType } from "./FillStrategy/type";
+import { EliminationStrategyType } from "./EliminationStrategy/type";
 import type { FillInputValueData } from "./FillStrategy/type";
+import type { EliminationData } from "./EliminationStrategy/type";
 
 export default class SudokuSolver {
   private static fillStrategiesBeforeSetCandidatesOrder: FillStrategyType[] = [

@@ -4,8 +4,9 @@ import TestUtil from "../TestUtil";
 import { VirtualLineType, type InputClues, type PositionAndValue } from "../../core/Sudoku/type";
 import Sudoku from "../../core/Sudoku/Sudoku";
 import NakedPairs from "../../core/Sudoku/EliminationStrategy/NakedPairs";
-import EliminationStrategy, { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
+import EliminationStrategy from "../../core/Sudoku/EliminationStrategy/EliminationStrategy";
 import { SudokuLine } from "../../core/Sudoku/SudokuLine";
+import { EliminationStrategyType } from "../../core/Sudoku/EliminationStrategy/type";
 
 const p0: InputClues = [
   ["0", "9", "0", "4", "6", "7", "5", "0", "8"],
