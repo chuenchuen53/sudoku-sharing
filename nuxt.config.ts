@@ -10,7 +10,7 @@ export default defineNuxtConfig({
     },
   },
   devtools: { enabled: true },
-  modules: ["@vueuse/nuxt", "@pinia/nuxt", "nuxt-particles", "@nuxt/content"],
+  modules: ["@vueuse/nuxt", "@pinia/nuxt", "nuxt-particles", "@nuxt/content", "nuxt-simple-robots", "nuxt-simple-sitemap"],
   css: ["~/assets/css/main.css"],
   postcss: {
     plugins: {
@@ -20,5 +20,8 @@ export default defineNuxtConfig({
   },
   content: {
     markdown: { anchorLinks: false },
+  },
+  sitemap: {
+    exclude: ["/solver/solution"],
   },
 });

@@ -44,6 +44,8 @@
     "jsdom": "^22.1.0",
     "nuxt": "^3.8.1",
     "nuxt-particles": "^0.1.5",
+    "nuxt-simple-robots": "^3.1.9",
+    "nuxt-simple-sitemap": "^4.1.7",
     "postcss": "^8.4.31",
     "prettier": "3.1.0",
     "prettier-plugin-tailwindcss": "^0.5.7",
