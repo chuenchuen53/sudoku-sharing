@@ -7,15 +7,13 @@
     </NuxtLayout>
 
     <ClientOnly>
-      <div v-if="showUpdate" class="toast toast-center toast-top top-20">
-        <div v-if="showUpdate && $pwa?.needRefresh" class="toast toast-center toast-top top-20">
-          <div class="flex flex-col items-end">
-            <button @click="showUpdate = false" class="btn btn-circle btn-ghost btn-sm">
-              <IconCross class="text-lg" />
-            </button>
-            <div class="my-6">New content available.</div>
-            <button class="btn btn-primary btn-sm" @click="$pwa.updateServiceWorker()">Reload</button>
-          </div>
+      <div v-if="showUpdate && $pwa?.needRefresh" class="toast toast-center toast-top top-20">
+        <div class="alert flex flex-col items-end bg-base-200 bg-opacity-50 backdrop-blur-sm">
+          <button @click="showUpdate = false" class="btn btn-circle btn-ghost btn-sm">
+            <IconCross class="text-lg" />
+          </button>
+          <div class="my-4 min-w-[250px]">New content available.</div>
+          <button class="btn btn-primary" @click="$pwa.updateServiceWorker()">Reload</button>
         </div>
       </div>
     </ClientOnly>
