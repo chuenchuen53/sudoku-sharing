@@ -31,6 +31,8 @@
     "@tailwindcss/typography": "^0.5.10",
     "@types/lodash": "4.14.201",
     "@types/lodash.uniqwith": "^4.5.9",
+    "@vite-pwa/assets-generator": "^0.0.11",
+    "@vite-pwa/nuxt": "^0.3.5",
     "@vitest/coverage-v8": "^0.34.6",
     "@vue/eslint-config-prettier": "8.0.0",
     "@vue/eslint-config-typescript": "12.0.0",
@@ -45,7 +47,7 @@
     "nuxt": "^3.8.1",
     "nuxt-particles": "^0.1.5",
     "nuxt-simple-robots": "^3.1.9",
-    "nuxt-simple-sitemap": "^4.1.7",
+    "nuxt-simple-sitemap": "^4.1.10",
     "postcss": "^8.4.31",
     "prettier": "3.1.0",
     "prettier-plugin-tailwindcss": "^0.5.7",
@@ -57,7 +59,7 @@
     "unplugin-auto-import": "0.16.7",
     "unplugin-vue-components": "0.25.2",
     "vitest": "0.34.6",
-    "vue": "^3.3.8",
+    "vue": "^3.3.11",
     "vue-router": "^4.2.5",
     "vue-tsc": "1.8.22"
   }

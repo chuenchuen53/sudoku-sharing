@@ -59,6 +59,14 @@
         <NuxtLink to="/strategies" class="btn btn-primary btn-block sm:w-fit">Explore Tips</NuxtLink>
       </div>
     </section>
+
+    <ClientOnly>
+      <section v-if="$pwa" class="w-full p-4 md:p-6">
+        <h2 class="text-3xl font-bold md:text-4xl">Play offline</h2>
+        <p class="my-4">Install the web app as PWA and play offline.</p>
+        <button class="btn btn-primary" @click="$pwa.install()">Install</button>
+      </section>
+    </ClientOnly>
   </div>
 </template>
 
