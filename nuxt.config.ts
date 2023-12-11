@@ -1,5 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  nitro: {
+    static: true,
+  },
   app: {
     head: {
       htmlAttrs: {
@@ -55,7 +58,7 @@ export default defineNuxtConfig({
       registerType: "prompt",
       workbox: {
         clientsClaim: true,
-        globPatterns: ["**/*.{js,css,html,ico,jpg,png,svg,json,xml,txt,xsl}"],
+        globPatterns: ["**/*.{js,css,html,ico,jpg,png,svg,json,xml,txt,xsl}", "*.{js,css,html,ico,jpg,png,svg,json,xml,txt,xsl}"],
         runtimeCaching: [
           {
             urlPattern: new RegExp(`${process.env.NUXT_PUBLIC_SITE_URL}/api/_content/query/.+\\.json\\?_params=.+`),
