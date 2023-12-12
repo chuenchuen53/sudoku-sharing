@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ContentDoc v-slot="{ doc }">
+    <ContentDoc v-slot="{ doc }" path="/_strategies">
       <article ref="containerRef" id="strategies-article" class="prose mx-auto max-w-[80ch]">
         <ContentRenderer :value="doc" />
       </article>
@@ -15,7 +15,7 @@
       class="fixed right-0 top-16 hidden h-[460px] w-60 bg-base-100 bg-opacity-50 px-6 pt-4 backdrop-blur-sm xl:block xl:bg-transparent"
       :class="openMobileToc && '!block'"
     >
-      <TableOfContents :activeTocId="activeTocId" :path="$route.path" :closeMobileToc="() => (openMobileToc = false)" />
+      <TableOfContents :activeTocId="activeTocId" path="/_strategies" :closeMobileToc="() => (openMobileToc = false)" />
     </div>
   </div>
 </template>
