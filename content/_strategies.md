@@ -23,7 +23,7 @@ For example, there are 8 filled cells in row 1, and the only missing digit is 3.
 
 The naked single strategy is when a cell has only one possible digit based on the digits already placed in its row, column, and box.
 
-For example, for the cell r1c8, the only possible digit is `3`, so the cell can be filled with `3`.
+For example, for the cell R1C8, the only possible digit is `3`, so the cell can be filled with `3`.
 
 ![naked single light](/img/strategies/naked-single-light.png)
 ![naked single dark](/img/strategies/naked-single-dark.png)
@@ -32,7 +32,7 @@ For example, for the cell r1c8, the only possible digit is `3`, so the cell can 
 
 The hidden single strategy is when a digit can only go in one cell of a row, column, or box. Since the row, column, or box must contain that digit once, the cell must be filled with that digit.
 
-For example, for digit `1`, there is only one cell (r1c3) in row 1 that can be filled with `1`, so the cell can be filled with `1`.
+For example, for digit `1`, there is only one cell (R1C3) in row 1 that can be filled with `1`, so the cell can be filled with `1`.
 
 ![hidden single light](/img/strategies/hidden-single-light.png)
 ![hidden single dark](/img/strategies/hidden-single-dark.png)
@@ -65,7 +65,7 @@ For example, in box 3, the possible cells for digit `2` are all in row 2. Theref
 
 Naked pairs occur when you have two cells in the same row, column, or box that have only two possible candidates and they are the same. When this occurs, those values must use up all the cells and therefore can be removed from the other cells in the same row, column, or box.
 
-For example, in column 9, the cells r4c9 and r9c9 have only two possible candidates `5` and `7`. That means that these two cells must be filled with `5` and `7`, in some order. Therefore, the digits `5` and `7` cannot be in any other cells in column 9 and can be removed from the candidates of the other cells in column 9.
+For example, in column 9, the cells R4C4 and R9C9 have only two possible candidates `5` and `7`. That means that these two cells must be filled with `5` and `7`, in some order. Therefore, the digits `5` and `7` cannot be in any other cells in column 9 and can be removed from the candidates of the other cells in column 9.
 
 ![naked pairs light](/img/strategies/naked-pairs-light.png)
 ![naked pairs dark](/img/strategies/naked-pairs-dark.png)
@@ -92,7 +92,7 @@ The following figure illustrates an example of naked quads.
 
 A hidden pair occurs when two cells in a row, column, or box have the same two candidates, and those candidates do not appear anywhere else in that row, column, or box. This means that those two cells must contain those two candidates, and you can remove any other candidates from those cells.
 
-For example, in row 5, the digits `3` and `4` only appear in cells r5c5 and r5c6. Therefore, the digits `3` and `4` must be in cells r5c5 and r5c6, in some order. Other candidates can be removed from these two cells.
+For example, in row 5, the digits `3` and `4` only appear in cells R5C5 and R5C5. Therefore, the digits `3` and `4` must be in cells R5C5 and R5C5, in some order. Other candidates can be removed from these two cells.
 
 ![hidden pairs light](/img/strategies/hidden-pairs-light.png)
 ![hidden pairs dark](/img/strategies/hidden-pairs-dark.png)
@@ -101,7 +101,7 @@ For example, in row 5, the digits `3` and `4` only appear in cells r5c5 and r5c6
 
 A hidden triplet involves finding three cells in the same row, column, or box that have the same three candidates (or a subset of them). These three cells must contain the three digits that form the triplet, so any other candidates can be eliminated from them.
 
-For example, in column2, the digits `1`, `4`, and `9` only appear in cells r2c2, r4c2, and r5c2. Therefore, the digits `1`, `4`, and `9` must be in cells r2c2, r4c2, and r5c2, in some order. Other candidates can be removed from these three cells.
+For example, in column2, the digits `1`, `4`, and `9` only appear in cells R2C2, R4C4, and R5C5. Therefore, the digits `1`, `4`, and `9` must be in cells R2C2, R4C4, and R5C5, in some order. Other candidates can be removed from these three cells.
 
 ![hidden triplets light](/img/strategies/hidden-triplets-light.png)
 ![hidden triplets dark](/img/strategies/hidden-triplets-dark.png)
@@ -119,7 +119,7 @@ The following figure illustrates an example of hidden quads.
 
 An X-Wing occurs when the same candidate occurs exactly twice in two rows (or columns) and in the same columns (or rows). These cells form the corners of a rectangle, so a pair of opposite corners of that rectangle must contain them, and the digit must not appear in the same column (or row) outside the corner cells.
 
-For example, in rows 2 and 8, the digit `2` only appears twice in each row and in the same columns. There are two possible ways to fill the digit `2`. The first one is to fill `2` in cells r2c7 and r8c9. The second one is to fill `2` in cells r2c9 and r8c7. In both cases, the digit `2` cannot be in any other cells in rows 2 and 8, and can be removed from the candidates of the other cells in rows 2 and 8.
+For example, in rows 2 and 8, the digit `2` only appears twice in each row and in the same columns. There are two possible ways to fill the digit `2`. The first one is to fill `2` in cells R2C2 and R8C8. The second one is to fill `2` in cells R2C2 and R8C8. In both cases, the digit `2` cannot be in any other cells in rows 2 and 8, and can be removed from the candidates of the other cells in rows 2 and 8.
 
 ![X-Wing light](/img/strategies/x-wing-light.png)
 ![X-Wing dark](/img/strategies/x-wing-dark.png)
@@ -128,9 +128,9 @@ For example, in rows 2 and 8, the digit `2` only appears twice in each row and i
 
 An XY-Wing involves three cells that have exactly two candidates each. These cells form a Y-shaped pattern, where the middle cell (the pivot) shares a row, column, or box with the other two cells (the pincers). The pivot cell must have two candidates that are different from the pincers, and the pincers must have one candidate in common. When this occurs, all the other cells in the intersection of the pincers cannot contain the common candidate.
 
-For example, for the pivot r8c5, the two candidates are `2` and `8`. The two pincers are r4c5 and r8c7. The two candidates for r4c5 are `7` and `8`, which the `8` appears in the candidates of the pivot. The two candidates for r8c7 are `2` and `7`, which the `7` appears in the candidates of the pivot. Therefore, the digit `7` cannot be in any other cells in the intersection of r4c5 and r8c7, which is r4c7.
+For example, for the pivot R8C8, the two candidates are `2` and `8`. The two pincers are R4C4 and R8C8. The two candidates for R4C4 are `7` and `8`, which the `8` appears in the candidates of the pivot. The two candidates for R8C8 are `2` and `7`, which the `7` appears in the candidates of the pivot. Therefore, the digit `7` cannot be in any other cells in the intersection of R4C4 and R8C8, which is R4C4.
 
-The logic behind this is that there are two possible ways to fill the pivot. The first one is to fill `2` in the pivot, which means that the pincer r8c7 must be filled with `7` and the intersection r4c7 cannot be filled with `7`. The second one is to fill `8` in the pivot, which means that the pincer r4c5 must be filled with `7` and the intersection r4c7 cannot be filled with `7`. In both cases, the digit `7` cannot be in r4c7.
+The logic behind this is that there are two possible ways to fill the pivot. The first one is to fill `2` in the pivot, which means that the pincer R8C8 must be filled with `7` and the intersection R4C4 cannot be filled with `7`. The second one is to fill `8` in the pivot, which means that the pincer R4C4 must be filled with `7` and the intersection R4C4 cannot be filled with `7`. In both cases, the digit `7` cannot be in R4C4.
 
 ![XY-Wing ex1 light](/img/strategies/xy-wing-ex1-light.png)
 ![XY-Wing ex1 dark](/img/strategies/xy-wing-ex1-dark.png)

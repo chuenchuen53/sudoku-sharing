@@ -1,9 +1,14 @@
 <template>
   <div>
-    <ContentDoc v-slot="{ doc }" path="/_strategies">
-      <article ref="containerRef" id="strategies-article" class="prose mx-auto max-w-[80ch]">
-        <ContentRenderer :value="doc" />
-      </article>
+    <ContentDoc path="/_strategies">
+      <template v-slot="{ doc }">
+        <article ref="containerRef" id="strategies-article" class="prose mx-auto max-w-[80ch]">
+          <ContentRenderer :value="doc"></ContentRenderer>
+        </article>
+      </template>
+      <template #not-found>
+        <div>Connect to the internet to view this page.</div>
+      </template>
     </ContentDoc>
 
     <button @click="openMobileToc = !openMobileToc" class="btn btn-square btn-ghost fixed right-2 top-2 z-[1001] xl:hidden">

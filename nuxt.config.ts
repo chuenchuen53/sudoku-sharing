@@ -3,6 +3,9 @@ export default defineNuxtConfig({
   nitro: {
     static: true,
   },
+  site: {
+    trailingSlash: true,
+  },
   app: {
     head: {
       htmlAttrs: {
@@ -59,20 +62,6 @@ export default defineNuxtConfig({
       workbox: {
         clientsClaim: true,
         globPatterns: ["**/*.{js,css,html,ico,jpg,png,svg,json,xml,txt,xsl}", "*.{js,css,html,ico,jpg,png,svg,json,xml,txt,xsl}"],
-        runtimeCaching: [
-          {
-            urlPattern: new RegExp(`${process.env.NUXT_PUBLIC_SITE_URL}/api/_content/query/.+\\.json\\?_params=.+`),
-            handler: async (option) => {
-              const matchPrecache = (await import("workbox-precaching")).matchPrecache;
-              const result = await matchPrecache(option.url.pathname);
-              if (result) {
-                return result;
-              } else {
-                return fetch(option.url);
-              }
-            },
-          },
-        ],
       },
       manifest: {
         name: "Sudoku",
