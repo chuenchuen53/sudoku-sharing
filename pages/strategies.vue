@@ -12,7 +12,7 @@
     </ContentDoc>
 
     <button @click="openMobileToc = !openMobileToc" class="btn btn-square btn-ghost fixed right-2 top-2 z-[1001] xl:hidden">
-      <IconTableOfContents class="h-6 w-6" />
+      <IconTableOfContents class="h-6 w-6" aria-label="toggle table of contents" />
     </button>
 
     <div

@@ -12,8 +12,9 @@
           <ul class="flex flex-col space-y-2 sm:flex-row sm:space-x-2 sm:space-y-0">
             <li v-for="x in routes" :key="x.path">
               <NuxtLink
+                active-class="text-primary"
                 class="btn btn-ghost btn-sm"
-                :class="{ 'text-primary': x.path === '/' ? route.path === x.path : route.path.startsWith(x.path) }"
+                :class="x.path === '/solver' && $route.path === '/solver/solution' && 'text-primary'"
                 :to="x.path"
                 @click="isMobileMenuOpened && (isMobileMenuOpened = false)"
               >
@@ -31,7 +32,6 @@
 <script lang="ts" setup>
 import IconMenu from "~/components/Icons/IconMenu.vue";
 
-const route = useRoute();
 const { y } = useWindowScroll();
 
 const menuOpening = ref(false);

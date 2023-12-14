@@ -3,9 +3,6 @@ export default defineNuxtConfig({
   nitro: {
     static: true,
   },
-  site: {
-    trailingSlash: true,
-  },
   app: {
     head: {
       htmlAttrs: {
