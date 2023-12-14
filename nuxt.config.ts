@@ -50,6 +50,8 @@ export default defineNuxtConfig({
   },
   sitemap: {
     exclude: ["/solver/solution"],
+    discoverImages: false,
+    xsl: false,
   },
   $production: {
     pwa: {
