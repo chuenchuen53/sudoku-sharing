@@ -33,6 +33,12 @@
 import IconMenu from "~/components/Icons/IconMenu.vue";
 
 const { y } = useWindowScroll();
+const route = useRoute();
+const config = useRuntimeConfig();
+
+useHead({
+  link: [{ rel: "canonical", href: config.public.siteUrl + route.path }],
+});
 
 const menuOpening = ref(false);
 const menuClosing = ref(false);

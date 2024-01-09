@@ -3,6 +3,11 @@ export default defineNuxtConfig({
   nitro: {
     static: true,
   },
+  runtimeConfig: {
+    public: {
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL,
+    },
+  },
   app: {
     head: {
       htmlAttrs: {
